@@ -31,7 +31,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "D3 template"
+      title: "Energy Sight"
     })
   ]
 };

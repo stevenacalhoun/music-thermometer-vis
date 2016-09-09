@@ -1,12 +1,13 @@
 {
-  "name": "d3_template",
+  "name": "energy_sight",
   "version": "1.0.0",
-  "description": "Template for D3 projects",
-  "author": "Steven Calhoun",
+  "description": "Visualization for renewable energies in America",
+  "author": "Info Vis Team",
   "main": "index.js",
   "scripts": {
     "build": "webpack -p --progress --colors",
-    "dev": "webpack-dev-server --inline --devtool eval --progress --colors --hot --content-base build --host 0.0.0.0 --port 8080"
+    "dev": "webpack-dev-server --inline --devtool eval --progress --colors --hot --content-base build --host 0.0.0.0 --port 8080",
+    "deploy": "webpack -p && gh-pages -d build"
   },
   "license": "UNLICENSED",
   "devDependencies": {
