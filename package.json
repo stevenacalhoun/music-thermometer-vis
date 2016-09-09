@@ -1,0 +1,24 @@
+{
+  "name": "d3_template",
+  "version": "1.0.0",
+  "description": "Template for D3 projects",
+  "author": "Steven Calhoun",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack -p --progress --colors",
+    "dev": "webpack-dev-server --inline --devtool eval --progress --colors --hot --content-base build --host 0.0.0.0 --port 8080"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "css-loader": "^0.24.0",
+    "d3": "^4.2.2",
+    "html-webpack-plugin": "^2.22.0",
+    "jquery": "^3.1.0",
+    "json-loader": "^0.5.4",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.1",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.1"
+  }
+}
