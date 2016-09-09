@@ -21,4 +21,10 @@ Let me know if you have any issues, I'd be happy to help. Email me or just drop 
 -Steven
 
 ## Deployment ##
-Deployment is done through npm as well. To deploy simply run `npm deploy`. This builds the project then pushes the built code to the gh-pages branch of our repo. By pushing to this branch GitHub pages will automatically serve the website. To view the deployed project go [here](https://github.com/pages/stevenacalhoun/energy-sight-vis)
+Deployment is done through npm as well. To deploy simply run `npm deploy`. This builds the project then pushes the built code to the gh-pages branch of our repo. By pushing to this branch GitHub pages will automatically serve the website. To view the deployed project go [here](http://stevenacalhoun.github.io/energy-sight-vis)
+
+## GATech GitHub vs Public GitHub ##
+I chose to post the repo on my personal GitHub account at github.com instead of GATech's private instance of GitHub at github.gatech.com. I'm not all that worried about people cheating, and that's the only benefit the GATech GitHub offers over the public GitHub. Projects are meant to be shared, and not everyone can access GATech's GitHub instance. It's also a pain to push to GATech's GitHub when you're not on campus. I hope no one has an issue with this.
+
+## Weird Side Effect ##
+We're actually hosting the site on GitHub through something called GitHub Pages. It's super slick and free. I host my personal website on GH Pages. Because I do that, it causes the URL for this site to be redirected from "http://stevenacalhoun.github.io/energy-sight-vis" to "http://stevenacalhoun.me/energy-sight-vis/" which I don't like. May or may not be fixable, not sure yet.
