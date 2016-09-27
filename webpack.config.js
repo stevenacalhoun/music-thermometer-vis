@@ -31,7 +31,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Energy Sight"
+      title: "Music Thermometer"
     })
   ]
 };
