@@ -23,6 +23,10 @@ module.exports = {
         test: /\.json$/,
         loader: "json-loader"
       },
+      {
+        test: /\.csv$/, 
+        loader: 'dsv-loader' 
+      }
     ]
   },
   output: {

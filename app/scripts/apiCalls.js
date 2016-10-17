@@ -2,14 +2,15 @@ var $ = require('jQuery'),
     settings = require('./settings.js');
 
 module.exports = {
-  // Billboard calls
-  getChartsForRange: function(earliestDate, latestDate, callBack) {
+  // Top 100 calls
+  getChartsForRange: function(earliestDate, latestDate, country, callBack) {
     $.ajax({
       type: "POST",
       url: settings.serverAddress + "/hot_100_entry",
       data: {
         "earliestDate": earliestDate,
-        "latestDate": latestDate
+        "latestDate": latestDate,
+        "country": country
       },
       success: function(data){ callBack(data) },
       dataType: "json"
