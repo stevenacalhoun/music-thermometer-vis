@@ -2,20 +2,17 @@ var d3 = require('d3'),
     tip = require('d3-tip'),
     constants = require('./constants.js');
 
+require('../styles/streamGraph.scss');
+
 module.exports = {
-  showData: function(data) {
-    data.forEach(function(d) {
-      var container = $('body').append("<div />");
-      container.append("<span>"+d.key+","+d.value+","+d.date+"</span>");
-    })
-  },
-  streamGraph: function(rawData) {
+  streamGraph: function(rawData, parent, graphId) {
     // Prep data
     var preppedData = aggregateData(rawData),
         data = preppedData.data,
         artists = preppedData.artists;
 
-    $('body').append("<div class='chart'></div>");
+    // Graph container
+    $(parent).append("<div id='"+graphId+"' class='stream-chart'></div>");
 
     // Sizing
     var margin = {top: 20, right: 40, bottom: 30, left: 30};
@@ -81,12 +78,12 @@ module.exports = {
         .attr('class', 'd3-tip')
         .html(function(d) {
           // Need some better tooltip html
-          return d;
+          return d.artist + ": " + d.value;
         })
         .offset([-10,0]);
 
     // Main container
-    var svg = d3.select(".chart").append("svg")
+    var svg = d3.select("#"+graphId).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .call(tooltip)
@@ -152,7 +149,11 @@ module.exports = {
           .attr('cy', d3.mouse(this)[1]);
 
         // Render tooltip on circle
-        tooltip.show(value, tipCircle.node());
+        tooltipData = {
+          "value": value,
+          "artist": d.key
+        }
+        tooltip.show(tooltipData, tipCircle.node());
       })
 
       .on("mouseout", function(d, i) {
@@ -165,28 +166,10 @@ module.exports = {
           .duration(250)
           .attr("opacity", "1");
       })
-
-    // Vertical bar vis
-    var vertical = d3.select(".chart")
-        .append("div")
-        .attr("class", "remove")
-        .style("position", "absolute")
-        .style("z-index", "19")
-        .style("width", "1px")
-        .style("height", "380px")
-        .style("top", "10px")
-        .style("bottom", "30px")
-        .style("left", "0px")
-        .style("background", "#fff");
-
-    // Move vertical bar
-    d3.select(".chart")
-      .on("mousemove", function() {
-        vertical.style("left", (d3.mouse(this)[0] + 5) + "px" )
-      })
    }
 }
 
+// This is function is nasty, could likely be improved/sped up
 function aggregateData(data) {
   // Aggregate weeks into months
   var artists = [];

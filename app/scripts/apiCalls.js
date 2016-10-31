@@ -3,15 +3,11 @@ var $ = require('jQuery'),
 
 module.exports = {
   // Top 100 calls
-  getChartsForRange: function(earliestDate, latestDate, country, callBack) {
+  getTopChartSongs: function(data, callBack) {
     $.ajax({
       type: "POST",
       url: settings.serverAddress + "/hot_100_entry",
-      data: {
-        "earliestDate": earliestDate,
-        "latestDate": latestDate,
-        "country": country
-      },
+      data: data,
       success: function(data){ callBack(data) },
       dataType: "json"
     });

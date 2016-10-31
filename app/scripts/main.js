@@ -6,9 +6,20 @@ var apiCalls = require('./apiCalls.js'),
 
 require('../styles/main.scss');
 
-startDate = new Date(2015,1,1);
-endDate = new Date(2015,12,31);
+startDate = new Date(1992,1,1);
+endDate = new Date(1993,12,31);
 
-apiCalls.getChartsForRange(startDate, endDate, 'us', function(data) {
-  streamGraph.streamGraph(data);
+// Get data for a range then pass this data to a stream graph
+var data = {
+  "startDate": startDate,
+  "endDate": endDate,
+  "country": "us"
+}
+apiCalls.getTopChartSongs(data, function(data) {
+  streamGraph.streamGraph(data, 'body', 'us-streamGraph');
+});
+
+data.country = "uk";
+apiCalls.getTopChartSongs(data, function(data) {
+  streamGraph.streamGraph(data, 'body', 'uk-streamGraph');
 });
