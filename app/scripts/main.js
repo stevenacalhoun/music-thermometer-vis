@@ -23,3 +23,5 @@ data.country = "uk";
 apiCalls.getTopChartSongs(data, function(data) {
   streamGraph.streamGraph(data, 'body', 'uk-streamGraph');
 });
+
+$('<img src="' + require("../images/placeholder.png") + '"/>').appendTo("body");
