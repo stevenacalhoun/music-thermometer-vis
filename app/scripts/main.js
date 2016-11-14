@@ -7,23 +7,26 @@ var apiCalls = require('./apiCalls.js'),
 require('../styles/main.scss');
 
 // Get data for a range then pass this data to a stream graph
-var data = {
-  "startDate": new Date(2001,1,1),
+var dateRange = {
+  "startDate": new Date(2008,1,1),
   "endDate": new Date(2010,12,31),
-  "country": "us",
-  "minRank": 100
 }
 
-// apiCalls.getChartRange(data, function(data) {
-//   streamGraph.streamGraph(data, 'body', 'us-streamGraph');
-// });
-//
-// data.country = "uk";
-// apiCalls.getChartRange(data, function(data) {
-//   streamGraph.streamGraph(data, 'body', 'uk-streamGraph');
-// });
+var start = new Date().getTime() / 1000;
+apiCalls.getChartRangeCountry('us', dateRange, function(data) {
+  streamGraph.streamGraph(data, 'body', 'us-streamGraph');
+  var end = new Date().getTime() / 1000;
+  console.log(end-start);
+  console.log(data);
+});
 
-data.artist = "The Killers";
-apiCalls.getChartRange(data, function(data) {
-  console.log(data)
-})
+apiCalls.getChartRangeCountry('uk', dateRange, function(data) {
+  streamGraph.streamGraph(data, 'body', 'uk-streamGraph');
+  var end = new Date().getTime() / 1000;
+  console.log(end-start);
+  console.log(data);
+});
+
+// apiCalls.getChartRangeCountryArtist("uk", "The Killers", dateRange, function(data) {
+//   console.log(data)
+// })

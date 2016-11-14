@@ -4,44 +4,61 @@ var $ = require('jQuery'),
 module.exports = {
   /*
     @returns all entries in hot 100 database fitting parameters in 'data'
-    @params:
+    @dateRange:
       - startDate: earliest date
       - endDate: latest date
-      - country: us or uk or both
-      - minRank: minimum rank wanted
+    @callback
+    @minRank: optional minimum rank wanted
   */
-   getChartRange: function(params, callBack) {
+  getChartRange: function(dateRange, callBack, minRank=100) {
+    var params = dateRange;
+    params.minRank = minRank;
     ajaxGet(settings.topChartsUrl, params, callBack);
   },
 
   /*
-    @returns entries for a chart of a particular week
-    @params:
-      - week: week to retrieve
-      - country: us or uk or both
-      - minRank: minimum rank wanted
+    @returns all entries in hot 100 database fitting parameters in 'data'
+    @country: us or uk or both
+    @dateRange:
+      - startDate: earliest date
+      - endDate: latest date
+    @callback
+    @minRank: optional minimum rank wanted
   */
-  getChartWeek: function(params, callBack) {
-    params.startDate = params.week;
-    params.endDate = params.week;
-    getTopChartSongs(params);
+  getChartRangeCountry: function(country, dateRange, callBack, minRank=100) {
+    var params = dateRange;
+    params.minRank = minRank;
+    ajaxGet(settings.topChartsUrl + '/' + country, params, callBack);
+  },
+
+  /*
+    @returns entries for a chart of a particular week
+    @country: us or uk or both
+    @week: week to retrieve
+    @callback
+  */
+  getChartWeek: function(week, callBack) {
+    var params = {
+      "startDate": week,
+      "endDate": week
+    }
+    getChartRange("both", params, callBack);
   },
 
   /*
     @returns all entries in hot 100 database fitting parameters in 'data'
-    @params:
+    @country: us or uk or both
+    @artist: specific artist or all
+    @dateRange:
       - startDate: earliest date
       - endDate: latest date
-      - country: us or uk or both
-      - minRank: minimum rank wanted
-      - artist: optional artist field
+    @callback
+    @minRank: optional minimum rank wanted
   */
-   getChartRange: function(params, callBack) {
-    var url = settings.topChartsUrl;
-    if (params.artist != null) {
-      url += "/" + params.artist;
-    }
-    console.log(url)
+  getChartRangeCountryArtist: function(country, artist, dateRange, callBack, minRank=100) {
+    var url = settings.topChartsUrl + "/" + country + "/" + artist;
+    var params = dateRange;
+    params.minRank = minRank;
     ajaxGet(url, params, callBack);
   },
 
@@ -49,17 +66,17 @@ module.exports = {
     @returns spotify info for song
     @songId: spotify id for this song
   */
-  getSpotifySong: function(songSpotifyId, callBack) {
-    this.getSpotifySongs([songSpotifyId], callBack);
+  getSongAttributes: function(songId, callBack) {
+    this.getSpotifySongs([songId], callBack);
   },
 
   /*
     @returns spotify info for multiple songs
     @songSpotifIds: list of spotify ids
   */
-  getSpotifySongs: function(songIds, callBack) {
+  getSongsAttributes: function(songIds, callBack) {
     var params = {
-      "song_spotify_id": songSpotifyIds
+      "song_spotify_id": songIds
     };
     ajaxGet(settings.spotifyUrl, params, callBack);
   },
@@ -68,8 +85,8 @@ module.exports = {
     @returns info for song
     @songId: spotify id for this song
   */
-  getSongInfo: function(songSpotifyId, callBack) {
-    this.getSongsInfo([songSpotifyId], callBack);
+  getSongInfo: function(songId, callBack) {
+    this.getSongsInfo([songId], callBack);
   },
 
   /*
@@ -80,11 +97,11 @@ module.exports = {
     var params = {
       "songSpotifyIDs": songIds
     };
-    console.log(params)
     ajaxGet(settings.songInfoUrl, params, callBack);
   }
 }
 
+// Helper to generate list of url params
 function generateUriParamString(params) {
   var paramString = "?"
   for (param in params) {
@@ -93,6 +110,7 @@ function generateUriParamString(params) {
   return paramString.substring(0, paramString.length - 1);
 }
 
+// Helper to run ajax get with params and callback
 function ajaxGet(url, params, callBack) {
   $.ajax({
     type: "GET",
