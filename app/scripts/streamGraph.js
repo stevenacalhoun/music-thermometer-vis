@@ -184,7 +184,7 @@ function aggregateData(data) {
   var aggregateData = d3.nest()
     .key(function(d) {
       // month/year key
-      var dateObj = new Date(d.chartWeek);
+      var dateObj = new Date(d.chart_week);
       var dateKey = new Date(dateObj.getFullYear(), dateObj.getMonth()-1, 1);
       return dateKey;
     })
