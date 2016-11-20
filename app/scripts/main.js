@@ -1,6 +1,7 @@
 var apiCalls = require('./apiCalls.js'),
     secrets = require('./secrets.js'),
-    streamGraph = require('./streamGraph.js')
+    streamGraph = require('./streamGraph.js'),
+    constants = require('./constants.js'),
     d3 = require('d3'),
     $ = require('jQuery');
 
@@ -8,20 +9,20 @@ require('../styles/main.scss');
 
 // Get data for a range then pass this data to a stream graph
 var dateRange = {
-  "startDate": new Date(2011,0,1),
-  "endDate": new Date(2012,11,31),
+  "startDate": new Date(2009,0,1),
+  "endDate": new Date(2009,11,31),
 }
 
-var start = new Date().getTime() / 1000;
 apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-  streamGraph.streamGraph(data.filter(function(entry) { if (entry.country == 'uk') return entry}), 'body', 'uk-streamGraph');
-  streamGraph.streamGraph(data.filter(function(entry) { if (entry.country == 'us') return entry}), 'body', 'us-streamGraph');
+  var countrySplit = {
+    "us": data.filter(function(d) {if (d.country == 'us') return d;}),
+    "uk": data.filter(function(d) {if (d.country == 'uk') return d;})
+  }
 
-
-  var end = new Date().getTime() / 1000;
-  console.log(end-start);
-  console.log(data);
-});
+  var tool = streamGraph.streamGraphInit('body');
+  streamGraph.streamGraph(countrySplit.uk, 'body', 'uk-streamGraph', constants.streamColors1, tool);
+  streamGraph.streamGraph(countrySplit.us, 'body', 'us-streamGraph', constants.streamColors2, tool);
+}, 50);
 
 // apiCalls.getChartRangeCountry('uk', dateRange, function(data) {
 //   streamGraph.streamGraph(data, 'body', 'uk-streamGraph');

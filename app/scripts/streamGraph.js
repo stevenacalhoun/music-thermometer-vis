@@ -1,23 +1,61 @@
 var d3 = require('d3'),
     tip = require('d3-tip'),
+    $ = require('jQuery'),
     constants = require('./constants.js');
 
 require('../styles/streamGraph.scss');
 
 module.exports = {
-  streamGraph: function(rawData, parent, graphId) {
+  streamGraphInit: function(parent) {
+    // Graph container
+    $(parent).append("<div id='stream-graph-parent' class='stream-chart'></div>");
+
+    // Sizing
+    var margin = {top: 20, right: 40, bottom: 30, left: 30};
+    var width = document.body.clientWidth - margin.left - margin.right;
+    var height = window.innerHeight - margin.top - margin.bottom;
+
+    // Hover tooltip
+    var tooltip = tip()
+        .attr('class', 'd3-tip')
+        .html(function(d) {
+          // Need some better tooltip html
+          console.log("heyo")
+          return d.artist + ": " + d.value;
+        })
+        .offset([-10,0]);
+
+    // Main container
+    var svg = d3.select("#stream-graph-parent").append("svg")
+        .attr('id', 'stream-graph-svg')
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        // .call(tooltip)
+
+    // Hidden circle for tooltip on mouse
+    var tipCircle = svg.append("circle")
+      .attr('fill', 'black')
+      .attr('r', 10)
+      .attr('id', 'tip-circle');
+
+    svg.on('mousemove', function(d,i) {
+      // Move circle to mouse
+      tipCircle.attr('cx', d3.mouse(this)[0])
+        .attr('cy', d3.mouse(this)[1]);
+    })
+
+    return {'tipCircle': tipCircle, 'tooltip': tooltip};
+  },
+  streamGraph: function(rawData, parent, graphId, colors, tooltip) {
     // Prep data
     var preppedData = aggregateData(rawData),
         data = preppedData.data,
         artists = preppedData.artists;
 
-    // Graph container
-    $(parent).append("<div id='"+graphId+"' class='stream-chart'></div>");
-
     // Sizing
     var margin = {top: 20, right: 40, bottom: 30, left: 30};
     var width = document.body.clientWidth - margin.left - margin.right;
-    var height = 400 - margin.top - margin.bottom;
+    var height = (window.innerHeight/2) - margin.top - margin.bottom;
 
     // Stack
     var stack = d3.stack()
@@ -48,7 +86,7 @@ module.exports = {
         ]);
 
     var color = d3.scaleOrdinal()
-        .range(constants.colors);
+        .range(colors);
 
     // Axes
     var xAxis = d3.axisBottom()
@@ -62,6 +100,7 @@ module.exports = {
 
     // Area function
     var area = d3.area()
+        .curve(d3.curveNatural)
         .x(function(d) {
           dateObj = new Date(d.data.key);
           return x(dateObj);
@@ -73,63 +112,50 @@ module.exports = {
           return y(d[1]);
         });
 
-    // Hover tooltip
-    var tooltip = tip()
-        .attr('class', 'd3-tip')
-        .html(function(d) {
-          // Need some better tooltip html
-          return d.artist + ": " + d.value;
-        })
-        .offset([-10,0]);
+    var streamGraphEle = d3.select("#stream-graph-svg").append("g").call(tooltip.tooltip);
 
-    // Main container
-    var svg = d3.select("#"+graphId).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .call(tooltip)
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Hidden circle for tooltip on mouse
-    var tipCircle = svg.append("circle")
-      .attr('id', 'tip-circle');
+
+    if (graphId == 'uk-streamGraph') {
+      streamGraphEle.attr("transform", "translate(0,"+height+")");
+    }
 
     // Axes render
-    svg.append("g")
+    streamGraphEle.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
-    svg.append("g")
+    streamGraphEle.append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + width + ", 0)")
         .call(yAxisr);
 
-    svg.append("g")
+    streamGraphEle.append("g")
         .attr("class", "y axis")
         .call(yAxis);
 
     // Render layers from layer data with area function
-    svg.selectAll(".layer")
-        .data(layersData)
-      .enter().append("path")
-        .attr("class", "layer")
-        .attr("d", area)
-        .attr("opacity", 1)
-        .style("fill", function(d, i) { return color(i); });
+    var g = streamGraphEle.selectAll(".layer")
+      .data(layersData)
+      .enter()
 
-    // Mouseover functions
-    svg.selectAll(".layer")
+    var layers = g.append("g")
+      .attr('class', 'layer')
+      .append("path")
+      .attr("class", "area")
+      .style("fill", function(d, i) { return color(i); })
+      .attr("d", area)
+
+    d3.selectAll(".layer")
       .on("mouseover", function(d, i) {
         // Lower opacity of all layers but hovered 1
-        svg.selectAll(".layer").transition()
+        d3.selectAll(".layer").transition()
           .duration(250)
-          .attr("opacity", function(d, j) {
-            return j != i ? 0.2 : 1;
-        })
-      })
+          .attr("opacity", function(e, j) {
+            return e.key != d.key ? 0.2 : 1;
+        });
 
-      .on("mousemove", function(d, i) {
         // Find correct info
         var mouseDate = x.invert(d3.mouse(this)[0]);
 
@@ -144,24 +170,20 @@ module.exports = {
         mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
         value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
 
-        // Move circle to mouse
-        tipCircle.attr('cx', d3.mouse(this)[0])
-          .attr('cy', d3.mouse(this)[1]);
-
-        // Render tooltip on circle
         tooltipData = {
           "value": value,
           "artist": d.key
         }
-        tooltip.show(tooltipData, tipCircle.node());
+        tooltip.tooltip.show(tooltipData, tooltip.tipCircle.node());
+      })
+
+      .on("mousemove", function(d, i) {
       })
 
       .on("mouseout", function(d, i) {
-        // Hide tooltip
-        tooltip.hide(d);
-
         // All layers back to full opacity
-        svg.selectAll(".layer")
+        tooltip.tooltip.hide(d);
+        d3.selectAll(".layer")
           .transition()
           .duration(250)
           .attr("opacity", "1");
@@ -174,8 +196,15 @@ function aggregateData(data) {
   // Aggregate weeks into months
   var artists = [];
   var i = 0;
+
+  // Keep up with all artists
   data.forEach(function(d){
-    // Keep up with all artists
+    if ($.inArray(d.artist, artists) == -1) {
+      artists.push(d.artist);
+    }
+  })
+
+  data.forEach(function(d){
     if ($.inArray(d.artist, artists) == -1) {
       artists.push(d.artist);
     }
