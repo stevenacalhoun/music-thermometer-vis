@@ -4,24 +4,43 @@ var d3 = require('d3'),
     constants = require('./constants.js');
 
 require('../styles/streamGraph.scss');
+var monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 module.exports = {
-  streamGraphInit: function(parent) {
-    // Graph container
-    $(parent).append("<div id='stream-graph-parent' class='stream-chart'></div>");
+  streamGraph: function(rawData, parent) {
+    var countrySplit = {
+      "us": rawData.filter(function(d) {if (d.country == 'us') return d;}),
+      "uk": rawData.filter(function(d) {if (d.country == 'uk') return d;})
+    }
+
+    // Prep data
+    var usData = aggregateData(countrySplit.us),
+        ukData = aggregateData(countrySplit.uk)
+        combinedData = usData.data.concat(ukData.data)
+        combinedArtists = usData.artists.concat(ukData.artists);
+
+    // Stack
+    var stack = d3.stack()
+        .keys(combinedArtists)
+        .offset(d3.stackOffsetSilhouette);
+
+    // Create layered data from stack
+    var layers = stack(combinedData);
 
     // Sizing
-    var margin = {top: 20, right: 40, bottom: 30, left: 30};
-    var width = document.body.clientWidth - margin.left - margin.right;
-    var height = window.innerHeight - margin.top - margin.bottom;
+    var margin = {top: 10, right: 0, bottom: 0, left: 40},
+        width = document.body.clientWidth - margin.left - margin.right,
+        height = (window.innerHeight/2),
+        containerHeight = window.innerHeight - margin.top;
+
+    // Graph container
+    var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
 
     // Hover tooltip
     var tooltip = tip()
         .attr('class', 'd3-tip')
         .html(function(d) {
-          // Need some better tooltip html
-          console.log("heyo")
-          return d.artist + ": " + d.value;
+          return tooltipHtml(d.artist, d.count, d.week);
         })
         .offset([-10,0]);
 
@@ -29,14 +48,11 @@ module.exports = {
     var svg = d3.select("#stream-graph-parent").append("svg")
         .attr('id', 'stream-graph-svg')
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        // .call(tooltip)
+        .attr("height", containerHeight)
 
     // Hidden circle for tooltip on mouse
     var tipCircle = svg.append("circle")
-      .attr('fill', 'black')
-      .attr('r', 10)
-      .attr('id', 'tip-circle');
+        .attr('id', 'tip-circle');
 
     svg.on('mousemove', function(d,i) {
       // Move circle to mouse
@@ -44,59 +60,35 @@ module.exports = {
         .attr('cy', d3.mouse(this)[1]);
     })
 
-    return {'tipCircle': tipCircle, 'tooltip': tooltip};
-  },
-  streamGraph: function(rawData, parent, graphId, colors, tooltip) {
-    // Prep data
-    var preppedData = aggregateData(rawData),
-        data = preppedData.data,
-        artists = preppedData.artists;
-
-    // Sizing
-    var margin = {top: 20, right: 40, bottom: 30, left: 30};
-    var width = document.body.clientWidth - margin.left - margin.right;
-    var height = (window.innerHeight/2) - margin.top - margin.bottom;
-
-    // Stack
-    var stack = d3.stack()
-        .keys(artists)
-        .offset(d3.stackOffsetSilhouette);
-
-    // Create layered data from stack
-    var layersData = stack(data);
-
     // Scales: x, y, color
     var x = d3.scaleTime()
         .range([0, width])
-        .domain(d3.extent(data, function(d) { return new Date(d.key); }));
+        .domain(d3.extent(usData.data, function(d) { return new Date(d.key); }));
 
     var y = d3.scaleLinear()
-        .range([height-10, 0])
+        .range([height, 0])
         .domain([
-          d3.min(layersData, function(layer) {
+          d3.min(layers, function(layer) {
             return d3.min(layer, function(d) {
               return d[1];
             })
           }),
-          d3.max(layersData, function(layer) {
+          d3.max(layers, function(layer) {
             return d3.max(layer, function(d) {
               return d[1];
             })
           })
         ]);
 
-    var color = d3.scaleOrdinal()
-        .range(colors);
-
     // Axes
     var xAxis = d3.axisBottom()
         .scale(x);
 
-    var yAxis = d3.axisLeft()
-        .scale(y);
-
-    var yAxisr = d3.axisRight()
-        .scale(y);
+    // Axes render
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate("+margin.left/2+"," + height + ")")
+        .call(xAxis);
 
     // Area function
     var area = d3.area()
@@ -112,40 +104,9 @@ module.exports = {
           return y(d[1]);
         });
 
-    var streamGraphEle = d3.select("#stream-graph-svg").append("g").call(tooltip.tooltip);
-
-
-
-    if (graphId == 'uk-streamGraph') {
-      streamGraphEle.attr("transform", "translate(0,"+height+")");
-    }
-
-    // Axes render
-    streamGraphEle.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    streamGraphEle.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(" + width + ", 0)")
-        .call(yAxisr);
-
-    streamGraphEle.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-
-    // Render layers from layer data with area function
-    var g = streamGraphEle.selectAll(".layer")
-      .data(layersData)
-      .enter()
-
-    var layers = g.append("g")
-      .attr('class', 'layer')
-      .append("path")
-      .attr("class", "area")
-      .style("fill", function(d, i) { return color(i); })
-      .attr("d", area)
+    renderLayers(usData, area, constants.streamColors1, tooltip, margin);
+    margin.top = margin.top + height;
+    renderLayers(ukData, area, constants.streamColors2, tooltip, margin);
 
     d3.selectAll(".layer")
       .on("mouseover", function(d, i) {
@@ -171,24 +132,50 @@ module.exports = {
         value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
 
         tooltipData = {
-          "value": value,
-          "artist": d.key
+          "count": value,
+          "artist": d.key,
+          "week": monthNames[mouseDate.getMonth()] + ", " + mouseDate.getFullYear()
         }
-        tooltip.tooltip.show(tooltipData, tooltip.tipCircle.node());
+        tooltip.show(tooltipData, tipCircle.node());
       })
-
-      .on("mousemove", function(d, i) {
-      })
-
       .on("mouseout", function(d, i) {
         // All layers back to full opacity
-        tooltip.tooltip.hide(d);
+        tooltip.hide(d);
         d3.selectAll(".layer")
           .transition()
           .duration(250)
           .attr("opacity", "1");
       })
    }
+}
+
+function renderLayers(data, area, colorOptions, tooltip, margin) {
+  // Stack
+  var stack = d3.stack()
+    .keys(data.artists)
+    .offset(d3.stackOffsetSilhouette);
+
+  // Create layered data from stack
+  var layers = stack(data.data);
+
+  var streamGraphEle = d3.select("#stream-graph-svg")
+    .append("g")
+      .call(tooltip);
+
+  streamGraphEle.attr("transform", "translate("+margin.left+","+margin.top+")");
+  var color = d3.scaleOrdinal(colorOptions);
+
+  // Render layers from layer data with area function
+  var g = streamGraphEle.selectAll(".layer")
+    .data(layers)
+    .enter();
+
+  var layers = g.append("g")
+    .attr('class', 'layer')
+    .append("path")
+    .attr("class", "area")
+    .style("fill", function(d, i) { return color(i); })
+    .attr("d", area)
 }
 
 // This is function is nasty, could likely be improved/sped up
@@ -276,4 +263,11 @@ function aggregateData(data) {
     "data": aggregateDatanew,
     "artists": artists
   };
+}
+
+function tooltipHtml(artist, count, week) {
+  var container = $('<div class="tooltip-container"></div>');
+  container.append('<div class="week">'+week+'</div>');
+  container.append('<div class="artist_count">'+artist+': '+count+'</div>');
+  return container.html();
 }

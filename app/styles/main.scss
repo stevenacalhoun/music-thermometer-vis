@@ -1,6 +1,8 @@
 body {
   width: 100%;
   height: 100%;
+  padding: 0;
+  margin: 0;
 }
 .d3-tip {
   line-height: 1;
@@ -23,8 +25,6 @@ body {
   position: absolute;
   text-align: center;
 }
-
-/* Style northward tooltips differently */
 .d3-tip.n:after {
   margin: -1px 0 0 0;
   top: 100%;
