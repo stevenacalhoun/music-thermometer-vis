@@ -13,6 +13,9 @@ module.exports = {
       "uk": rawData.filter(function(d) {if (d.country == 'uk') return d;})
     }
 
+
+    createSlider(parent, new Date(1960,0,1), new Date(2015,12,31))
+
     // Prep data
     var usData = aggregateData(countrySplit.us),
         ukData = aggregateData(countrySplit.uk)
@@ -30,8 +33,8 @@ module.exports = {
     // Sizing
     var margin = {top: 10, right: 0, bottom: 0, left: 40},
         width = document.body.clientWidth - margin.left - margin.right,
-        height = (window.innerHeight/2),
-        containerHeight = window.innerHeight - margin.top;
+        containerHeight = window.innerHeight - $('#slider-parent').height(),
+        height = (containerHeight/2);
 
     // Graph container
     var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
@@ -271,3 +274,65 @@ function tooltipHtml(artist, count, week) {
   container.append('<div class="artist_count">'+artist+': '+count+'</div>');
   return container.html();
 }
+
+function createSlider(parent, start, end) {
+  var sliderContainer = $("<div id='slider-parent' class='slider'></div>").appendTo(parent)
+
+  // Sizes
+  var margin = {top: 10, right: 40, bottom: 20, left: 40},
+      width = document.body.clientWidth - margin.left - margin.right,
+      height = 50 - margin.top - margin.bottom;
+
+  // Scale
+  var xScale = d3.scaleTime()
+    .domain([start, end])
+    .rangeRound([0, width]);
+
+  // Axis object
+  var xAxis = d3.axisBottom(xScale)
+    .tickSize(-height)
+    .tickFormat(function() { return null; });
+
+  // Brush object
+  var brush = d3.brushX()
+    .extent([[0,0], [width,height]])
+    .on("brush", function() {
+      brushed(xScale)
+    })
+
+  // Main container
+  var svg = d3.select("#slider-parent").append("svg")
+      .attr("width", width + margin.right + margin.left)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate("+margin.left+","+margin.top+")");
+
+  // Axis at bottom
+  svg.append("g")
+      .attr("class", "axis axis--grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+
+  // Visual bar
+  svg.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale)
+        .tickPadding(0))
+      .attr("text-anchor", null)
+    .selectAll("text")
+      .attr("x", 6);
+
+  // Append bursh
+  svg.append("g")
+    .attr("class", "brush")
+    .call(brush);
+}
+
+function brushed(xScale) {
+  // Code to change when brushed
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+  var s = d3.event.selection;
+  var start = xScale.invert(s[0]),
+      end = xScale.invert(s[1]);
+};

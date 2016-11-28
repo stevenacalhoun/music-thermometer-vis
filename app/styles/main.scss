@@ -30,3 +30,14 @@ body {
   top: 100%;
   left: 0;
 }
+
+.axis--grid .domain {
+  fill: #ddd;
+  stroke: none;
+}
+
+.axis--x .domain,
+.axis--grid .tick line {
+  // fill: #ddd;
+  stroke: #fff;
+}
