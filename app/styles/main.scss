@@ -4,6 +4,7 @@ body {
   padding: 0;
   margin: 0;
 }
+
 .d3-tip {
   line-height: 1;
   font-weight: bold;
@@ -40,4 +41,18 @@ body {
 .axis--grid .tick line {
   // fill: #ddd;
   stroke: #fff;
+}
+
+.slider {
+  display: inline-block;
+}
+
+.button {
+  display: inline-block;
+  cursor: pointer;
+  background-color: #fff;
+  text-align: center;
+  width: 100px;
+  height: 25px;
+  border: 1px solid black;
 }
