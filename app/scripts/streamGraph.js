@@ -18,7 +18,11 @@ var startDate,
     xScale,
     yScale,
     tooltip,
-    tipCircle;
+    tipCircle,
+    margin,
+    width,
+    containerHeight,
+    height;
 
 function streamGraphInit(parent) {
   // Graph container
@@ -28,16 +32,17 @@ function streamGraphInit(parent) {
   createControls(graphContainer);
 
   // Sizing
-  var margin = {top: 10, right: 40, bottom: 0, left: 40},
-      width = document.body.clientWidth - margin.left - margin.right,
-      containerHeight = window.innerHeight - $('#slider-parent').height(),
-      height = (containerHeight/2);
+  margin = {top: 10, right: 40, bottom: 0, left: 40},
+  width = document.body.clientWidth - margin.left - margin.right,
+  containerHeight = window.innerHeight - $('#controls').height() - margin.top - margin.bottom,
+  streamPadding = 40,
+  height = (containerHeight/2) - streamPadding;
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
       .attr('id', 'stream-graph-svg')
       .attr("width", width + margin.left + margin.right)
-      .attr("height", containerHeight)
+      .attr("height", containerHeight+margin.top+margin.bottom)
 
   // Hover tooltip
   tooltip = tip()
@@ -66,14 +71,14 @@ function streamGraphInit(parent) {
   d3.select("#stream-graph-svg")
     .append("g")
       .attr("id", "stream-graph-stream-uk")
-      .attr("transform", "translate("+margin.left+","+(margin.top+height)+")")
+      .attr("transform", "translate("+margin.left+","+(margin.top+height+(streamPadding*2))+")")
       .call(tooltip);
 
   // Axes section
   svg.append("g")
       .attr("id", "x-axis")
       .attr("class", "x axis")
-      .attr("transform", "translate("+margin.left/2+"," + height + ")")
+      .attr("transform", "translate("+margin.left/2+"," + (height+streamPadding) + ")")
 }
 
 // Create streamgraph for dates/rank
@@ -105,12 +110,6 @@ function renderStreamGraph(rawData, parent) {
 
   // Create layered data from stack
   var layers = stack(combinedData);
-
-  // Sizing
-  var margin = {top: 10, right: 40, bottom: 0, left: 40},
-      width = document.body.clientWidth - margin.left - margin.right,
-      containerHeight = window.innerHeight - $('#controls').height(),
-      height = (containerHeight/2)-margin.top*2;
 
   // Scales x & y
   xScale = d3.scaleTime()
@@ -166,7 +165,7 @@ function renderStreamGraph(rawData, parent) {
 function renderLayers(layersData, area, color, parent) {
   // Render layers from layer data with area function
   var layers = d3.select(parent)
-    .selectAll(".layer")
+    .selectAll("path")
     .data(layersData);
 
   // Add new layers
@@ -174,9 +173,10 @@ function renderLayers(layersData, area, color, parent) {
     .attr('class', 'layer')
     .append("path")
       .attr("class", "area")
+    .merge(layers)
       .style("fill", function(d, i) { return color(i); })
       .attr("d", area)
-    .merge(layers)
+
 
   // Remove old layers
   layers.exit().remove();
@@ -334,14 +334,19 @@ function createControls(parent) {
 
   // Add date slider
   createSlider(controlsContainer);
+  createRankFilter(controlsContainer);
   createApplyButton(controlsContainer);
 }
 
 function createApplyButton(parent) {
   var button = $("<div class='button' id='filter-button'>Filter</div>").appendTo(parent);
   button.on("click", function(){
-    createStreamGraph(startDate, endDate, 10);
+    createStreamGraph(startDate, endDate, $('#rank-value').val());
   })
+}
+
+function createRankFilter(parent) {
+  var input = $("<input class='rank-input' id='rank-value' type='number' name='rank' min='1' max='100'>").appendTo(parent)
 }
 
 function createSlider(parent) {
