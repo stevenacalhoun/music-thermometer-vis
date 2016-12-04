@@ -1,4 +1,6 @@
 var $ = require('jQuery'),
+    utilities = require('./utilities.js'),
+    d3 = require('d3'),
     settings = require('./settings.js');
 
 module.exports = {
@@ -98,7 +100,45 @@ module.exports = {
       "songSpotifyIDs": songIds
     };
     ajaxGet(settings.songInfoUrl, params, callBack);
+  },
+
+  /*
+    @returns song info and chartweek
+    @artist: artist to lookup
+    @dateRange:
+    - startDate: earliest date
+    - endDate: latest date
+  */
+  getArtistSongs: function(artist, dateRange, callback) {
+    var params = dateRange;
+    ajaxGet(settings.artistInfoUrl+'/'+artist, params, function(rawData) {
+
+      var data = d3.nest()
+        .key(function(d) {
+          var dateObj = new Date(d.chart_week);
+          return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
+        })
+        .rollup(function(leaves){
+          var count = leaves.length;
+          var songs = [];
+          leaves.forEach(function(d){
+            songs.push({
+              "title": d.title,
+              "albumArtLink": d.albumArtLink,
+              "chartWeek": d.chart_week,
+              "rank": d.rank
+            })
+          });
+          return {
+            "count": count,
+            "songs": songs
+          }
+        })
+        .entries(rawData);
+      callback(data);
+    })
   }
+
 }
 
 // Helper to generate list of url params
