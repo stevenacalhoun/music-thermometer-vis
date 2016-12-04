@@ -2,7 +2,6 @@ var apiCalls = require('./apiCalls.js'),
     secrets = require('./secrets.js'),
     constants = require('./constants.js'),
     streamGraph = require('./streamGraph.js')
-
     barGraph = require('./barGraph.js')
     d3 = require('d3'),
     $ = require('jQuery');
