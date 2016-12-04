@@ -36,7 +36,7 @@ function streamGraphInit(parent) {
   width = document.body.clientWidth - margin.left - margin.right,
   containerHeight = window.innerHeight - $('#controls').height() - margin.top - margin.bottom,
   streamPadding = 40,
-  height = (containerHeight/2) - streamPadding;
+  height = (containerHeight/2) - (10) - streamPadding;
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
