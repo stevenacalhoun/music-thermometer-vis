@@ -9,4 +9,4 @@ require('../styles/main.scss');
 
 // Get data for a range then pass this data to a stream graph
 streamGraph.streamGraphInit('body');
-streamGraph.createStreamGraph(new Date(2009,0,1), new Date(2009,11,31), 100)
+streamGraph.createStreamGraph(new Date(2009,0,1), new Date(2009,11,31), 10)

@@ -168,15 +168,16 @@ function renderLayers(layersData, area, color, parent) {
     .selectAll("path")
     .data(layersData);
 
+  layers.attr("class", "update");
+
   // Add new layers
   layers.enter().append("g")
     .attr('class', 'layer')
     .append("path")
-      .attr("class", "area")
     .merge(layers)
+      .attr("class", "area")
       .style("fill", function(d, i) { return color(i); })
       .attr("d", area)
-
 
   // Remove old layers
   layers.exit().remove();
@@ -288,12 +289,15 @@ function tooltipHtml(artist, count, week) {
 }
 function addToolTip() {
   // Setup hover interaction
-  d3.selectAll(".layer")
+  d3.selectAll("path")
     .on("mouseover", function(d, i) {
       // Lower opacity of all layers but hovered 1
       d3.selectAll(".layer").transition()
         .duration(250)
         .attr("opacity", function(e, j) {
+          if (e == d) {
+            return 1;
+          }
           return e.key != d.key ? 0.2 : 1;
       });
 
@@ -308,6 +312,9 @@ function addToolTip() {
       }
 
       // Get value at date
+      console.log(d.key)
+      // console.log(mouseDate.getFullYear() + "/" + mouseDate.getMonth())
+      // console.log(datearray)
       mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
       value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
 
