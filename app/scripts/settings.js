@@ -3,4 +3,5 @@ module.exports = {
   topChartsUrl: 'charts',
   songInfoUrl: 'song',
   spotifyUrl: 'song',
+  artistInfoUrl: 'artist'
 }

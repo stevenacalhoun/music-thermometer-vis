@@ -13,17 +13,6 @@ var dateRange = {
   "endDate": new Date(2001,11,31),
 }
 
-apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-  streamGraph.streamGraph(data, 'body');
-}, 10);
-
-// apiCalls.getChartRangeCountry('uk', dateRange, function(data) {
-//   streamGraph.streamGraph(data, 'body', 'uk-streamGraph');
-//   var end = new Date().getTime() / 1000;
-//   console.log(end-start);
-//   console.log(data);
-// });
-
-// apiCalls.getChartRangeCountryArtist("uk", "The Killers", dateRange, function(data) {
-//   console.log(data)
-// })
+apiCalls.getArtistSongs('Michael Jackson', dateRange, function(data) {
+  console.log(data);
+})

@@ -98,7 +98,20 @@ module.exports = {
       "songSpotifyIDs": songIds
     };
     ajaxGet(settings.songInfoUrl, params, callBack);
+  },
+
+  /*
+    @returns song info and chartweek
+    @artist: artist to lookup
+    @dateRange:
+    - startDate: earliest date
+    - endDate: latest date
+  */
+  getArtistSongs: function(artist, dateRange, callback) {
+    var params = dateRange;
+    ajaxGet(settings.artistInfoUrl+'/'+artist, params, callback)
   }
+
 }
 
 // Helper to generate list of url params
