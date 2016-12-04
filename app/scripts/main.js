@@ -1,4 +1,4 @@
-var secrets = require('./secrets.js'),
+var apiCalls = require('./apiCalls.js'),
     streamGraph = require('./streamGraph.js'),
     constants = require('./constants.js'),
     d3 = require('d3'),

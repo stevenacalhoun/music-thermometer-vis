@@ -189,6 +189,18 @@ function prepData(data) {
   var artists = [];
   var i = 0;
 
+  var startDate = d3.min(layers, function(layer) {
+    return d3.min(layer, function(d) {
+      return d[1];
+    })
+  });
+
+  var endDate = d3.max(layers, function(layer) {
+    return d3.max(layer, function(d) {
+      return d[1];
+    })
+  });
+
   // Keep up with all artists
   data.forEach(function(d){
     if ($.inArray(d.artist, artists) == -1) {
@@ -218,9 +230,7 @@ function createTotals(data, artists) {
     .key(function(d) {
       // month/year key
       var dateObj = new Date(d.chart_week);
-      dateObj = new Date( dateObj.getTime() + ( dateObj.getTimezoneOffset() * 60000 ) );
-      var dateKey = new Date(dateObj.getFullYear(), dateObj.getMonth()-1, 1);
-      return dateKey;
+      return utilities.createDateAggregateKey(startDate, endDate, dateObj)
     })
     .rollup(function(leaves) {
       // Combine all artist data into one long list
