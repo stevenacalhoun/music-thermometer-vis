@@ -3,7 +3,7 @@ var d3 = require('d3'),
     apiCalls = require('./apiCalls.js'),
     tip = require('d3-tip'),
     $ = require('jQuery'),
-    utils = require('./utilities.js'),
+    utilities = require('./utilities.js'),
     constants = require('./constants.js');
 
 // Css
@@ -189,18 +189,6 @@ function prepData(data) {
   var artists = [];
   var i = 0;
 
-  var startDate = d3.min(layers, function(layer) {
-    return d3.min(layer, function(d) {
-      return d[1];
-    })
-  });
-
-  var endDate = d3.max(layers, function(layer) {
-    return d3.max(layer, function(d) {
-      return d[1];
-    })
-  });
-
   // Keep up with all artists
   data.forEach(function(d){
     if ($.inArray(d.artist, artists) == -1) {
@@ -214,10 +202,18 @@ function prepData(data) {
     "uk": data.filter(function(d) {if (d.country == 'uk') return d;})
   }
 
+  var startDate = d3.min(data, function(d) {
+    return new Date(d.chart_week);
+  })
+
+  var endDate = d3.max(data, function(d) {
+    return new Date(d.chart_week);
+  })
+
   // Create totals
   var returnData = {
-    "us": createTotals(countrySplit.us, artists),
-    "uk": createTotals(countrySplit.uk, artists),
+    "us": createTotals(countrySplit.us, artists, startDate, endDate),
+    "uk": createTotals(countrySplit.uk, artists, startDate, endDate),
     "artists": artists
   }
 
@@ -225,11 +221,21 @@ function prepData(data) {
 }
 
 // Create totals
-function createTotals(data, artists) {
+function createTotals(data, artists, startDate, endDate) {
+
+  var startDate = d3.min(data, function(d) {
+    return new Date(d.chart_week);
+  })
+
+  var endDate = d3.max(data, function(d) {
+    return new Date(d.chart_week);
+  })
+
   var aggregateData = d3.nest()
     .key(function(d) {
       // month/year key
       var dateObj = new Date(d.chart_week);
+      dateObj = new Date( dateObj.getTime() + ( dateObj.getTimezoneOffset() * 60000 ) );
       return utilities.createDateAggregateKey(startDate, endDate, dateObj)
     })
     .rollup(function(leaves) {
@@ -322,9 +328,6 @@ function addToolTip() {
       }
 
       // Get value at date
-      console.log(d.key)
-      // console.log(mouseDate.getFullYear() + "/" + mouseDate.getMonth())
-      // console.log(datearray)
       mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
       value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
 
