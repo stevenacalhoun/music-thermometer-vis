@@ -21,3 +21,4 @@ var dateRange = {
 apiCalls.getArtistSongs('Michael Jackson', dateRange, function(data) {
   console.log(data);
 })
+
