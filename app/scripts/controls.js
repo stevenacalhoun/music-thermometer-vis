@@ -123,5 +123,6 @@ function brushed(xScale) {
 };
 
 module.exports = {
-  createControls: createControls
+  createControls: createControls,
+  createButton: createButton
 }

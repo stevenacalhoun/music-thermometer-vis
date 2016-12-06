@@ -35,7 +35,7 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   // Sizing
   margin = {top: 10, right: 40, bottom: 0, left: 40},
   width = document.body.clientWidth - margin.left - margin.right,
-  containerHeight = window.innerHeight - $('#controls').outerHeight() - margin.top - margin.bottom,
+  containerHeight = window.innerHeight - $('#header').outerHeight() - $('#controls').outerHeight() - margin.top - margin.bottom,
   streamPadding = 40,
   height = (containerHeight/2) - (10) - streamPadding;
 
