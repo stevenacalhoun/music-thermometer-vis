@@ -1,0 +1,84 @@
+@import './colors.scss';
+
+$control-item-background-color: $light-gray;
+$control-item-text-color: $dark-gray;
+
+$control-height: 100px;
+
+$control-piece-height: 40px;
+
+$button-color: $accent-color;
+$button-text-color: $control-item-text-color;
+$button-width: 150px;
+$button-height: $control-piece-height;
+
+$label-color: $light-gray;
+$input-color: $dark-gray;
+
+.controls {
+  padding: 10px;
+  max-width: 100%;
+  height: $control-height;
+  border-bottom: 1px solid black;
+}
+
+.control-piece {
+  padding:0 10px;
+  vertical-align: top;
+  display: inline-block;
+  margin-top: 25px;
+}
+
+/** Button Styling **/
+.button-parent {
+  height: 100%;
+  width: auto;
+}
+
+.button {
+  cursor: pointer;
+  height: $button-height;
+  width: $button-width;
+  border-radius: 2px;
+  float: right;
+  background-color: $button-color;
+}
+
+.button-text {
+  color: $button-text-color;
+  text-align: center;
+  vertical-align: middle;
+  line-height: $button-height;
+  font-size:18px;
+}
+
+/** Number input box styling **/
+.number-input-parent {
+}
+
+.number-input-label {
+  font-size: 18px;
+  color: $label-color;
+  font-weight: lighter;
+}
+
+.number-input-box {
+  border: none;
+  border-bottom: 1px solid black;
+  font-size: 18px;
+  &:focus{
+    outline: none;
+  }
+  color: $input-color;
+}
+
+/** Search Bar **/
+.search-input-box {
+  width: 300px;
+  height: $control-piece-height;
+  color: $input-color;
+  font-size: 28px;
+  &:focus {
+    outline:none;
+  }
+}

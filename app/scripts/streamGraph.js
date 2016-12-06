@@ -3,6 +3,7 @@ var d3 = require('d3'),
     apiCalls = require('./apiCalls.js'),
     tip = require('d3-tip'),
     $ = require('jQuery'),
+    controls = require('./controls.js')
     utilities = require('./utilities.js'),
     constants = require('./constants.js');
 
@@ -24,17 +25,17 @@ var startDate,
     containerHeight,
     height;
 
-function streamGraphInit(parent) {
+function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
   // Graph container
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
 
   // Add controls
-  createControls(graphContainer);
+  controls.createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingTotal);
 
   // Sizing
   margin = {top: 10, right: 40, bottom: 0, left: 40},
   width = document.body.clientWidth - margin.left - margin.right,
-  containerHeight = window.innerHeight - $('#controls').height() - margin.top - margin.bottom,
+  containerHeight = window.innerHeight - $('#controls').outerHeight() - margin.top - margin.bottom,
   streamPadding = 40,
   height = (containerHeight/2) - (10) - streamPadding;
 
@@ -348,88 +349,6 @@ function addToolTip() {
     })
 }
 
-// Streamgraph controls
-function createControls(parent) {
-  var controlsContainer = $("<div id='controls' class='controls'></div>").appendTo(parent)
-
-  // Add date slider
-  createSlider(controlsContainer);
-  createRankFilter(controlsContainer);
-  createApplyButton(controlsContainer);
-}
-
-function createApplyButton(parent) {
-  var button = $("<div class='button' id='filter-button'>Filter</div>").appendTo(parent);
-  button.on("click", function(){
-    createStreamGraph(startDate, endDate, $('#rank-value').val());
-  })
-}
-
-function createRankFilter(parent) {
-  var input = $("<input class='rank-input' id='rank-value' type='number' name='rank' min='1' max='100'>").appendTo(parent)
-}
-
-function createSlider(parent) {
-  var sliderContainer = $("<div id='slider-parent' class='slider'></div>").appendTo(parent)
-
-  // Sizes
-  var margin = {top: 10, right: 40, bottom: 20, left: 40},
-      width = (document.body.clientWidth/2) - margin.left - margin.right,
-      height = 50 - margin.top - margin.bottom;
-
-  // Scale
-  var xScale = d3.scaleTime()
-    .domain([new Date(1960,0,1), new Date(2015,12,31)])
-    .rangeRound([0, width]);
-
-  // Axis object
-  var xAxis = d3.axisBottom(xScale)
-    .tickSize(-height)
-    .tickFormat(function() { return null; });
-
-  // Brush object
-  var brush = d3.brushX()
-    .extent([[0,0], [width,height]])
-    .on("brush", function() {
-      brushed(xScale)
-    })
-
-  // Main container
-  var svg = d3.select('#'+sliderContainer.attr("id")).append("svg")
-      .attr("width", width + margin.right + margin.left)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", "translate("+margin.left+","+margin.top+")");
-
-  // Axis at bottom
-  svg.append("g")
-      .attr("class", "axis axis--grid")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-
-  // Visual bar
-  svg.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(xScale)
-        .tickPadding(0))
-      .attr("text-anchor", null)
-    .selectAll("text")
-      .attr("x", 6);
-
-  // Append bursh
-  svg.append("g")
-    .attr("class", "brush")
-    .call(brush);
-}
-
-function brushed(xScale) {
-  // Code to change when brushed
-  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
-  var s = d3.event.selection;
-  startDate = xScale.invert(s[0]);
-  endDate = xScale.invert(s[1]);
-};
 
 module.exports = {
   streamGraphInit: streamGraphInit,
