@@ -4,18 +4,20 @@ var $ = require('jQuery')
 require('../styles/overlay.scss');
 
 function createOverlay() {
-  var overlayContainer = $("<div id='overlay-parent'></div>").appendTo('body');
-  $("<div class='curtain'></div>").appendTo(overlayContainer);
+  $("<div id='overlay-shade' class='overlay-shade'></div>").appendTo('body');
+  // $("<div class='curtain'></div>").appendTo(overlayContainer);
 
-  var overlayParent = $("<div class='overlay'></div>").appendTo(overlayContainer);
-  overlayParent.append($("<div class='overlay-title'>Help</div>"))
+  var helpBoxParent = $("<div id='help-box-parent' class='help-box-parent'></div>").appendTo('body');
+  var helpBox = $("<div class='help-box'></div>").appendTo(helpBoxParent);
+  helpBox.append($("<div class='help-title'>Help</div>"))
 
   var closeButton = controls.createButton("Close");
-  closeButton.addClass('overlay-exit-button')
+  closeButton.addClass('help-exit-button')
   closeButton.on("click", function() {
-    $('#overlay-parent').remove();
+    $('#overlay-shade').remove();
+    $('#help-box-parent').remove();
   })
-  overlayParent.append(closeButton);
+  helpBox.append(closeButton);
 }
 
 module.exports = {
