@@ -3,6 +3,7 @@ var d3 = require('d3'),
     apiCalls = require('./apiCalls.js'),
     tip = require('d3-tip'),
     $ = require('jQuery'),
+    tooltipLib = require('./tooltip.js'),
     controls = require('./controls.js')
     utilities = require('./utilities.js'),
     constants = require('./constants.js');
@@ -23,7 +24,8 @@ var startDate,
     margin,
     width,
     containerHeight,
-    height;
+    height,
+    globalData;
 
 function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
   // Graph container
@@ -48,10 +50,11 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   // Hover tooltip
   tooltip = tip()
       .attr('class', 'd3-tip')
+      .attr('id', 'stream-tip')
       .html(function(d) {
-        return tooltipHtml(d.artist, d.count, d.week);
+        return tooltipLib.streamGraphTooltip(d.artist, d.count, 1, d.week);
       })
-      .offset([-10,0]);
+      .offset([-120,0]);
 
   // Hidden circle for tooltip on mouse
   tipCircle = svg.append("circle")
@@ -103,6 +106,8 @@ function renderStreamGraph(rawData, parent) {
   // Prep data
   var preppedData = prepData(rawData),
       combinedData = preppedData.us.concat(preppedData.uk);
+
+  globalData = preppedData;
 
   // Stack
   var stack = d3.stack()
@@ -298,12 +303,6 @@ function createTotals(data, artists, startDate, endDate) {
 }
 
 // Tooltips
-function tooltipHtml(artist, count, week) {
-  var container = $('<div class="tooltip-container"></div>');
-  container.append('<div class="week">'+week+'</div>');
-  container.append('<div class="artist_count">'+artist+': '+count+'</div>');
-  return container.html();
-}
 function addToolTip() {
   // Setup hover interaction
   d3.selectAll("path")
@@ -332,12 +331,18 @@ function addToolTip() {
       mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
       value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
 
+      var usValue = globalData.us[mouseDateIndex][d.key];
+          ukValue = globalData.uk[mouseDateIndex][d.key];
+
       tooltipData = {
-        "count": value,
+        "us": usValue,
+        "uk": ukValue,
         "artist": d.key,
         "week": monthNames[mouseDate.getMonth()] + ", " + mouseDate.getFullYear()
       }
+
       tooltip.show(tooltipData, tipCircle.node());
+      tooltipLib.addStreamgraphTooltipGraph(tooltipData);
     })
     .on("mouseout", function(d, i) {
       // All layers back to full opacity

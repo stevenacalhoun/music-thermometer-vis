@@ -3,7 +3,11 @@ var apiCalls = require('./apiCalls.js'),
     constants = require('./constants.js'),
     $ = require('jQuery'),
     overlay = require('./overlay.js'),
+    d3 = require('d3'),
+    tip = require('d3-tip'),
     utils = require('./utilities.js');
+
+var tooltipLib = require('./tooltip.js');
 
 require('../styles/main.scss');
 
