@@ -22,4 +22,3 @@ infoButton.on("click", function() {
 
 // Start with stream grap
 streamGraph.streamGraphInit('body', new Date(2009,0,1), new Date(2009,11,31), 50, 1);
-streamGraph.createStreamGraph(new Date(2009,0,1), new Date(2009,11,31), 50, 1)

@@ -36,8 +36,14 @@ $tooltip-min-width: 200px;
 }
 
 .x-axis-tip-bar{
-  fill:none;
-  stroke: none;
+  .tick {
+    font-size: 12px;
+    font-weight: bold;
+  }
+  path {
+    fill:none;
+    stroke: none;
+  }
 }
 
 .bar-text-label {

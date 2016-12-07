@@ -24,14 +24,16 @@ var dateRange,
     width,
     containerHeight,
     height,
+    currentTipArtist,
+    currentTipDate,
     globalData;
 
-function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
+function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal) {
   // Graph container
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
 
   // Add controls
-  createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingTotal);
+  createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
 
   // Sizing
   margin = {top: 10, right: 40, bottom: 0, left: 150},
@@ -92,16 +94,18 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
       .attr("id", "x-axis")
       .attr("class", "x axis")
       .attr("transform", "translate("+margin.left/2+"," + (height+streamPadding) + ")")
+
+  createStreamGraph(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal)
 }
 
 // Create streamgraph for dates/rank
-function createStreamGraph(start, end, rank) {
+function createStreamGraph(start, end, rank, minTotal) {
   dateRange = {
     "startDate": start,
     "endDate": end
   }
   apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-    renderStreamGraph(data, 'body');
+    renderStreamGraph(data, 'body', minTotal);
   }, rank);
 }
 
@@ -111,9 +115,9 @@ function removeStreamGraph() {
 }
 
 // Render a streamgraph
-function renderStreamGraph(rawData, parent) {
+function renderStreamGraph(rawData, parent, minTotal) {
   // Prep data
-  var preppedData = prepData(rawData),
+  var preppedData = prepData(rawData, minTotal),
       combinedData = preppedData.us.concat(preppedData.uk);
 
   globalData = preppedData;
@@ -156,7 +160,7 @@ function renderStreamGraph(rawData, parent) {
 
   // Area function
   var area = d3.area()
-    .curve(d3.curveNatural)
+    .curve(d3.curveBasis)
     .x(function(d) {
       dateObj = new Date(d.data.key);
       return xScale(dateObj);
@@ -206,7 +210,7 @@ function renderLayers(layersData, area, color, parent) {
 }
 
 // Prep data for stream graph
-function prepData(data) {
+function prepData(data, minTotal) {
   // Aggregate weeks into months
   var artists = [];
   var i = 0;
@@ -234,15 +238,17 @@ function prepData(data) {
 
   // Create totals
   var returnData = {
-    "us": createTotals(countrySplit.us, artists, startDate, endDate),
-    "uk": createTotals(countrySplit.uk, artists, startDate, endDate),
+    "us": createTotals(countrySplit.us, artists, startDate, endDate, minTotal),
+    "uk": createTotals(countrySplit.uk, artists, startDate, endDate, minTotal),
     "artists": artists
   }
 
   // Taper off streams
   // Create a date a bit after the first/last date
-  var preDate = new Date(startDate.getTime() - 60*(1000*60*60*24));
-  var postDate = new Date(endDate.getTime() - 30*(1000*60*60*24));
+  var preDate = new Date(startDate.getTime() - 40*(1000*60*60*24));
+  // var postDate = new Date(endDate.getTime() + 40*(1000*60*60*24));
+  console.log(startDate)
+  console.log(preDate)
 
   // Create all 0s for each artist
   var preData = {};
@@ -251,24 +257,24 @@ function prepData(data) {
   })
   preData['key'] = preDate;
 
-  var postData = {};
-  artists.forEach(d => {
-    postData[d] = 0;
-  })
-  postData['key'] = postDate;
+  // var postData = {};
+  // artists.forEach(d => {
+  //   postData[d] = 0;
+  // })
+  // postData['key'] = postDate;
 
   // Add to our data
   returnData.us.unshift(preData);
   returnData.uk.unshift(preData);
 
-  returnData.us.push(postData);
-  returnData.uk.push(postData);
+  // returnData.us.push(postData);
+  // returnData.uk.push(postData);
 
   return returnData;
 }
 
 // Create totals
-function createTotals(data, artists, startDate, endDate) {
+function createTotals(data, artists, startDate, endDate, minTotal) {
 
   var startDate = d3.min(data, function(d) {
     return new Date(d.chart_week);
@@ -298,7 +304,12 @@ function createTotals(data, artists, startDate, endDate) {
           return d
         })
         .rollup(function(leaves) {
-          return leaves.length
+          if (leaves.length > minTotal) {
+            return leaves.length
+          }
+          else {
+            return 0
+          }
         })
         .entries(artistData)
 
@@ -358,34 +369,17 @@ function addToolTip() {
           return e.key != d.key ? 0.2 : 1;
       });
 
-      // Find correct info
-      var mouseDate = xScale.invert(d3.mouse(this)[0]);
-
-      // Create date array (should be a better way)
-      datearray = [];
-      for (var k = 0; k < d.length; k++) {
-        date = new Date(d[k].data.key);
-        datearray[k] = date.getFullYear() + "/" + date.getMonth();
+      // Get dateinfo and render tooltip
+      var dateInfo = getMouseDate(d, this);
+      renderTooltip(d, dateInfo);
+    })
+    .on("mousemove", function(d, i) {
+      // Check if we've moved to a new artist/date
+      var dateInfo = getMouseDate(d, this);
+      if ((d.key != currentTipArtist) || (dateInfo.date != currentTipDate)) {
+        // Get dateinfo and render tooltip
+        renderTooltip(d, dateInfo);
       }
-
-      // Get value at date
-      mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
-      value = d[mouseDateIndex][1] - d[mouseDateIndex][0];
-
-      var usValue = globalData.us[mouseDateIndex][d.key];
-          ukValue = globalData.uk[mouseDateIndex][d.key];
-
-      // Set up tool tipe data
-      tooltipData = {
-        "us": usValue,
-        "uk": ukValue,
-        "artist": d.key,
-        "week": monthNames[mouseDate.getMonth()] + ", " + mouseDate.getFullYear()
-      }
-
-      // Render tooltip
-      tooltip.show(tooltipData, tipCircle.node());
-      tooltipLib.addStreamgraphTooltipGraph(tooltipData);
     })
     .on("mouseout", function(d, i) {
       // All layers back to full opacity
@@ -395,6 +389,42 @@ function addToolTip() {
         .duration(250)
         .attr("opacity", "1");
     })
+}
+
+function renderTooltip(d, dateInfo) {
+  var usValue = globalData.us[dateInfo.index][d.key];
+      ukValue = globalData.uk[dateInfo.index][d.key];
+
+  // Set up tool tip data
+  tooltipData = {
+    "us": usValue,
+    "uk": ukValue,
+    "artist": d.key,
+    "week": monthNames[dateInfo.date.getMonth()] + ", " + dateInfo.date.getFullYear()
+  }
+
+  // Render tooltip
+  tooltip.show(tooltipData, tipCircle.node());
+  tooltipLib.addStreamgraphTooltipGraph(tooltipData);
+
+  currentTipArtist = d.key;
+  currentTipDate = dateInfo.date;
+}
+
+function getMouseDate(d, e) {
+  // Find correct info
+  var mouseDate = xScale.invert(d3.mouse(e)[0]);
+
+  // Create date array (should be a better way)
+  var datearray = [];
+  for (var k = 0; k < d.length; k++) {
+    date = new Date(d[k].data.key);
+    datearray[k] = date.getFullYear() + "/" + date.getMonth();
+  }
+
+  // Get value at date
+  var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
+  return {"index": mouseDateIndex, "date": mouseDate};
 }
 
 // Streamgraph controls

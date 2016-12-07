@@ -17,7 +17,7 @@ function smallBarChart(tooltipData) {
     {"country": "US", "count": tooltipData.us},
     {"country": "UK", "count": tooltipData.uk}
   ]
-  var margin = {top: 10, bottom: 25, right: 0, left: 20},
+  var margin = {top: 20, bottom: 25, right: 0, left: 0},
       width = $('#stream-tip').width() - margin.right - margin.left,
       height = 100 - margin.top - margin.bottom;
 
@@ -74,12 +74,8 @@ function smallBarChart(tooltipData) {
   svg.append("g")
     .call(xAxis)
     .attr('class', 'x-axis-tip-bar')
-    .attr('transform', 'translate('+margin.left+','+(height+margin.top)+')')
+    .attr('transform', 'translate('+(margin.left-2)+','+(height+margin.top+3)+')')
 
-  svg.append("g")
-    .call(yAxis)
-    .attr('class', 'x-axis-tip-bar')
-    .attr('transform', 'translate('+margin.left+','+margin.top+')')
 }
 
 module.exports = {
