@@ -194,12 +194,15 @@ function renderLayers(layersData, area, color, parent) {
   // Render layers from layer data with area function
   var layers = d3.select(parent)
     .selectAll("path")
-    .data(layersData);
+    .data(layersData)
 
   // Add new layers
   layers.enter()
     .append("path")
     .merge(layers)
+      .transition()
+      .duration(300)
+      .ease(d3.easeCubic)
       .attr("class", "layer area")
       .style("fill", function(d, i) { return color(i); })
       .attr("d", area)
