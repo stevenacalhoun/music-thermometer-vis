@@ -105,7 +105,10 @@ function createStreamGraph(start, end, rank, minTotal) {
     "endDate": end
   }
   apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-    renderStreamGraph(data, 'body', minTotal);
+    var preppedData = prepData(data, minTotal)
+    globalData = preppedData;
+
+    renderStreamGraph(preppedData, 'body', minTotal);
   }, rank);
 }
 
@@ -115,12 +118,10 @@ function removeStreamGraph() {
 }
 
 // Render a streamgraph
-function renderStreamGraph(rawData, parent, minTotal) {
+function renderStreamGraph(preppedData, parent, minTotal) {
   // Prep data
-  var preppedData = prepData(rawData, minTotal),
-      combinedData = preppedData.us.concat(preppedData.uk);
+  var combinedData = preppedData.us.concat(preppedData.uk);
 
-  globalData = preppedData;
 
   // Stack
   var stack = d3.stack()
@@ -439,22 +440,67 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
 
   // Add search bar
   var searchBar = controls.createSearchBar('stream-search');
+  searchBar.on('input', function(d) {
+    filterAndRerender($('#stream-search').val());
+  })
   controlsContainer.append(searchBar);
 
+  // Add button
   var button = controls.createButton("Update");
-  button.on("click", function(){
-    // Get slider selection
-    var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
-
-    // Invert slider dates
-    var startDate = controls.reverseScale(sliderSelection[0]);
-    var endDate = controls.reverseScale(sliderSelection[1]);
-
-    // Create a new graph
-    createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val());
+  button.on("onchange", function(){
+    applyFilters();
   })
-
   controlsContainer.append(button);
+}
+
+function applyFilters() {
+  // Get slider selection
+  var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
+
+  // Invert slider dates
+  var startDate = controls.reverseScale(sliderSelection[0]);
+  var endDate = controls.reverseScale(sliderSelection[1]);
+
+  // Create a new graph
+  createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val());
+}
+
+function filterAndRerender(filterText) {
+  var filteredArtists = [];
+
+  // Filter out artists
+  for (var i=0;i<globalData.artists.length;i++) {
+    if (globalData.artists[i].toLowerCase().includes(filterText.toLowerCase())) {
+      filteredArtists.push(globalData.artists[i]);
+    }
+  }
+
+  // Create data structure
+  var filteredData = {
+    "artists": filteredArtists,
+    "us": filterData(globalData.us, filteredArtists),
+    "uk": filterData(globalData.uk, filteredArtists)
+  }
+  renderStreamGraph(filteredData,'body', 1);
+}
+
+function filterData(data, filteredArtists) {
+  var filteredData = [];
+
+  // Filter out for each date
+  for(var i=0;i<data.length;i++) {
+    var filteredDate = {};
+    filteredDate["key"] = data[i].key;
+
+    // Copy in each artist that is in the list
+    for (artist in data[i]) {
+      if (filteredArtists.includes(artist)){
+        filteredDate[artist] = data[i][artist];
+      }
+    }
+    filteredData.push(filteredDate);
+  }
+  return filteredData;
 }
 
 module.exports = {
