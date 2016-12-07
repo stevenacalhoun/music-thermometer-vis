@@ -447,7 +447,8 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
 
   // Add button
   var button = controls.createButton("Update");
-  button.on("onchange", function(){
+  button.on("click", function(){
+    $('#stream-search').val("");
     applyFilters();
   })
   controlsContainer.append(button);
@@ -481,7 +482,7 @@ function filterAndRerender(filterText) {
     "us": filterData(globalData.us, filteredArtists),
     "uk": filterData(globalData.uk, filteredArtists)
   }
-  renderStreamGraph(filteredData,'body', 1);
+  renderStreamGraph(filteredData,'body', $('#min-total-value').val());
 }
 
 function filterData(data, filteredArtists) {
