@@ -165,7 +165,7 @@ function renderStreamGraph(rawData, parent) {
 
   // Add in tooltip interaction
   addToolTip();
- }
+}
 
 // Render layers of streamgraph
 function renderLayers(layersData, area, color, parent) {
@@ -222,6 +222,31 @@ function prepData(data) {
     "uk": createTotals(countrySplit.uk, artists, startDate, endDate),
     "artists": artists
   }
+
+  // Taper off streams
+  // Create a date a bit after the first/last date
+  var preDate = new Date(startDate.getTime() - 60*(1000*60*60*24));
+  var postDate = new Date(endDate.getTime() - 30*(1000*60*60*24));
+
+  // Create all 0s for each artist
+  var preData = {};
+  artists.forEach(d => {
+    preData[d] = 0;
+  })
+  preData['key'] = preDate;
+
+  var postData = {};
+  artists.forEach(d => {
+    postData[d] = 0;
+  })
+  postData['key'] = postDate;
+
+  // Add to our data
+  returnData.us.unshift(preData);
+  returnData.uk.unshift(preData);
+
+  returnData.us.push(postData);
+  returnData.uk.push(postData);
 
   return returnData;
 }
