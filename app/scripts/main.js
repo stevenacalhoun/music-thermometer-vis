@@ -20,5 +20,5 @@ infoButton.on("click", function() {
   overlay.createOverlay();
 })
 
-// Start with stream grap
+// Start with stream graph
 streamGraph.streamGraphInit('body', new Date(2009,0,1), new Date(2009,11,31), 50, 1);

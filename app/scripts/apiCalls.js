@@ -155,6 +155,6 @@ function ajaxGet(url, params, callBack) {
     type: "GET",
     url: settings.serverAddress + url + generateUriParamString(params),
     dataType: "json",
-    success: function(data){ console.log(data);callBack(data) },
+    success: function(data){ callBack(data) },
   });
 }

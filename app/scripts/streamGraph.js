@@ -179,6 +179,7 @@ function renderStreamGraph(rawData, parent, minTotal) {
   // Add in tooltip interaction
   addToolTip();
 
+  // Click to transition to other view
   d3.selectAll("path")
     .on("click", function(d, i) {
       // Here's where we transition to the bar chart
@@ -194,14 +195,11 @@ function renderLayers(layersData, area, color, parent) {
     .selectAll("path")
     .data(layersData);
 
-  layers.attr("class", "update");
-
   // Add new layers
-  layers.enter().append("g")
-    .attr('class', 'layer')
+  layers.enter()
     .append("path")
     .merge(layers)
-      .attr("class", "area")
+      .attr("class", "layer area")
       .style("fill", function(d, i) { return color(i); })
       .attr("d", area)
 
@@ -247,8 +245,6 @@ function prepData(data, minTotal) {
   // Create a date a bit after the first/last date
   var preDate = new Date(startDate.getTime() - 40*(1000*60*60*24));
   // var postDate = new Date(endDate.getTime() + 40*(1000*60*60*24));
-  console.log(startDate)
-  console.log(preDate)
 
   // Create all 0s for each artist
   var preData = {};
@@ -275,7 +271,6 @@ function prepData(data, minTotal) {
 
 // Create totals
 function createTotals(data, artists, startDate, endDate, minTotal) {
-
   var startDate = d3.min(data, function(d) {
     return new Date(d.chart_week);
   })
@@ -456,7 +451,7 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
     var endDate = controls.reverseScale(sliderSelection[1]);
 
     // Create a new graph
-    createStreamGraph(startDate, endDate, $('#min-rank-value').val());
+    createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val());
   })
 
   controlsContainer.append(button);
