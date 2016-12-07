@@ -14,7 +14,7 @@ require('../styles/main.scss');
 // Add title and info button
 var header = $("<div id='header' class='header'></div>").appendTo('body');
 header.append("<div class='title'>Music Thermometer</div>");
-var infoButton = header.append("<div class='info-button'><span class='info-button-text'>i</span></div>");
+var infoButton = $("<div class='info-button'><span class='info-button-text'>i</span></div>").appendTo(header);
 
 infoButton.on("click", function() {
   overlay.createOverlay();

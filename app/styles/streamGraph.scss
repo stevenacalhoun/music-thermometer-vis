@@ -1,6 +1,13 @@
+@import './colors.scss';
+
 .stream-chart {
 }
 
 svg {
   display: block;
+}
+
+.stream-label {
+  font-size:40px;
+  fill: $dark-gray;
 }

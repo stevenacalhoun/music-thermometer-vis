@@ -15,8 +15,7 @@ require('../styles/streamGraph.scss');
 var monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 // Global vars
-var startDate,
-    endDate,
+var dateRange,
     xScale,
     yScale,
     tooltip,
@@ -35,11 +34,12 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingTotal);
 
   // Sizing
-  margin = {top: 10, right: 40, bottom: 0, left: 40},
+  margin = {top: 10, right: 40, bottom: 0, left: 150},
   width = document.body.clientWidth - margin.left - margin.right,
   containerHeight = window.innerHeight - $('#header').outerHeight() - $('#controls').outerHeight() - margin.top - margin.bottom,
   streamPadding = 40,
-  height = (containerHeight/2) - (10) - streamPadding;
+  height = (containerHeight/2) - (10) - streamPadding
+  labelOffset = -100;
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
@@ -71,12 +71,21 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
     .append("g")
       .attr("id", "stream-graph-stream-us")
       .attr("transform", "translate("+margin.left+","+margin.top+")")
-      .call(tooltip);
+      .call(tooltip)
+    .append("text")
+      .text("US")
+      .attr("class", "stream-label")
+      .attr("transform", "translate("+labelOffset+","+(height/2 + 10)+")")
+
   d3.select("#stream-graph-svg")
     .append("g")
       .attr("id", "stream-graph-stream-uk")
       .attr("transform", "translate("+margin.left+","+(margin.top+height+(streamPadding*2))+")")
-      .call(tooltip);
+      .call(tooltip)
+    .append("text")
+      .attr("class", "stream-label")
+      .text("UK")
+      .attr("transform", "translate("+labelOffset+","+(height/2 + 10)+")")
 
   // Axes section
   svg.append("g")
@@ -87,7 +96,7 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
 
 // Create streamgraph for dates/rank
 function createStreamGraph(start, end, rank) {
-  var dateRange = {
+  dateRange = {
     "startDate": start,
     "endDate": end
   }
@@ -165,6 +174,13 @@ function renderStreamGraph(rawData, parent) {
 
   // Add in tooltip interaction
   addToolTip();
+
+  d3.selectAll("path")
+    .on("click", function(d, i) {
+      // Here's where we transition to the bar chart
+      console.log(dateRange);
+      console.log(d.key);
+    })
 }
 
 // Render layers of streamgraph

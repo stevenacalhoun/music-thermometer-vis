@@ -14,6 +14,7 @@ $tooltip-min-width: 200px;
 .tooltip-time {
   width: 100%;
   text-align: center;
+  font-style: italic;
 }
 
 .tooltip-count {
@@ -31,7 +32,7 @@ $tooltip-min-width: 200px;
 }
 
 .tooltip-piece {
-  padding: 4px 0;
+  padding: 5px 0;
 }
 
 .x-axis-tip-bar{

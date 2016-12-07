@@ -76,7 +76,7 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
     .selectAll("text")
       .attr("x", 6);
 
-  // Append bursh
+  // Append brush
   var brushArea = svg.append("g")
     .attr("class", "brush")
     .attr("id", "stream-graph-brush")

@@ -19,7 +19,6 @@ $input-color: $dark-gray;
   padding: 0 10px;
   max-width: 100%;
   height: $control-height;
-  border-bottom: 1px solid black;
 }
 
 .control-piece {
@@ -64,7 +63,7 @@ $input-color: $dark-gray;
 
 .number-input-box {
   border: none;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid $accent-color;
   font-size: 18px;
   &:focus{
     outline: none;
@@ -78,7 +77,18 @@ $input-color: $dark-gray;
   height: $control-piece-height;
   color: $input-color;
   font-size: 28px;
+  border:none;
+  border-bottom: 1px solid $accent-color;
   &:focus {
     outline:none;
   }
+}
+
+.selection{
+  fill: $accent-color;
+  fill-opacity: 0.8;
+  stroke: none;
+}
+.handle {
+  fill: none;
 }
