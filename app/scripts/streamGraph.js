@@ -32,7 +32,7 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
 
   // Add controls
-  controls.createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingTotal);
+  createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingTotal);
 
   // Sizing
   margin = {top: 10, right: 40, bottom: 0, left: 40},
@@ -208,10 +208,10 @@ function prepData(data) {
     "uk": data.filter(function(d) {if (d.country == 'uk') return d;})
   }
 
+  // Actual earliest and latest date
   var startDate = d3.min(data, function(d) {
     return new Date(d.chart_week);
   })
-
   var endDate = d3.max(data, function(d) {
     return new Date(d.chart_week);
   })
@@ -359,6 +359,7 @@ function addToolTip() {
       var usValue = globalData.us[mouseDateIndex][d.key];
           ukValue = globalData.uk[mouseDateIndex][d.key];
 
+      // Set up tool tipe data
       tooltipData = {
         "us": usValue,
         "uk": ukValue,
@@ -366,6 +367,7 @@ function addToolTip() {
         "week": monthNames[mouseDate.getMonth()] + ", " + mouseDate.getFullYear()
       }
 
+      // Render tooltip
       tooltip.show(tooltipData, tipCircle.node());
       tooltipLib.addStreamgraphTooltipGraph(tooltipData);
     })
@@ -379,6 +381,40 @@ function addToolTip() {
     })
 }
 
+// Streamgraph controls
+function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
+  var controlsContainer = $("<div id='controls' class='controls'></div>").appendTo(parent)
+
+  // Add date slider
+  controls.createSlider(controlsContainer, earlyStartingDate, lateStartingDate);
+
+  // Add filter for min rank
+  var rankInput = controls.createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
+  controlsContainer.append(rankInput);
+
+  // Add filter for min total
+  var totalInput = controls.createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
+  controlsContainer.append(totalInput);
+
+  // Add search bar
+  var searchBar = controls.createSearchBar('stream-search');
+  controlsContainer.append(searchBar);
+
+  var button = controls.createButton("Update");
+  button.on("click", function(){
+    // Get slider selection
+    var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
+
+    // Invert slider dates
+    var startDate = controls.reverseScale(sliderSelection[0]);
+    var endDate = controls.reverseScale(sliderSelection[1]);
+
+    // Create a new graph
+    createStreamGraph(startDate, endDate, $('#min-rank-value').val());
+  })
+
+  controlsContainer.append(button);
+}
 
 module.exports = {
   streamGraphInit: streamGraphInit,

@@ -3,16 +3,10 @@ var $ = require('jQuery'),
 
 require('../styles/controls.scss');
 
-// Streamgraph controls
-function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
-  var controlsContainer = $("<div id='controls' class='controls'></div>").appendTo(parent)
+  var sliderScale;
 
-  // Add date slider
-  createSlider(controlsContainer, earlyStartingDate, lateStartingDate);
-  controlsContainer.append(createRankFilter(startingRank));
-  controlsContainer.append(createTotalFilter(startingTotal));
-  controlsContainer.append(createStreamSearch());
-  controlsContainer.append(createApplyButton());
+function reverseScale(val) {
+  return sliderScale.invert(val);
 }
 
 function createButton(text) {
@@ -22,35 +16,11 @@ function createButton(text) {
   return buttonParent;
 }
 
-function createApplyButton() {
-  var button = createButton("Update");
-
-  button.on("click", function(){
-    createStreamGraph(startDate, endDate, $('#rank-value').val());
-  })
-  return button;
-}
-
 function createNumberInput(labelText, min, max, startValue, id) {
   var inputParent = $("<div class='control-piece number-input-parent'></div>");
   inputParent.append($("<div class='number-input-label'>"+labelText+"</div>"))
   inputParent.append($("<input class='number-input-box' id='"+id+"' type='number' name='rank' min='1' max='100' value="+startValue+">"));
   return inputParent;
-}
-
-function createRankFilter(startingRank) {
-  var rankInput = createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
-  return rankInput;
-}
-
-function createTotalFilter(startingTotal) {
-  var rankInput = createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
-  return rankInput;
-}
-
-function createStreamSearch() {
-  var searchBar = createSearchBar('stream-search');
-  return searchBar;
 }
 
 function createSearchBar(id) {
@@ -67,12 +37,12 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
       height = 50 - margin.top - margin.bottom;
 
   // Scale
-  var xScale = d3.scaleTime()
+  sliderScale = d3.scaleTime()
     .domain([new Date(1960,0,1), new Date(2015,12,31)])
     .rangeRound([0, width]);
 
   // Axis object
-  var xAxis = d3.axisBottom(xScale)
+  var xAxis = d3.axisBottom(sliderScale)
     .tickSize(-height)
     .tickFormat(function() { return null; });
 
@@ -80,7 +50,7 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
   var brush = d3.brushX()
     .extent([[0,0], [width,height]])
     .on("brush", function() {
-      brushed(xScale)
+      brushed(sliderScale)
     })
 
   // Main container
@@ -100,7 +70,7 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
   svg.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(xScale)
+      .call(d3.axisBottom(sliderScale)
         .tickPadding(0))
       .attr("text-anchor", null)
     .selectAll("text")
@@ -109,9 +79,10 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
   // Append bursh
   var brushArea = svg.append("g")
     .attr("class", "brush")
+    .attr("id", "stream-graph-brush")
     .call(brush);
 
-  brushArea.call(brush.move, [xScale(earlyStartingDate), xScale(lateStartingDate)])
+  brushArea.call(brush.move, [sliderScale(earlyStartingDate), sliderScale(lateStartingDate)])
 }
 
 function brushed(xScale) {
@@ -123,6 +94,9 @@ function brushed(xScale) {
 };
 
 module.exports = {
-  createControls: createControls,
-  createButton: createButton
+  createButton: createButton,
+  createNumberInput: createNumberInput,
+  createSearchBar: createSearchBar,
+  createSlider: createSlider,
+  reverseScale: reverseScale
 }
