@@ -39,6 +39,8 @@ $tooltip-min-width: 200px;
   .tick {
     font-size: 12px;
     font-weight: bold;
+    fill: $dark-gray;
+    stroke: none;
   }
   path {
     fill:none;

@@ -14,13 +14,9 @@ require('../styles/main.scss');
 // overlay.initScreen();
 
 // Add title and info button
-var header = $("<div id='header' class='header'></div>").appendTo('body');
-header.append("<div class='title'>Music Thermometer</div>");
-var infoButton = $("<div class='info-button'><span class='info-button-text'>i</span></div>").appendTo(header);
+var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');
+header.append("<div id='app-title' class='title'>Music Thermometer</div>");
 
-infoButton.on("click", function() {
-  overlay.createOverlay();
-})
 
 // Start with stream graph
 streamGraph.streamGraphInit('body', new Date(2009,0,1), new Date(2009,11,31), 50, 1);

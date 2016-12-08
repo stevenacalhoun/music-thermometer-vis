@@ -53,6 +53,7 @@ function smallBarChart(tooltipData) {
   var bars = g.selectAll("rect")
     .data(data)
 
+  // Bar
   bars.enter().append("rect")
       .attr("class", "bar")
       .attr("x", function(d) { return x(d.country); })
@@ -62,15 +63,16 @@ function smallBarChart(tooltipData) {
       .attr("height", function(d) { return height - y(d.count); })
       .attr("fill", d => {return d.country == "US" ? "#023858" : "#b30000"})
 
-
+  // Bar lable
   g.selectAll("text.bar")
       .data(data)
     .enter().append("text")
       .attr("class", "bar-text-label")
-      .attr("x", function(d) { return x(d.country) + x.bandwidth()/2 - 5; })
+      .attr("x", function(d) { return x(d.country) + x.bandwidth()/2 - 6; })
       .attr("y", function(d) { return y(d.count) - 5; })
       .text(d => {return d.count})
 
+  // Bar axis
   svg.append("g")
     .call(xAxis)
     .attr('class', 'x-axis-tip-bar')

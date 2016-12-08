@@ -1,13 +1,51 @@
-$gray-scale-1: #ebebeb;
-$gray-scale-2: #dcdddd;
-$gray-scale-3: #b5b5b6;
-$gray-scale-4: #9fa0a0;
-$gray-scale-5: #555555;
+$gray-scale-0: #000000;
+$gray-scale-1: #080808;
+$gray-scale-2: #101010;
+$gray-scale-3: #181818;
+$gray-scale-4: #202020;
+$gray-scale-5: #282828;
+$gray-scale-6: #303030;
+$gray-scale-7: #383838;
+$gray-scale-8: #404040;
+$gray-scale-9: #484848;
+$gray-scale-10: #505050;
+$gray-scale-11: #585858;
+$gray-scale-12: #606060;
+$gray-scale-13: #686868;
+$gray-scale-14: #707070;
+$gray-scale-15: #787878;
+$gray-scale-16: #808080;
+$gray-scale-17: #888888;
+$gray-scale-18: #909090;
+$gray-scale-19: #989898;
+$gray-scale-20: #A0A0A0;
+$gray-scale-21: #A8A8A8;
+$gray-scale-22: #B0B0B0;
+$gray-scale-23: #B8B8B8;
+$gray-scale-24: #C0C0C0;
+$gray-scale-25: #C8C8C8;
+$gray-scale-26: #D0D0D0;
+$gray-scale-27: #D8D8D8;
+$gray-scale-28: #E0E0E0;
+$gray-scale-29: #E8E8E8;
+$gray-scale-30: #F0F0F0;
+$gray-scale-31: #F8F8F8;
+$gray-scale-32: #FFFFFF;
 
 $light-blue: #39B54A;
 
-$offwhite: $gray-scale-1;
-$light-gray: $gray-scale-4;
+$offwhite: $gray-scale-28;
+$light-gray: $gray-scale-28;
 $dark-gray: $gray-scale-5;
 
+$background-color: $gray-scale-5;
+$font-color: $gray-scale-28;
+
+
+$tooltip-background-color: $offwhite;
+
+$stroke-color: $font-color;
+
 $accent-color: $light-blue;
+
+$axis-color: $font-color;

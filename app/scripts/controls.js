@@ -24,7 +24,7 @@ function createNumberInput(labelText, min, max, startValue, id) {
 }
 
 function createSearchBar(id) {
-  var searchBar = $("<input placeholder='Search' class='control-piece search-input-box' id='"+id+"' />");
+  var searchBar = $("<input placeholder='Type in artist' class='control-piece search-input-box' id='"+id+"' />");
   return searchBar;
 }
 
@@ -62,14 +62,14 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
 
   // Axis at bottom
   svg.append("g")
-      .attr("class", "axis axis--grid")
+      .attr("class", "axis slider-axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
 
   // Visual bar
   svg.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "slider-axis")
+      .attr("transform", "translate(0," + (height) + ")")
       .call(d3.axisBottom(sliderScale)
         .tickPadding(0))
       .attr("text-anchor", null)

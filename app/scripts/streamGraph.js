@@ -34,15 +34,18 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   // Add controls
   createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
 
+  var theFuck = 70;
   // Sizing
   var margin = {top: 10, right: 20, bottom: 0, left: 150};
       streamPadding = 30,
-      containerHeight = window.innerHeight - $('#header').outerHeight() - $('#controls').outerHeight() - margin.top - margin.bottom,
+      containerHeight = window.innerHeight - theFuck - $('#controls').outerHeight() - margin.top - margin.bottom,
       axisHeight = 10,
       height = (containerHeight/2) - axisHeight - streamPadding,
       labelOffset = 50,
       width = document.body.clientWidth - margin.left - margin.right,
       streamWidth = width - labelOffset;
+
+  console.log($('#app-title').outerHeight())
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
@@ -494,25 +497,20 @@ function getMouseDate(d, e) {
 
 // Streamgraph controls
 function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
-  var controlsContainer = $("<div id='controls' class='controls'></div>").appendTo(parent)
+  var controlsContainer = $("<div id='controls'></div>").appendTo(parent),
+      controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
+      controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
 
   // Add date slider
-  controls.createSlider(controlsContainer, earlyStartingDate, lateStartingDate);
+  controls.createSlider(controlsContainerTop, earlyStartingDate, lateStartingDate);
 
   // Add filter for min rank
   var rankInput = controls.createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
-  controlsContainer.append(rankInput);
+  controlsContainerTop.append(rankInput);
 
   // Add filter for min total
   var totalInput = controls.createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
-  controlsContainer.append(totalInput);
-
-  // Add search bar
-  var searchBar = controls.createSearchBar('stream-search');
-  searchBar.on('input', function(d) {
-    filterAndRerender($('#stream-search').val());
-  })
-  controlsContainer.append(searchBar);
+  controlsContainerTop.append(totalInput);
 
   // Add button
   var button = controls.createButton("Update");
@@ -520,7 +518,14 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
     $('#stream-search').val("");
     applyFilters();
   })
-  controlsContainer.append(button);
+  controlsContainerTop.append(button);
+
+  // Add search bar
+  var searchBar = controls.createSearchBar('stream-search');
+  searchBar.on('input', function(d) {
+    filterAndRerender($('#stream-search').val());
+  })
+  controlsContainerBot.append(searchBar);
 }
 
 function applyFilters() {

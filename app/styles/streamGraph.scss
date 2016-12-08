@@ -9,5 +9,15 @@ svg {
 
 .stream-label {
   font-size:40px;
-  fill: $dark-gray;
+  fill: $font-color;
+}
+
+.axis .domain,
+.axis .tick line {
+  stroke: $axis-color;
+}
+
+.tick text {
+  stroke: none;
+  fill: $font-color;
 }

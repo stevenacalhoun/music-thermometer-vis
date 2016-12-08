@@ -19,13 +19,14 @@ $input-color: $dark-gray;
   padding: 0 10px;
   max-width: 100%;
   height: $control-height;
+  text-align: center;
 }
 
 .control-piece {
   padding:0 10px;
-  vertical-align: top;
   display: inline-block;
   margin-top: 25px;
+  vertical-align: top;
 }
 
 /** Button Styling **/
@@ -44,7 +45,6 @@ $input-color: $dark-gray;
 }
 
 .button-text {
-  color: $button-text-color;
   text-align: center;
   vertical-align: middle;
   line-height: $button-height;
@@ -53,11 +53,11 @@ $input-color: $dark-gray;
 
 /** Number input box styling **/
 .number-input-parent {
+  text-align: left;
 }
 
 .number-input-label {
   font-size: 18px;
-  color: $label-color;
   font-weight: lighter;
 }
 
@@ -68,15 +68,13 @@ $input-color: $dark-gray;
   &:focus{
     outline: none;
   }
-  color: $input-color;
 }
 
 /** Search Bar **/
 .search-input-box {
-  width: 300px;
+  width: 50%;
   height: $control-piece-height;
-  color: $input-color;
-  font-size: 28px;
+  font-size: 35px;
   border:none;
   border-bottom: 1px solid $accent-color;
   &:focus {
@@ -84,11 +82,24 @@ $input-color: $dark-gray;
   }
 }
 
+/** Date slider **/
 .selection{
   fill: $accent-color;
   fill-opacity: 0.8;
   stroke: none;
 }
+
 .handle {
   fill: none;
+}
+
+.slider-axis  line {
+  stroke: $stroke-color;
+}
+.slider-axis  path {
+  stroke: $stroke-color;
+}
+.slider-axis text {
+  stroke: none;
+  fill: $font-color;
 }
