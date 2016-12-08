@@ -27,12 +27,12 @@ var xScale,
 //******************************************************************************
 // Public functions
 //******************************************************************************
-function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal) {
+function streamGraphInit(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal) {
   // Graph container
-  var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
+  var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
 
   // Add controls
-  createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
+  createControls(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
 
   var theFuck = 70;
   // Sizing
@@ -44,8 +44,6 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
       labelOffset = 50,
       width = document.body.clientWidth - margin.left - margin.right,
       streamWidth = width - labelOffset;
-
-  console.log($('#app-title').outerHeight())
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
@@ -133,7 +131,7 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
     .range([height, 0])
 
   // Pull data and create stream
-  createStreamGraph(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal)
+  renderStreamGraph(globalData);
 }
 
 // Create streamgraph
@@ -146,7 +144,7 @@ function createStreamGraph(start, end, rank, minTotal) {
     var preppedData = prepData(data, minTotal)
     globalData = preppedData;
 
-    renderStreamGraph(preppedData, 'body');
+    renderStreamGraph(preppedData);
   }, rank);
 }
 
@@ -155,12 +153,24 @@ function removeStreamGraph() {
   $('#stream-graph-parent').remove();
 }
 
+// Load some data at the beginning
+function initialLoad(start, end, rank, minTotal) {
+  var dateRange = {
+    "startDate": start,
+    "endDate": end
+  }
+  apiCalls.getChartRangeCountry('both', dateRange, function(data) {
+    var preppedData = prepData(data, minTotal)
+    globalData = preppedData;
+  }, rank);
+}
+
 //******************************************************************************
 // Stream Graph Helper functions
 //******************************************************************************
 
 // Render a streamgraph
-function renderStreamGraph(preppedData, parent) {
+function renderStreamGraph(preppedData) {
   // Data
   var combinedData = preppedData.us.concat(preppedData.uk);
 
@@ -496,8 +506,8 @@ function getMouseDate(d, e) {
 }
 
 // Streamgraph controls
-function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
-  var controlsContainer = $("<div id='controls'></div>").appendTo(parent),
+function createControls(earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
+  var controlsContainer = $("<div id='controls'></div>").appendTo('#stream-graph-parent'),
       controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
       controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
 
@@ -556,7 +566,7 @@ function filterAndRerender(filterText) {
     "us": filterData(globalData.us, filteredArtists),
     "uk": filterData(globalData.uk, filteredArtists)
   }
-  renderStreamGraph(filteredData,'body');
+  renderStreamGraph(filteredData);
 }
 
 function filterData(data, filteredArtists) {
@@ -581,5 +591,6 @@ function filterData(data, filteredArtists) {
 module.exports = {
   streamGraphInit: streamGraphInit,
   createStreamGraph: createStreamGraph,
-  removeStreamGraph: removeStreamGraph
+  removeStreamGraph: removeStreamGraph,
+  initialLoad: initialLoad
 }

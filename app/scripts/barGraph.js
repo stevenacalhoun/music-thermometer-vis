@@ -1,5 +1,5 @@
 var d3 = require('d3'),
-    $ = require('jquery'),
+    $ = require('jQuery'),
     tip = require('d3-tip'),
     constants = require('./constants.js');
 
@@ -9,8 +9,8 @@ module.exports = {
   showData: function(data) {
   },
   barGraph: function(data,id) {
-    
-    
+
+
 
     init();
     draw(data);
@@ -55,8 +55,8 @@ module.exports = {
 
 
       defs = svg.append('defs');
-      addPattern('default',require('../images/default.png'))  
-      
+      addPattern('default',require('../images/default.png'))
+
 
       content = svg.append("g")
           .attr('class','content')
@@ -70,7 +70,7 @@ module.exports = {
       xAxis = content.append("g")
           .attr("class", "x axis")
           .attr("transform", "translate(0," + height + ")")
-     
+
       yAxis= content.append("g")
           .attr("class", "y axis")
           .attr("transform", "translate(0,0)")
@@ -80,7 +80,7 @@ module.exports = {
           .attr("transform", "translate(0," + heightOverview + ")")
 
 
-      
+
 
       tooltip = tip()
         .attr('class', 'd3-tip')
@@ -110,24 +110,24 @@ module.exports = {
       var drawData=[];
 
       songMap = d3.map(); // map from songName to pattern id
-      
+
 
       for(var i=0;i<data.length;i++){
-          
+
           var temp={date:data[i].key};
-          
+
           data[i].values.forEach(function(song){
 
             if(!songMap.has(song.key)){
-          
+
                 var link = song.values[0].albumArtLink;
                 if(link!== null && link!==undefined){
                   var id = 'img'+song.key.replace(/[\s+,']/g, '');
-                  addPattern(id, link); 
+                  addPattern(id, link);
                   song.values.forEach(function(v){
                     v.patternId = id;
                   });
-                
+
                   songMap.set(song.key, id);
                 }
             }
@@ -164,7 +164,7 @@ module.exports = {
       xOverview.domain([minDate,maxDate]);
       yOverview.domain([0, num2])
 
-      
+
 
       var color = d3.scaleOrdinal(d3.schemeCategory20)
           .domain(songMap.keys())
@@ -175,11 +175,11 @@ module.exports = {
         group.values.forEach(function(type){
 
           type.offsets = {y0: y0, y1: y0 += type.values.length, value : type.values.length}
-          
+
           });
-        
+
       });
-      
+
 
       xAxis.call(d3.axisBottom(x));
       yAxis.call(d3.axisLeft(y));
@@ -211,7 +211,7 @@ module.exports = {
 
       var rects = svg.selectAll(".type").selectAll("rect")
           .data(function(d){return d.values; });
-          
+
       rects.exit().remove()
 
       rects.enter().append("rect")
@@ -250,16 +250,16 @@ module.exports = {
           .data(function(d){return d.values})
 
       typesOverview.exit().remove();
-      
+
       typesOverview.enter().append("g")
           .merge(typesOverview)
             .attr("transform", function(d){ return translate(0,yOverview(d.offsets.y1))})
             .attr("class", "type overview")
-      
+
 
       var rectsOverview = overview.selectAll(".type").selectAll("rect")
           .data(function(d){return d.values; })
-          
+
       rectsOverview.exit().remove();
 
       rectsOverview.enter().append("rect")
@@ -268,7 +268,7 @@ module.exports = {
             .attr("width", boxheightOverview)
             .attr("y", function(d,i){ return boxheightOverview * i })
             .attr("fill", function(d){ return color(d.title);})
-      
+
     }
 
 
@@ -277,18 +277,18 @@ module.exports = {
       var range = selection.map(xOverview.invert, xOverview);
       x.domain(range);
       content.selectAll(".group")
-          .attr("transform", function(d) { 
+          .attr("transform", function(d) {
               var date = new Date(d.key)
-              if(date>=range[0] && date<=range[1]) 
+              if(date>=range[0] && date<=range[1])
                 return "translate(" + x(date) + ",0)";
               else
-                return "translate(960,0)"; 
+                return "translate(960,0)";
           })
       xAxis.call(d3.axisBottom(x));
     }
 
     function addPattern(id,link){
-        
+
         defs.append('pattern')
           .attr("patternUnits", "objectBoundingBox")
           .attr('id',id)
@@ -303,7 +303,7 @@ module.exports = {
 
     }
 
-    function translate(x,y){               
+    function translate(x,y){
       return "translate(" + x + "," + y + ")";
     };
 
@@ -325,7 +325,7 @@ module.exports = {
   // var margin = {top: 20, right: 80, bottom: 80, left: 40},
   //     width = boxheight * 1.4 * 12;
 
-  // var translate = function(x,y){               
+  // var translate = function(x,y){
   //   return "translate(" + x + "," + y + ")";
   // }
 
@@ -396,7 +396,7 @@ module.exports = {
   //     .attr("transform", "translate(0," + height + ")")
   //     .call(xAxis);
 
- 
+
   // console.log('bargraph data');
   // console.log(data);
 
@@ -425,4 +425,3 @@ module.exports = {
 
   }
 }
-
