@@ -35,21 +35,6 @@ $tooltip-min-width: 200px;
   padding: 5px 0;
 }
 
-.x-axis-tip-bar{
-  .tick {
-    text {
-      font-size: 12px;
-      font-weight: bold;
-      stroke: none;
-      fill: $dark-gray;
-    }
-  }
-  path {
-    fill:none;
-    stroke: none;
-  }
-}
-
 .bar-text-label {
   font-size: 14px;
   fill: $tooltip-font-color;

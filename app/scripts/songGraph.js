@@ -1,12 +1,14 @@
 var d3 = require('d3'),
     $ = require('jQuery'),
     tip = require('d3-tip'),
-    tooltipLib = require('./tooltip.js')
+    tooltipLib = require('./tooltip.js'),
+    colors = require('./colors.js'),
     constants = require('./constants.js');
 
 require('../styles/songGraph.scss');
+require('../styles/axes.scss');
 
-var x, y, tooltip;
+var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin;
 
 var boxHeight = 50
     rectHeight = 15;
@@ -26,14 +28,17 @@ function songGraph(data,dateRange) {
       ukSongs = ukData.map(function(d){ return d.key; }),
       allSongs = usSongs.concat(ukSongs.filter(function(item){ return usSongs.indexOf(item)<0; }));
 
-  var gradientPairs=[['#9E0101','#F85C5C'], ['#3E6D86','#7FC9FF']]
-
   // Sizing
-  var cWidth = document.body.clientWidth,
-      margin =  { top: cWidth*0.05, right: cWidth*0.1, bottom: cWidth*0.1, left: cWidth*0.1 },
-      width = document.body.clientWidth*0.5 - margin.left - margin.right,
+  var cWidth = document.body.clientWidth;
+
+  margin =  { top: cWidth*0.05, right: cWidth*0.05, bottom: cWidth*0.1, left: cWidth*0.1 };
+
+  var width = document.body.clientWidth*0.5 - margin.left - margin.right,
       height = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom;
-      // height = boxHeight*allSongs.length;
+
+  legendWidth = width;
+  legendHeight = 50;
+  legendMargin = {top: 20, left:20, bottom: 20, right:20 };
 
   // Scales
   x = d3.scaleTime()
@@ -43,7 +48,7 @@ function songGraph(data,dateRange) {
     .rangeRound([0,height])
 
   // Container
-  $("<div id='song-graph-parent'></div>").appendTo("#vis-parent");
+  $("<div id='song-graph-parent' class='song-graph'></div>").appendTo("#vis-parent");
 
   // Song grpah svg
   var svg = d3.select("#song-graph-parent").append("svg")
@@ -55,7 +60,7 @@ function songGraph(data,dateRange) {
   var content = svg.append("g")
     .attr('id', 'song-graph-content')
     .attr('class','content')
-    .attr("transform", translate(margin.left, margin.top))
+    .attr("transform", translate(margin.left, margin.top+legendHeight))
     .attr('clip-path', 'url(#plotAreaClip)')
 
   content.append('clipPath')
@@ -68,12 +73,12 @@ function songGraph(data,dateRange) {
   var xAxis = svg.append("g")
     .attr("id", "song-graph-x-axis")
     .attr("class", "x axis")
-    .attr("transform", translate(margin.left,margin.top))
+    .attr("transform", translate(margin.left,height+margin.top+legendHeight))
 
   var yAxis = svg.append("g")
     .attr("id", "song-graph-y-axis")
-    .attr("class", "y axis")
-    .attr("transform", translate(margin.left,margin.top))
+    .attr("class", "transparent y axis")
+    .attr("transform", translate(margin.left,margin.top+legendHeight))
 
   // Tooltip
   tooltip = tip()
@@ -93,19 +98,19 @@ function songGraph(data,dateRange) {
   var ukColor = d3.scaleLinear()
     .domain([1,100])
     .interpolate(d3.interpolateRgb)
-    .range([d3.color(gradientPairs[0][0]), d3.color(gradientPairs[0][1])])
+    .range([d3.color(colors.ukGradientPair[0]), d3.color(colors.ukGradientPair[1])])
 
   var usColor = d3.scaleLinear()
     .domain([1,100])
     .interpolate(d3.interpolateRgb)
-    .range([d3.color(gradientPairs[1][0]), d3.color(gradientPairs[1][1])])
+    .range([d3.color(colors.usGradientPair[0]), d3.color(colors.usGradientPair[1])])
 
   // Add axes
-  var xAxis = d3.axisTop(x),
-      yAxis = d3.axisLeft(y);
+  var xAxis = d3.axisBottom(x),
+      yAxis = d3.axisLeft(y).tickSize(0);
 
   d3.select('#song-graph-x-axis').call(xAxis);
-  d3.select('#song-graph-y-axis').call(xAxis);
+  d3.select('#song-graph-y-axis').call(yAxis);
 
   var bases = content.selectAll(".base")
     .data(allSongs);
@@ -123,8 +128,8 @@ function songGraph(data,dateRange) {
       .attr("fill", "rgba(200,200,200,.2)");
 
   // Add bars
-  createBars(ukData, ukColor, 'uk');
   createBars(usData, usColor, 'us');
+  createBars(ukData, ukColor, 'uk');
 
   //add zoom function
   var zoom = d3.zoom()
@@ -135,8 +140,8 @@ function songGraph(data,dateRange) {
   svg.call(zoom);
 
   function zoomed(){
-    rects.attr("transform", d3.event.transform)
-    xAxis.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+    // rects.attr("transform", d3.event.transform)
+    // xAxis.call(xAxis.scale(d3.event.transform.rescaleX(x)));
   }
 
 
@@ -145,65 +150,7 @@ function songGraph(data,dateRange) {
 
   // $('<iframe src="https://embed.spotify.com/?uri=spotify:track:5JunxkcjfCYcY7xJ29tLai" width="'+playerWidth+'" height="'+playerHeight+'" frameborder="0" allowtransparency="true"></iframe>').appendTo('body');
 
-
-  // add us legend
-  var legendWidth = 60, legendHeight = 200,
-      legendMargin = {top: 20, left:20, bottom: 20, right:20 }
-
-  addGradient(gradientPairs[1][0],gradientPairs[1][1],'usGradient');
-
-  var legend = svg.append('g')
-        .attr('class','legend')
-
-  legend.append("rect")
-    .attr("width", legendWidth - legendMargin.left - legendMargin.right)
-    .attr("height", legendHeight - legendMargin.top-legendMargin.bottom)
-    .style("fill", "url(#usGradient)")
-    .attr("transform", translate(width+margin.left+legendMargin.left,margin.top));
-
-  var gradientY = d3.scaleLinear()
-    .range([legendHeight - legendMargin.top-legendMargin.bottom, 0])
-    .domain([100, 0]);
-
-  var gradientYAxis = d3.axisRight(gradientY);
-
-  legend.append("g")
-    .attr("class", "gradientYAxis")
-    .attr("transform", translate(width+margin.left-legendMargin.right+legendWidth,margin.top))
-    .call(gradientYAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 30).attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("US Ranking")
-      .attr('fill', 'rgba(0,0,0,1)');
-
-
-
-  // add uk legend
-
-  var space = 50;
-
-  addGradient(gradientPairs[0][0],gradientPairs[0][1],'ukGradient');
-
-
-  legend.append("rect")
-    .attr("width", legendWidth - legendMargin.left - legendMargin.right)
-    .attr("height", legendHeight - legendMargin.top-legendMargin.bottom)
-    .style("fill", "url(#ukGradient)")
-    .attr("transform", translate(width+margin.left+legendMargin.left,margin.top+space+legendHeight));
-
-
-  legend.append("g")
-    .attr("class", "gradientYAxis")
-    .attr("transform", translate(width+margin.left-legendMargin.right+legendWidth,margin.top+space+legendHeight))
-    .call(gradientYAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 30).attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("UK Ranking")
-      .attr('fill', 'rgba(0,0,0,1)');
+  createLegend();
 }
 
 function createBars(data, color, country) {
@@ -270,29 +217,79 @@ function createBars(data, color, country) {
   bars.exit().remove()
 }
 
+function createLegend() {
+  // add us legend
+  var gradientBarWidth = legendWidth/2,
+      gradientBarHeight = legendHeight - legendMargin.top-legendMargin.bottom;
+
+  // Add legend
+  var legend = d3.select('#song-graph-svg')
+    .append('g')
+      .attr('id', 'song-graph-legend')
+      .attr("transform", translate(margin.left,margin.top));
+
+  var gradientY = d3.scaleLinear()
+    .range([gradientBarWidth, 0])
+    .domain([100, 0]);
+
+  addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
+  addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
+}
+
 function translate(x,y){
   return "translate(" + x + "," + y + ")";
 }
 
-function addGradient(color1, color2, id){
+function addGradientLegend(country, barWidth, barHeight, gradientY, color){
+  if (country == 'UK') {
+    var xShift = barWidth*1.1;
+  }
+  else {
+    var xShift =0;
+  }
+
+  // Add gradient
   var gradient = d3.select('#song-graph-svg').append("defs")
     .append("linearGradient")
-    .attr("id", id)
-    .attr("x1", "100%")
-    .attr("y1", "0%")
-    .attr("x2", "100%")
-    .attr("y2", "100%")
-    .attr("spreadMethod", "pad");
+      .attr("id", country+"-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
 
   gradient.append("stop")
     .attr("offset", "0%")
-    .attr("stop-color", color1)
+    .attr("stop-color", color[0])
     .attr("stop-opacity", 1);
 
   gradient.append("stop")
     .attr("offset", "100%")
-    .attr("stop-color", color2)
+    .attr("stop-color", color[1])
     .attr("stop-opacity", 1);
+
+
+  var legendBar = d3.select('#song-graph-legend')
+    .append("g")
+    .attr("transform", translate(xShift,0))
+
+  legendBar.append("rect")
+    .attr("width", barWidth)
+    .attr("height", barHeight)
+    .style("fill", "url(#"+country+"-gradient)")
+
+  legendBar.append("g")
+    .attr("class", "x axis")
+    .attr("transform", translate(0, barHeight))
+    .call(d3.axisBottom(gradientY).tickSize(0))
+    .append("text")
+      .attr("y", -18)
+      .attr("x", 55)
+      .style("text-anchor", "end")
+      .text(country+" Ranking")
+}
+
+function addGradient(color1, color2, id){
 }
 
 module.exports = {

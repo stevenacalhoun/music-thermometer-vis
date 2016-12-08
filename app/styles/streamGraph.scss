@@ -13,16 +13,6 @@ svg {
   fill: $font-color;
 }
 
-.axis .domain,
-.axis .tick line {
-  stroke: $axis-color;
-}
-
-.tick text {
-  stroke: none;
-  fill: $font-color;
-}
-
 .spinner-container {
   position: fixed;
   top: 40px;

@@ -1,0 +1,41 @@
+@import './colors.scss';
+
+$axis-color: $font-color;
+
+// General axes
+.axis .domain,
+.axis .tick line {
+  stroke: $axis-color;
+}
+
+.transparent .domain{
+  fill: none;
+  stroke: none;
+}
+
+.axis text {
+  fill: $font-color;
+  stroke:none;
+}
+
+.tick text {
+  stroke: none;
+  fill: $font-color;
+}
+
+
+// Inverted color axes
+.x-axis-tip-bar{
+  .tick {
+    text {
+      font-size: 12px;
+      font-weight: bold;
+      stroke: none;
+      fill: $dark-gray;
+    }
+  }
+  path {
+    fill:none;
+    stroke: none;
+  }
+}

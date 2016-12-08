@@ -15,6 +15,7 @@ var tooltipLib = require('./tooltip.js'),
 
 // Css
 require('../styles/streamGraph.scss');
+require('../styles/axes.scss');
 
 // Global vars
 var xScale,

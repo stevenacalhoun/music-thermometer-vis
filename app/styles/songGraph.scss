@@ -1,25 +1,6 @@
-#songGraph {
-	display: inline-block;
-	.axis{
-		path{
-			display:none
-		}
-  		.tick line{
-  			display:none;
-  		}
-	}
-
-	.legend{
-		.gradientYAxis{
-	  		path{
-	  			display:none;
-	  		}
-	  		.tick line{
-	  			display:none;
-	  		}
-	  		text{
-	  			fill:gray;
-	  		}
-  		}
-	}
+.song-graph {
+  display: inline-block;
+}
+svg {
+  display: block;
 }
