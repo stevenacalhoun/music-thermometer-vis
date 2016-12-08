@@ -37,10 +37,12 @@ $tooltip-min-width: 200px;
 
 .x-axis-tip-bar{
   .tick {
-    font-size: 12px;
-    font-weight: bold;
-    fill: $dark-gray;
-    stroke: none;
+    text {
+      font-size: 12px;
+      font-weight: bold;
+      stroke: none;
+      fill: $dark-gray;
+    }
   }
   path {
     fill:none;
