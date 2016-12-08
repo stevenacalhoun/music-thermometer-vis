@@ -117,7 +117,6 @@ module.exports = {
   getArtistSongs: function(artist, dateRange, callback) {
     var params = dateRange;
     ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
-
       var data = d3.nest()
         .key(function(d) {
           var dateObj = new Date(d.chart_week);
@@ -131,7 +130,8 @@ module.exports = {
               "title": d.title,
               "albumArtLink": d.albumArtLink,
               "chartWeek": d.chart_week,
-              "rank": d.rank
+              "rank": d.rank,
+              "spotify_id": d.spotify_id
             })
           });
           return {
