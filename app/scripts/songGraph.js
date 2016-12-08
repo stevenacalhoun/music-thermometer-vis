@@ -31,12 +31,13 @@ module.exports = {
       svg,content,overview,
       defs;
 
-    var gradientPairs=[['#ff4b1f','#1fddff'],['#ef32d9','#89fffd']]
+    var gradientPairs=[['#3E6D86','#7FC9FF'],['#9E0101','#F85C5C']]
+    // var gradientPairs=[['#ff4b1f','#1fddff'],['#ef32d9','#89fffd']]
     var cWidth = document.body.clientWidth
 
     
     var margin =  { top: cWidth*0.05, right: cWidth*0.1, bottom: cWidth*0.1, left: cWidth*0.1 },
-      rectHeight=15,boxHeight=60,
+      rectHeight=15,boxHeight=50,
       width = document.body.clientWidth*0.5 - margin.left - margin.right,
       height = boxHeight*allSongs.length;
 
