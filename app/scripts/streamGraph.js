@@ -10,6 +10,7 @@ var tooltipLib = require('./tooltip.js'),
     controls = require('./controls.js'),
     utilities = require('./utilities.js'),
     colors = require('./colors.js'),
+    songGraph = require('./songGraph.js'),
     constants = require('./constants.js');
 
 // Css
@@ -29,11 +30,14 @@ var xScale,
 // Public functions
 //******************************************************************************
 function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode) {
-  // Graph container
-  var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
 
   // Add controls
   createControls(startDate, endDate, minRank, minTotal);
+
+  // Graph container
+  var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
+
+  var streamParent = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(visContainer);
 
   // Hover tooltip
   tooltip = tip()
@@ -62,7 +66,7 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode) {
       width = document.body.clientWidth - margin.left - margin.right;
 
   if (halfMode) {
-    width = width/2;
+    width = (document.body.clientWidth/2) - margin.left - margin.right;
   }
 
   var streamWidth = width - labelOffset;
@@ -278,8 +282,8 @@ function renderStreamGraph(preppedData) {
     });
 
   // Render layers for us and uk
-  renderLayers(stack(preppedData.us), area, d3.scaleOrdinal(colors.streamColors1), '#stream-graph-stream-us');
-  renderLayers(stack(preppedData.uk), area, d3.scaleOrdinal(colors.streamColors2), '#stream-graph-stream-uk');
+  renderLayers(stack(preppedData.us), area, d3.scaleOrdinal(colors.streamColors1), 'us');
+  renderLayers(stack(preppedData.uk), area, d3.scaleOrdinal(colors.streamColors2), 'uk');
 
   // Add in tooltip interaction
   addToolTip();
@@ -305,9 +309,9 @@ function renderStreamGraph(preppedData) {
 }
 
 // Render layers of streamgraph
-function renderLayers(layersData, area, color, parent) {
+function renderLayers(layersData, area, color, country) {
   // Render layers from layer data with area function
-  var layers = d3.select(parent)
+  var layers = d3.select('#stream-graph-stream-'+country)
     .selectAll("path")
     .data(layersData)
 
@@ -315,12 +319,16 @@ function renderLayers(layersData, area, color, parent) {
   layers.enter()
     .append("path")
     .merge(layers)
+      .attr("id", d => {
+        var id = d.key.replace(/ /g, "_") + "_" + country;
+        return id;
+      })
       .transition()
       .duration(300)
       .ease(d3.easeCubic)
       .attr("class", "layer area")
       .style("fill", function(d, i) { return color(i); })
-      .attr("d", area)
+      .attr("d", area);
 
   // Remove old layers
   layers.exit().remove();
@@ -543,7 +551,7 @@ function getMouseDate(d, e) {
 
 // Streamgraph controls
 function createControls(earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
-  var controlsContainer = $("<div id='controls'></div>").appendTo('#stream-graph-parent'),
+  var controlsContainer = $("<div id='controls'></div>").appendTo('body'),
       controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
       controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
 
@@ -624,12 +632,18 @@ function filterData(data, filteredArtists) {
   return filteredData;
 }
 
-function slideStreamgraph(dateRange, artist) {
+function slideStreamgraph(dateRange) {
   streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), true);
 }
 
 function transitionToSplitView(dateRange, artist) {
-  slideStreamgraph(dateRange, artist);
+  // Make streamgraph half width
+  slideStreamgraph(dateRange);
+
+  // Create song graph
+  apiCalls.getArtistSongs(artist, dateRange, function(data) {
+    songGraph.songGraph(data,dateRange);
+  })
 }
 
 module.exports = {

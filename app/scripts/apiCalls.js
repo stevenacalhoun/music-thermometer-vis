@@ -119,9 +119,6 @@ module.exports = {
     var params = dateRange;
     ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
 
-    console.log('api');
-    console.log(rawData);
-
     var data = d3.nest()
         .key(function(d){
           return d.country

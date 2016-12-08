@@ -3,6 +3,17 @@ var $ = require('jQuery'),
 
 require('../styles/tooltip.scss');
 
+
+function songGraphTooltip(d) {
+  var container = $("<div class=tooltip-container></div>");
+  $('<p>Song: '+d.title+'</p>').appendTo(container)
+  $('<p>Rank: '+d.rank+'</p>').appendTo(container)
+  $('<p>Artist: '+d.artist+'</p>').appendTo(container)
+  $('<p>Week: '+d.chart_week.substring(0,10)+'</p>').appendTo(container)
+
+  return container.html();
+}
+
 function streamGraphTooltip(artist, usCount, ukCount, time) {
   var container = $('<div id="tooltip-container" class="tooltip-container"></div>');
   container.append("<div class='tooltip-piece tooltip-artist'>"+artist+"</div>");
@@ -82,5 +93,6 @@ function smallBarChart(tooltipData) {
 
 module.exports = {
   streamGraphTooltip: streamGraphTooltip,
+  songGraphTooltip: songGraphTooltip,
   addStreamgraphTooltipGraph: smallBarChart
 }
