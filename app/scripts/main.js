@@ -11,6 +11,8 @@ var tooltipLib = require('./tooltip.js');
 
 require('../styles/main.scss');
 
+// overlay.initScreen();
+
 // Add title and info button
 var header = $("<div id='header' class='header'></div>").appendTo('body');
 header.append("<div class='title'>Music Thermometer</div>");

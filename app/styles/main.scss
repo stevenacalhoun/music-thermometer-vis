@@ -1,4 +1,6 @@
 @import './colors.scss';
+@import './constants.scss';
+
 $header-height: 40px;
 $info-button-size: 25px;
 
@@ -7,7 +9,7 @@ html {
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: Helvetica;
+  font-family: $font;
 }
 
 body {
@@ -22,8 +24,8 @@ body {
   height: $header-height;
   color: $dark-gray;
   font-weight: bold;
-  font-family: "Helvetica Neue";
   padding:10px 10px;
+  font-family: $title-font;
 }
 
 .title {
