@@ -1,17 +1,10 @@
 var apiCalls = require('./apiCalls.js'),
     streamGraph = require('./streamGraph.js'),
-    constants = require('./constants.js'),
-    $ = require('jQuery'),
-    overlay = require('./overlay.js'),
-    d3 = require('d3'),
-    tip = require('d3-tip'),
-    utils = require('./utilities.js');
-
-var tooltipLib = require('./tooltip.js');
+    introScreen = require('./introScreen.js');
 
 require('../styles/main.scss');
 
-overlay.createLandingScreen();
+introScreen.createLandingScreen();
 
 // // Add title and info button
 // var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');

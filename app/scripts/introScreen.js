@@ -3,7 +3,7 @@ var $ = require('jQuery')
     constants = require('./constants.js'),
     controls = require('./controls.js');
 
-require('../styles/overlay.scss');
+require('../styles/introScreen.scss');
 
 function createLandingScreen() {
   // Main splash container
