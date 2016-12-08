@@ -10,10 +10,10 @@ function reverseScale(val) {
   return sliderScale.invert(val);
 }
 
-function createButton(text) {
+function createButton(text, id) {
   var buttonParent = $("<div class='control-piece button-parent'></div>");
   var button = $("<div class='button' id='filter-button'></div>").appendTo(buttonParent);
-  $("<div class='button-text'>"+text+"</div>").appendTo(button);
+  $("<div id='"+id+"' class='button-text'>"+text+"</div>").appendTo(button);
   return buttonParent;
 }
 
@@ -112,11 +112,7 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
   controlsContainerTop.append(totalInput);
 
   // Add button
-  var button = createButton("Update");
-  button.on("click", function(){
-    $('#stream-search').val("");
-    applyFilters();
-  })
+  var button = createButton("Update", 'apply-filters-button');
   controlsContainerTop.append(button);
 
   // Add search bar

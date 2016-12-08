@@ -34,6 +34,10 @@ function initVis() {
   $('#stream-search').on('input', function(d) {
     filterAndRerender($('#stream-search').val());
   })
+  $('#apply-filters-button').on("click", function(){
+    $('#stream-search').val("");
+    applyFilters();
+  })
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');

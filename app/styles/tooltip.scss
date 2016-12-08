@@ -40,6 +40,10 @@ $tooltip-min-width: 200px;
 }
 
 .tooltip-album-art {
+  margin: 0 auto;
+  width: $tooltip-min-width;
+  height: $tooltip-min-width;
+  padding-bottom: 20px;
   img {
     width: $tooltip-min-width;
     height: $tooltip-min-width;
