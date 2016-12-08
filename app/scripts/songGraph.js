@@ -26,21 +26,14 @@ function songGraph(data,dateRange) {
       ukSongs = ukData.map(function(d){ return d.key; }),
       allSongs = usSongs.concat(ukSongs.filter(function(item){ return usSongs.indexOf(item)<0; }));
 
-  // // initialize
-  // var x,y,xOverview,yOverview,
-  //   xAxis,yAxis,xOverviewAxis,
-  //   tooltip,brush,
-  //   margin,width,height,marginOverview,heightOverview,
-  //   svg,content,overview,
-  //   defs;
-
   var gradientPairs=[['#9E0101','#F85C5C'], ['#3E6D86','#7FC9FF']]
 
   // Sizing
   var cWidth = document.body.clientWidth,
       margin =  { top: cWidth*0.05, right: cWidth*0.1, bottom: cWidth*0.1, left: cWidth*0.1 },
       width = document.body.clientWidth*0.5 - margin.left - margin.right,
-      height = boxHeight*allSongs.length;
+      height = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom;
+      // height = boxHeight*allSongs.length;
 
   // Scales
   x = d3.scaleTime()
@@ -50,10 +43,10 @@ function songGraph(data,dateRange) {
     .rangeRound([0,height])
 
   // Container
-  $("<div id='songGraph'></div>").appendTo("#vis-parent");
+  $("<div id='song-graph-parent'></div>").appendTo("#vis-parent");
 
   // Song grpah svg
-  var svg = d3.select("#songGraph").append("svg")
+  var svg = d3.select("#song-graph-parent").append("svg")
       .attr("id", "song-graph-svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)

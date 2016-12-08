@@ -32,7 +32,7 @@ var xScale,
 function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode) {
 
   // Add controls
-  createControls(startDate, endDate, minRank, minTotal);
+  // createControls(startDate, endDate, minRank, minTotal);
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
@@ -59,7 +59,7 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode) {
   // Sizing
   var margin = {top: 10, right: 20, bottom: 0, left: 150};
       streamPadding = 30,
-      containerHeight = window.innerHeight - theFuck - $('#controls').outerHeight() - margin.top - margin.bottom,
+      containerHeight = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom,
       axisHeight = 10,
       height = (containerHeight/2) - axisHeight - streamPadding,
       labelOffset = 50,
@@ -547,39 +547,6 @@ function getMouseDate(d, e) {
   // Get value at date
   var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
   return {"index": mouseDateIndex, "date": mouseDate};
-}
-
-// Streamgraph controls
-function createControls(earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
-  var controlsContainer = $("<div id='controls'></div>").appendTo('body'),
-      controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
-      controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
-
-  // Add date slider
-  controls.createSlider(controlsContainerTop, earlyStartingDate, lateStartingDate);
-
-  // Add filter for min rank
-  var rankInput = controls.createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
-  controlsContainerTop.append(rankInput);
-
-  // Add filter for min total
-  var totalInput = controls.createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
-  controlsContainerTop.append(totalInput);
-
-  // Add button
-  var button = controls.createButton("Update");
-  button.on("click", function(){
-    $('#stream-search').val("");
-    applyFilters();
-  })
-  controlsContainerTop.append(button);
-
-  // Add search bar
-  var searchBar = controls.createSearchBar('stream-search');
-  searchBar.on('input', function(d) {
-    filterAndRerender($('#stream-search').val());
-  })
-  controlsContainerBot.append(searchBar);
 }
 
 function applyFilters() {

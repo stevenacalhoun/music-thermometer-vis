@@ -93,10 +93,44 @@ function brushed(xScale) {
   endDate = xScale.invert(s[1]);
 };
 
+// Controls
+function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
+  var controlsContainer = $("<div id='controls'></div>").appendTo(parent),
+      controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
+      controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
+
+  // Add date slider
+  createSlider(controlsContainerTop, earlyStartingDate, lateStartingDate);
+
+  // Add filter for min rank
+  var rankInput = createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
+  controlsContainerTop.append(rankInput);
+
+  // Add filter for min total
+  var totalInput = createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
+  controlsContainerTop.append(totalInput);
+
+  // Add button
+  var button = createButton("Update");
+  button.on("click", function(){
+    $('#stream-search').val("");
+    applyFilters();
+  })
+  controlsContainerTop.append(button);
+
+  // Add search bar
+  var searchBar = createSearchBar('stream-search');
+  searchBar.on('input', function(d) {
+    filterAndRerender($('#stream-search').val());
+  })
+  controlsContainerBot.append(searchBar);
+}
+
 module.exports = {
   createButton: createButton,
   createNumberInput: createNumberInput,
   createSearchBar: createSearchBar,
   createSlider: createSlider,
-  reverseScale: reverseScale
+  reverseScale: reverseScale,
+  createControls: createControls
 }

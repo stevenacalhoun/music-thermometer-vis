@@ -60,12 +60,15 @@ function createVisScreen(splashContainer) {
     // Add title and info button
     var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');
     header.append("<div id='app-title' class='title'>Music Thermometer</div>");
+    controls.createControls(header, new Date(2009,0,1), new Date(2009,11,31), 50, 1);
 
     // Start with stream graph
+    streamGraph.streamGraphInit1(new Date(2009,0,1), new Date(2009,11,31), 50, 1);
     streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 50, 1);
   });
 }
 
 module.exports = {
-  createLandingScreen: createLandingScreen
+  createLandingScreen: createLandingScreen,
+  createVisScreen: createVisScreen
 }

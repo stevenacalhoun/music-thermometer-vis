@@ -25,11 +25,11 @@ body {
 
 .app-header {
   font-weight: bold;
-  font-family: $title-font;
   text-align: center;
 }
 
 .title {
+  font-family: $title-font;
   display: inline-block;
   margin: 0 auto;
   padding: 10px 0;
