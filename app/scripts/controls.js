@@ -1,9 +1,10 @@
 var $ = require('jQuery'),
+    streamGraph = require('./streamGraph.js'),
     d3 = require('d3');
 
 require('../styles/controls.scss');
 
-  var sliderScale;
+var sliderScale;
 
 function reverseScale(val) {
   return sliderScale.invert(val);
@@ -120,9 +121,6 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
 
   // Add search bar
   var searchBar = createSearchBar('stream-search');
-  searchBar.on('input', function(d) {
-    filterAndRerender($('#stream-search').val());
-  })
   controlsContainerBot.append(searchBar);
 }
 

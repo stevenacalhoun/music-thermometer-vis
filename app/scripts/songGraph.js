@@ -3,17 +3,19 @@ var d3 = require('d3'),
     tip = require('d3-tip'),
     tooltipLib = require('./tooltip.js'),
     colors = require('./colors.js'),
+    utilities = require('./utilities.js'),
     constants = require('./constants.js');
 
 require('../styles/songGraph.scss');
 require('../styles/axes.scss');
 
-var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin;
+var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin, dateRange;
 
 var boxHeight = 50
     rectHeight = 15;
 
-function songGraph(data,dateRange) {
+function songGraph(data, passedDateRange) {
+  dateRange = passedDateRange;
   // process data
   var ukData, usData;
   for(var i=0;i<data.length;i++){
@@ -60,7 +62,7 @@ function songGraph(data,dateRange) {
   var content = svg.append("g")
     .attr('id', 'song-graph-content')
     .attr('class','content')
-    .attr("transform", translate(margin.left, margin.top+legendHeight))
+    .attr("transform", utilities.translate(margin.left, margin.top+legendHeight))
     .attr('clip-path', 'url(#plotAreaClip)')
 
   content.append('clipPath')
@@ -230,7 +232,7 @@ function createLegend() {
 
   var gradientY = d3.scaleLinear()
     .range([gradientBarWidth, 0])
-    .domain([100, 0]);
+    .domain([100, 1]);
 
   addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
   addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
@@ -287,9 +289,6 @@ function addGradientLegend(country, barWidth, barHeight, gradientY, color){
       .attr("x", 55)
       .style("text-anchor", "end")
       .text(country+" Ranking")
-}
-
-function addGradient(color1, color2, id){
 }
 
 module.exports = {

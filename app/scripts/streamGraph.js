@@ -24,16 +24,16 @@ var xScale,
     tooltip,
     currentTipArtist,
     currentTipDate,
+    dateRange,
     globalData;
-
 
 //******************************************************************************
 // Public functions
 //******************************************************************************
-function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode) {
-
-  // Add controls
-  // createControls(startDate, endDate, minRank, minTotal);
+function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode, dataLoaded) {
+  $('#stream-search').on('input', function(d) {
+    filterAndRerender($('#stream-search').val());
+  })
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
@@ -49,14 +49,7 @@ function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode) {
       })
       .offset([-120,0]);
 }
-function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode) {
-  // // Graph container
-  // var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
-  //
-  // // Add controls
-  // createControls(startDate, endDate, minRank, minTotal);
-
-  var theFuck = 70;
+function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLoaded) {
   // Sizing
   var margin = {top: 10, right: 20, bottom: 0, left: 150};
       streamPadding = 30,
@@ -153,12 +146,12 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode) {
 
   // Pull data and create stream
   // renderStreamGraph(globalData);
-  createStreamGraph(startDate, endDate, minRank, minTotal)
+  createStreamGraph(startDate, endDate, minRank, minTotal, dataLoaded)
 }
 
 // Create streamgraph
-function createStreamGraph(startDate, endDate, rank, minTotal) {
-  var dateRange = {
+function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
+  dateRange = {
     "startDate": startDate,
     "endDate": endDate
   }
@@ -179,16 +172,22 @@ function createStreamGraph(startDate, endDate, rank, minTotal) {
   var spinner = new spin(spinnerOptions).spin();
   $('#spinner-container').append(spinner.el);
 
-  apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-    // Prepdata
-    globalData = prepData(data, minTotal)
-
+  if (dataLoaded) {
     // Render graph
     renderStreamGraph(globalData);
+  }
+  else {
+    apiCalls.getChartRangeCountry('both', dateRange, function(data) {
+      // Prepdata
+      globalData = prepData(data, minTotal)
 
-    // Remove spinner
-    $('#spinner-container').html('');
-  }, rank);
+      // Render graph
+      renderStreamGraph(globalData);
+
+      // Remove spinner
+      $('#spinner-container').html('');
+    }, rank);
+  }
 }
 
 // Remove streamgraph
@@ -305,7 +304,10 @@ function renderStreamGraph(preppedData) {
         "endDate": endDate
       }
 
+      $('#stream-search').val(d.key)
+
       transitionToSplitView(dateRange, d.key);
+      filterAndRerender($('#stream-search').val())
     })
 }
 
@@ -372,7 +374,7 @@ function prepData(data, minTotal) {
   // Taper off streams
   // Create a date a bit after the first/last date
   var preDate = new Date(startDate.getTime() - 40*(1000*60*60*24));
-  // var postDate = new Date(endDate.getTime() + 40*(1000*60*60*24));
+  var postDate = new Date(endDate.getTime() + 10*(1000*60*60*24));
 
   // Create all 0s for each artist
   var preData = {};
@@ -381,16 +383,16 @@ function prepData(data, minTotal) {
   })
   preData['key'] = preDate;
 
-  // var postData = {};
-  // artists.forEach(d => {
-  //   postData[d] = 0;
-  // })
-  // postData['key'] = postDate;
+  var postData = {};
+  artists.forEach(d => {
+    postData[d] = 0;
+  })
+  postData['key'] = postDate;
 
   // Add to our data
-  returnData.us.unshift(preData);
-  returnData.uk.unshift(preData);
-
+  // returnData.us.unshift(preData);
+  // returnData.uk.unshift(preData);
+  //
   // returnData.us.push(postData);
   // returnData.uk.push(postData);
 
@@ -600,18 +602,54 @@ function filterData(data, filteredArtists) {
   return filteredData;
 }
 
-function slideStreamgraph(dateRange) {
-  streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), true);
-}
-
 function transitionToSplitView(dateRange, artist) {
   // Make streamgraph half width
-  slideStreamgraph(dateRange);
+  streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), true, true);
 
   // Create song graph
   apiCalls.getArtistSongs(artist, dateRange, function(data) {
     songGraph.songGraph(data,dateRange);
+
+    createSongGraphExitButton()
   })
+}
+
+function createSongGraphExitButton(){
+  var buttonSize = 30,
+      buttonStrokeWidth = 2;
+
+  // Add X button
+  var exitButton = d3.select('#song-graph-svg').append("g")
+    .attr('id', 'exit-song-graph')
+    .attr('class', 'exit-song-graph')
+    .attr('cursor', 'pointer')
+    .attr('transform', utilities.translate(0,0))
+    .on('click', function(){
+      // Get rid of song info
+      $('#song-graph-parent').remove();
+
+      // Clear out artist name
+      $('#stream-search').val('');
+
+      // Go back to full screen stream
+      streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false, true);
+    });
+
+  exitButton.append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", buttonSize)
+    .attr("y2", buttonSize)
+    .attr("stroke-width", buttonStrokeWidth)
+    .attr("stroke", colors.accentColor);
+
+  exitButton.append("line")
+    .attr("x1", buttonSize)
+    .attr("y1", 0)
+    .attr("x2", 0)
+    .attr("y2", buttonSize)
+    .attr("stroke-width", buttonStrokeWidth)
+    .attr("stroke", colors.accentColor);
 }
 
 module.exports = {

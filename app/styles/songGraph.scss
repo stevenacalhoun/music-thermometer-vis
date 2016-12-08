@@ -1,6 +1,12 @@
+@import '../styles/colors.scss';
+
 .song-graph {
   display: inline-block;
 }
 svg {
   display: block;
+}
+
+.song-graph-exit {
+  cursor: pointer;
 }

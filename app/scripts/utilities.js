@@ -1,6 +1,9 @@
 var d3 = require('d3');
 
 module.exports = {
+  translate: function(x,y) {
+    return "translate("+x+","+y+")";
+  },
   unique: function(arr) {
     var u = {}, a = [];
     for(var i = 0, l = arr.length; i < l; ++i){
