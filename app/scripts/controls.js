@@ -24,7 +24,7 @@ function createNumberInput(labelText, min, max, startValue, id) {
 }
 
 function createSearchBar(id) {
-  var searchBar = $("<input placeholder='Type in artist' class='control-piece search-input-box' id='"+id+"' />");
+  var searchBar = $("<input placeholder='Type in artist' onfocus=\"this.placeholder = ''\" onfocusout=\"this.placeholder = 'Type in artist'\" class='control-piece search-input-box' id='"+id+"' />");
   return searchBar;
 }
 

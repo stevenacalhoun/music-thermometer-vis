@@ -1,6 +1,7 @@
 // JS Libraries
 var d3 = require('d3'),
     tip = require('d3-tip'),
+    spin = require('spin'),
     $ = require('jQuery');
 
 // Other JS files
@@ -27,12 +28,12 @@ var xScale,
 //******************************************************************************
 // Public functions
 //******************************************************************************
-function streamGraphInit(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal) {
+function streamGraphInit(startDate, endDate, minRank, minTotal) {
   // Graph container
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
 
   // Add controls
-  createControls(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
+  createControls(startDate, endDate, minRank, minTotal);
 
   var theFuck = 70;
   // Sizing
@@ -131,20 +132,42 @@ function streamGraphInit(earlyStartingDate, lateStartingDate, startingRank, star
     .range([height, 0])
 
   // Pull data and create stream
-  renderStreamGraph(globalData);
+  // renderStreamGraph(globalData);
+  createStreamGraph(startDate, endDate, minRank, minTotal)
 }
 
 // Create streamgraph
-function createStreamGraph(start, end, rank, minTotal) {
+function createStreamGraph(startDate, endDate, rank, minTotal) {
   var dateRange = {
-    "startDate": start,
-    "endDate": end
+    "startDate": startDate,
+    "endDate": endDate
   }
-  apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-    var preppedData = prepData(data, minTotal)
-    globalData = preppedData;
 
-    renderStreamGraph(preppedData);
+  var spinnerOptions = {
+    className: 'spinner',
+    color: "#39B54A",
+    top: '50%',
+    left: '50%',
+    trail: 60,
+    lines: 10,
+    length: 6,
+    radius: 12,
+    width: 3
+  }
+
+  // Add spinner
+  var spinner = new spin(spinnerOptions).spin();
+  $('#spinner-container').append(spinner.el);
+
+  apiCalls.getChartRangeCountry('both', dateRange, function(data) {
+    // Prepdata
+    globalData = prepData(data, minTotal)
+
+    // Render graph
+    renderStreamGraph(globalData);
+
+    // Remove spinner
+    $('#spinner-container').html('');
   }, rank);
 }
 

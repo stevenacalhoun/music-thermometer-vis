@@ -21,3 +21,10 @@ svg {
   stroke: none;
   fill: $font-color;
 }
+
+.spinner-container {
+  position: fixed;
+  top: 40px;
+  left: 40px;
+  z-index: 10;
+}
