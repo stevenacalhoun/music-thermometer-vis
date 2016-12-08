@@ -1,10 +1,24 @@
-.songGraph {
+#songGraph {
 	.axis{
 		path{
 			display:none
 		}
   		.tick line{
   			display:none;
+  		}
+	}
+
+	.legend{
+		.gradientYAxis{
+	  		path{
+	  			display:none;
+	  		}
+	  		.tick line{
+	  			display:none;
+	  		}
+	  		text{
+	  			fill:gray;
+	  		}
   		}
 	}
 }
