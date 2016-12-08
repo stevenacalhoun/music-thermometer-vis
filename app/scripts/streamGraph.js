@@ -30,7 +30,7 @@ var xScale,
 //******************************************************************************
 // Public functions
 //******************************************************************************
-function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode, dataLoaded) {
+function initVis() {
   $('#stream-search').on('input', function(d) {
     filterAndRerender($('#stream-search').val());
   })
@@ -233,7 +233,7 @@ function renderStreamGraph(preppedData) {
 
   var minCount = d3.min(layers, function(layer) {
     return d3.min(layer, function(d) {
-      return d[1];
+      return d[0];
     })
   });
 
@@ -243,19 +243,9 @@ function renderStreamGraph(preppedData) {
     })
   });
 
-  yScale.domain([
-      d3.min(layers, function(layer) {
-        return d3.min(layer, function(d) {
-          return d[1];
-        })
-      }),
-      d3.max(layers, function(layer) {
-        return d3.max(layer, function(d) {
-          return d[1];
-        })
-      })
-    ]);
+  yScale.domain([minCount, maxCount]);
 
+  console.log(yScale.domain())
   axisYScale.domain([0, (maxCount + (-minCount))]);
 
   // Update axes
@@ -623,7 +613,7 @@ function createSongGraphExitButton(){
     .attr('id', 'exit-song-graph')
     .attr('class', 'exit-song-graph')
     .attr('cursor', 'pointer')
-    .attr('transform', utilities.translate(0,0))
+    .attr('transform', utilities.translate((document.body.clientWidth/2)-buttonSize*2,0))
     .on('click', function(){
       // Get rid of song info
       $('#song-graph-parent').remove();
@@ -634,6 +624,11 @@ function createSongGraphExitButton(){
       // Go back to full screen stream
       streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false, true);
     });
+
+  exitButton.append("rect")
+    .attr("width",buttonSize)
+    .attr("height", buttonSize)
+    .attr("fill", colors.backgroundColor)
 
   exitButton.append("line")
     .attr("x1", 0)
@@ -656,6 +651,6 @@ module.exports = {
   streamGraphInit: streamGraphInit,
   createStreamGraph: createStreamGraph,
   removeStreamGraph: removeStreamGraph,
-  streamGraphInit1: streamGraphInit1,
+  initVis: initVis,
   initialLoad: initialLoad
 }

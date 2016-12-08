@@ -17,7 +17,8 @@ var boxHeight = 50
 function songGraph(data, passedDateRange) {
   dateRange = passedDateRange;
   // process data
-  var ukData, usData;
+  var ukData = [],
+      usData = [];
   for(var i=0;i<data.length;i++){
     if(data[i].key === 'us')
       usData = data[i].values;
@@ -44,10 +45,12 @@ function songGraph(data, passedDateRange) {
 
   // Scales
   x = d3.scaleTime()
-    .range([0,width]);
+    .range([0,width])
+    .domain([dateRange.startDate,dateRange.endDate])
 
   y = d3.scaleBand()
     .rangeRound([0,height])
+    .domain(allSongs)
 
   // Container
   $("<div id='song-graph-parent' class='song-graph'></div>").appendTo("#vis-parent");
@@ -75,12 +78,12 @@ function songGraph(data, passedDateRange) {
   var xAxis = svg.append("g")
     .attr("id", "song-graph-x-axis")
     .attr("class", "x axis")
-    .attr("transform", translate(margin.left,height+margin.top+legendHeight))
+    .attr("transform", utilities.translate(margin.left,height+margin.top+legendHeight))
 
   var yAxis = svg.append("g")
     .attr("id", "song-graph-y-axis")
     .attr("class", "transparent y axis")
-    .attr("transform", translate(margin.left,margin.top+legendHeight))
+    .attr("transform", utilities.translate(margin.left,margin.top+legendHeight))
 
   // Tooltip
   tooltip = tip()
@@ -93,8 +96,6 @@ function songGraph(data, passedDateRange) {
   svg.call(tooltip);
 
   // Set x/y domain
-  x.domain([dateRange.endDate,dateRange.startDate])
-  y.domain(allSongs)
 
   // Color scales
   var ukColor = d3.scaleLinear()
@@ -123,7 +124,7 @@ function songGraph(data, passedDateRange) {
     .attr("class", "base")
     .merge(bases)
       .attr("transform", function(d,i){
-        return translate(0,(y(d)+boxHeight/2));
+        return utilities.translate(0,(y(d)+boxHeight/2));
       })
       .attr("height", rectHeight/2)
       .attr("width", width)
@@ -133,23 +134,9 @@ function songGraph(data, passedDateRange) {
   createBars(usData, usColor, 'us');
   createBars(ukData, ukColor, 'uk');
 
-  //add zoom function
-  var zoom = d3.zoom()
-        .scaleExtent([1,10])
-        // .translateExtent([[-100, -100], [width + 90, height + 100]])
-        .on("zoom", zoomed);
-
-  svg.call(zoom);
-
-  function zoomed(){
-    // rects.attr("transform", d3.event.transform)
-    // xAxis.call(xAxis.scale(d3.event.transform.rescaleX(x)));
-  }
-
-
-  // add Spotify play button
-  var playerWidth=640,playerHeight=180;
-
+  // // add Spotify play button
+  // var playerWidth=640,playerHeight=180;
+  //
   // $('<iframe src="https://embed.spotify.com/?uri=spotify:track:5JunxkcjfCYcY7xJ29tLai" width="'+playerWidth+'" height="'+playerHeight+'" frameborder="0" allowtransparency="true"></iframe>').appendTo('body');
 
   createLegend();
@@ -176,7 +163,7 @@ function createBars(data, color, country) {
     .attr("class", groupsClass)
     .merge(groups)
       .attr("transform", function(d,i){
-        return translate(0,(y(d.key)+boxHeight/2+rectHeight*factor));
+        return utilities.translate(0,(y(d.key)+boxHeight/2+rectHeight*factor));
       })
   groups.exit().remove();
 
@@ -191,18 +178,18 @@ function createBars(data, color, country) {
       .attr('class',barClass)
       .attr("height", rectHeight)
       .attr("width", function(d){
-        var thisWeek = new Date(d.chart_week);
-        var nextWeek = new Date(d.chart_week);
+        var thisWeek = new Date(d.chart_week),
+            nextWeek = new Date(d.chart_week);
         nextWeek.setDate(nextWeek.getDate()+7);
 
-        return x(thisWeek)-x(nextWeek);
+        return x(nextWeek)-x(thisWeek);
 
       })
       .attr("x", function(d){
         return x(new Date(d.chart_week));
       })
       .attr("fill", function(d){
-          return color(d.rank);
+        return color(d.rank);
       })
       .on('mouseover', tooltip.show)
       .on('mouseout', tooltip.hide)
@@ -228,7 +215,7 @@ function createLegend() {
   var legend = d3.select('#song-graph-svg')
     .append('g')
       .attr('id', 'song-graph-legend')
-      .attr("transform", translate(margin.left,margin.top));
+      .attr("transform", utilities.translate(margin.left,margin.top));
 
   var gradientY = d3.scaleLinear()
     .range([gradientBarWidth, 0])
@@ -236,10 +223,6 @@ function createLegend() {
 
   addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
   addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
-}
-
-function translate(x,y){
-  return "translate(" + x + "," + y + ")";
 }
 
 function addGradientLegend(country, barWidth, barHeight, gradientY, color){
@@ -273,7 +256,7 @@ function addGradientLegend(country, barWidth, barHeight, gradientY, color){
 
   var legendBar = d3.select('#song-graph-legend')
     .append("g")
-    .attr("transform", translate(xShift,0))
+    .attr("transform", utilities.translate(xShift,0))
 
   legendBar.append("rect")
     .attr("width", barWidth)
@@ -282,7 +265,7 @@ function addGradientLegend(country, barWidth, barHeight, gradientY, color){
 
   legendBar.append("g")
     .attr("class", "x axis")
-    .attr("transform", translate(0, barHeight))
+    .attr("transform", utilities.translate(0, barHeight))
     .call(d3.axisBottom(gradientY).tickSize(0))
     .append("text")
       .attr("y", -18)

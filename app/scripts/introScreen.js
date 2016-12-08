@@ -63,7 +63,7 @@ function createVisScreen(splashContainer) {
     controls.createControls(header, new Date(2009,0,1), new Date(2009,11,31), 50, 1);
 
     // Start with stream graph
-    streamGraph.streamGraphInit1(new Date(2009,0,1), new Date(2009,11,31), 50, 1);
+    streamGraph.initVis();
     streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 50, 1);
   });
 }
