@@ -1,53 +1,68 @@
 var $ = require('jQuery')
+    streamGraph = require('./streamGraph.js')
     constants = require('./constants.js'),
     controls = require('./controls.js');
 
 require('../styles/overlay.scss');
 
-function initScreen() {
-  $('body').append("<div class='background'></div>");
+function createLandingScreen() {
+  // Main splash container
+  var splashContainer = $('<div style="display:none" class="splash-container"></div>').appendTo('body');
 
-  var splashContainer = $('<div class="splash-container"></div>').appendTo('body');
-  var container = $('<div id="openening-info" class="center-container"></div>').appendTo(splashContainer);
+  // Add background
+  splashContainer.append("<div class='background'></div>");
+
+  // Add initial info
+  var container = $('<div id="opening-screen" class="center-container"></div>').appendTo(splashContainer);
   container.append("<div class='splash-title'>Music Thermometer</div>");
   container.append("<div class='splash-subtitle'>artists' popularity over time</div>");
   container.append("<div class='splash-subtitle-bold'>US vs. UK</div>");
+
+  // Button to transition
   var nextButton = $("<div class='splash-button'>Find Out More</div>").appendTo(container);
-
   nextButton.on("click", function() {
-    $('#openening-info').fadeOut(500, function() {
-      var shade = $("<div id='overlay-shade' class='overlay-shade'></div>").appendTo('body');
-
-      var container = $('<div style="display:none" class="center-container"></div>').appendTo(splashContainer);
-      container.append("<div class='splash-text'>"+constants.entry1+"</div>");
-      container.append("<div class='splash-text'>"+constants.entry2+"</div>");
-      container.append("<div class='splash-text'>"+constants.entry3+"</div>");
-
-      var enterButton = $("<div class='splash-button'>Enter</div>").appendTo(container);
-
-      container.fadeIn(500);
+    $('#opening-screen').fadeOut(500, function() {
+      // Create next screen
+      createDescriptionScreen(splashContainer);
     })
   })
+  splashContainer.fadeIn(500);
 }
 
-function createOverlay() {
-  $("<div id='overlay-shade' class='overlay-shade'></div>").appendTo('body');
-  // $("<div class='curtain'></div>").appendTo(overlayContainer);
+function createDescriptionScreen(splashContainer) {
+  var totalContainer = $("<div id='description-screen' style='display:none'></div>").appendTo(splashContainer);
 
-  var helpBoxParent = $("<div id='help-box-parent' class='help-box-parent'></div>").appendTo('body');
-  var helpBox = $("<div class='help-box'></div>").appendTo(helpBoxParent);
-  helpBox.append($("<div class='help-title'>Help</div>"))
+  // Add shade
+  var shade = $("<div id='shade' class='shade'></div>").appendTo(totalContainer);
 
-  var closeButton = controls.createButton("Close");
-  closeButton.addClass('help-exit-button')
-  closeButton.on("click", function() {
-    $('#overlay-shade').remove();
-    $('#help-box-parent').remove();
+  // Add explanation info
+  var container = $('<div class="center-container details"></div>').appendTo(totalContainer);
+  container.append("<div class='splash-text'>"+constants.entry1+"</div>");
+  container.append("<div class='splash-text'>"+constants.entry2+"</div>");
+  container.append("<div class='splash-text'>"+constants.entry3+"</div>");
+
+  // Add button to enter vis
+  var enterButton = $("<div class='splash-button'>Enter</div>").appendTo(container);
+  enterButton.on("click", function() {
+    $('#description-screen').fadeOut(500, function() {
+      // Create vis
+      createVisScreen(splashContainer);
+    })
   })
-  helpBox.append(closeButton);
+  totalContainer.fadeIn(500);
+}
+
+function createVisScreen(splashContainer) {
+  splashContainer.fadeOut(500, function(){
+    // Add title and info button
+    var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');
+    header.append("<div id='app-title' class='title'>Music Thermometer</div>");
+
+    // Start with stream graph
+    streamGraph.streamGraphInit('body', new Date(2009,0,1), new Date(2009,11,31), 50, 1);
+  });
 }
 
 module.exports = {
-  createOverlay: createOverlay,
-  initScreen: initScreen
+  createLandingScreen: createLandingScreen
 }
