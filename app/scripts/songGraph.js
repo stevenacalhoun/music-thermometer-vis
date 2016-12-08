@@ -89,7 +89,7 @@ function songGraph(data, passedDateRange) {
   tooltip = tip()
     .direction('e')
     .attr('class', 'd3-tip')
-    .offset([80,0])
+    .offset([-100,-250])
     .html(function(d){return tooltipLib.songGraphTooltip(d)});
 
   // Add tooltip

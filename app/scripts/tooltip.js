@@ -5,11 +5,14 @@ require('../styles/tooltip.scss');
 
 
 function songGraphTooltip(d) {
-  var container = $("<div class=tooltip-container></div>");
-  $('<p>Song: '+d.title+'</p>').appendTo(container)
-  $('<p>Rank: '+d.rank+'</p>').appendTo(container)
-  $('<p>Artist: '+d.artist+'</p>').appendTo(container)
-  $('<p>Week: '+d.chart_week.substring(0,10)+'</p>').appendTo(container)
+  var container = $("<div class='song-tooltip-container'></div>");
+  container.append('<div class="tooltip-rank">'+d.rank+'<div>');
+  if (d.albumArtLink != null) {
+    container.append("<div class='tooltip-album-art'><img src='"+d.albumArtLink+"' /></div>");
+  }
+  container.append("<span class='tooltip-song-name tooltip-piece'>"+d.title+"</span>");
+  container.append("<div class='tooltip-by-artist tooltip-piece'>by "+d.artist+"</div>");
+  container.append("<div class='tooltip-time tooltip-piece'>"+d.chart_week.substring(0,10)+"</div>")
 
   return container.html();
 }

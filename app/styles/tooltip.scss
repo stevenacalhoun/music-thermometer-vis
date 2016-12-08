@@ -17,9 +17,40 @@ $tooltip-min-width: 200px;
   font-style: italic;
 }
 
+.tooltip-song-name{
+  font-style: italic;
+  text-align: center;
+  font-size: 20px;
+}
+
+.tooltip-by-artist {
+  font-size: 15px;
+  font-weight: lighter;
+}
+
+.song-tooltip-container {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.tooltip-rank {
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 15px;
+}
+
+.tooltip-album-art {
+  img {
+    width: $tooltip-min-width;
+    height: $tooltip-min-width;
+    border: 1px solid $background-color;
+  }
+}
+
 .tooltip-count {
 
 }
+
 .tooltip-count-graph {
   width: 100%;
 }

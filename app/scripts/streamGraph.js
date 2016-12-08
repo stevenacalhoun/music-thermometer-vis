@@ -37,7 +37,6 @@ function initVis() {
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
-
   var streamParent = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(visContainer);
 
   // Hover tooltip
@@ -244,8 +243,6 @@ function renderStreamGraph(preppedData) {
   });
 
   yScale.domain([minCount, maxCount]);
-
-  console.log(yScale.domain())
   axisYScale.domain([0, (maxCount + (-minCount))]);
 
   // Update axes
@@ -297,7 +294,8 @@ function renderStreamGraph(preppedData) {
       $('#stream-search').val(d.key)
 
       transitionToSplitView(dateRange, d.key);
-      filterAndRerender($('#stream-search').val())
+      filterAndRerender($('#stream-search').val());
+      tooltip.hide();
     })
 }
 

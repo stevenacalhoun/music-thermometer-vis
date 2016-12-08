@@ -57,9 +57,9 @@ function createDescriptionScreen(splashContainer) {
 
 function createVisScreen(splashContainer) {
   splashContainer.fadeOut(500, function(){
-    // Add title and info button
+    // Add title
     var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');
-    header.append("<div id='app-title' class='title'>Music Thermometer</div>");
+    $(header).append("<div id='app-title' class='title'>Music Thermometer</div>");
     controls.createControls(header, new Date(2009,0,1), new Date(2009,11,31), 50, 1);
 
     // Start with stream graph
