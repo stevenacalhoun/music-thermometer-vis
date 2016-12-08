@@ -1,33 +1,32 @@
-// JS toolkits
+// JS Libraries
 var d3 = require('d3'),
-    apiCalls = require('./apiCalls.js'),
     tip = require('d3-tip'),
-    $ = require('jQuery'),
-    tooltipLib = require('./tooltip.js'),
-    controls = require('./controls.js')
+    $ = require('jQuery');
+
+// Other JS files
+var tooltipLib = require('./tooltip.js'),
+    apiCalls = require('./apiCalls.js'),
+    controls = require('./controls.js'),
     utilities = require('./utilities.js'),
+    colors = require('./colors.js'),
     constants = require('./constants.js');
 
 // Css
 require('../styles/streamGraph.scss');
 
-// Constants
-var monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
-
 // Global vars
-var dateRange,
-    xScale,
+var xScale,
     yScale,
+    axisYScale,
     tooltip,
-    tipCircle,
-    margin,
-    width,
-    containerHeight,
-    height,
     currentTipArtist,
     currentTipDate,
     globalData;
 
+
+//******************************************************************************
+// Public functions
+//******************************************************************************
 function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal) {
   // Graph container
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(parent)
@@ -36,12 +35,14 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   createControls(graphContainer, earlyStartingDate, lateStartingDate, startingRank, startingMinTotal);
 
   // Sizing
-  margin = {top: 10, right: 40, bottom: 0, left: 150},
-  width = document.body.clientWidth - margin.left - margin.right,
-  containerHeight = window.innerHeight - $('#header').outerHeight() - $('#controls').outerHeight() - margin.top - margin.bottom,
-  streamPadding = 40,
-  height = (containerHeight/2) - (10) - streamPadding
-  labelOffset = -100;
+  var margin = {top: 10, right: 20, bottom: 0, left: 150};
+      streamPadding = 30,
+      containerHeight = window.innerHeight - $('#header').outerHeight() - $('#controls').outerHeight() - margin.top - margin.bottom,
+      axisHeight = 10,
+      height = (containerHeight/2) - axisHeight - streamPadding,
+      labelOffset = 50,
+      width = document.body.clientWidth - margin.left - margin.right,
+      streamWidth = width - labelOffset;
 
   // Main container
   var svg = d3.select("#stream-graph-parent").append("svg")
@@ -59,7 +60,7 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
       .offset([-120,0]);
 
   // Hidden circle for tooltip on mouse
-  tipCircle = svg.append("circle")
+  var tipCircle = svg.append("circle")
       .attr('id', 'tip-circle');
 
   // Move circle to mouse
@@ -71,36 +72,70 @@ function streamGraphInit(parent, earlyStartingDate, lateStartingDate, startingRa
   // Layer group for us and uk streams
   d3.select("#stream-graph-svg")
     .append("g")
-      .attr("id", "stream-graph-stream-us")
-      .attr("transform", "translate("+margin.left+","+margin.top+")")
-      .call(tooltip)
-    .append("text")
-      .text("US")
-      .attr("class", "stream-label")
-      .attr("transform", "translate("+labelOffset+","+(height/2 + 10)+")")
+      .attr("id", "stream-graph-us")
+      .attr("transform", "translate(0,"+margin.top+")")
+      .append("g")
+        .attr("id", "stream-graph-stream-us")
+        .attr("transform", "translate("+margin.left+",0)")
+        .call(tooltip)
 
   d3.select("#stream-graph-svg")
     .append("g")
+      .attr("id", "stream-graph-uk")
+      .attr("transform", "translate(0,"+(margin.top+height+(streamPadding*2))+")")
+    .append("g")
       .attr("id", "stream-graph-stream-uk")
-      .attr("transform", "translate("+margin.left+","+(margin.top+height+(streamPadding*2))+")")
+      .attr("transform", "translate("+margin.left+",0)")
       .call(tooltip)
-    .append("text")
-      .attr("class", "stream-label")
-      .text("UK")
-      .attr("transform", "translate("+labelOffset+","+(height/2 + 10)+")")
+
+  // Stream labels
+  d3.select("#stream-graph-us")
+    .append("g")
+      .attr("transform", "translate("+(labelOffset)+","+(8+height/2)+")")
+      .append("text")
+        .text("US")
+        .attr("class", "stream-label")
+
+  d3.select("#stream-graph-uk")
+    .append("g")
+      .attr("transform", "translate("+(labelOffset)+","+(8+height/2)+")")
+      .append("text")
+        .text("UK")
+        .attr("class", "stream-label")
 
   // Axes section
   svg.append("g")
       .attr("id", "x-axis")
       .attr("class", "x axis")
-      .attr("transform", "translate("+margin.left/2+"," + (height+streamPadding) + ")")
+      .attr("transform", "translate("+margin.left+"," + (height+streamPadding) + ")")
 
+  svg.append("g")
+      .attr("id", "y-axis-top")
+      .attr("class", "y axis")
+      .attr("transform", "translate("+(width+margin.left-labelOffset)+"," + (margin.top) + ")")
+
+  svg.append("g")
+      .attr("id", "y-axis-bot")
+      .attr("class", "y axis")
+      .attr("transform", "translate("+(width+margin.left-labelOffset)+"," + (margin.top+height+(streamPadding*2)) + ")")
+
+  // x/y Scales
+  xScale = d3.scaleTime()
+    .range([0, streamWidth])
+
+  yScale = d3.scaleLinear()
+    .range([height, 0])
+
+  axisYScale = d3.scaleLinear()
+    .range([height, 0])
+
+  // Pull data and create stream
   createStreamGraph(earlyStartingDate, lateStartingDate, startingRank, startingMinTotal)
 }
 
-// Create streamgraph for dates/rank
+// Create streamgraph
 function createStreamGraph(start, end, rank, minTotal) {
-  dateRange = {
+  var dateRange = {
     "startDate": start,
     "endDate": end
   }
@@ -108,20 +143,23 @@ function createStreamGraph(start, end, rank, minTotal) {
     var preppedData = prepData(data, minTotal)
     globalData = preppedData;
 
-    renderStreamGraph(preppedData, 'body', minTotal);
+    renderStreamGraph(preppedData, 'body');
   }, rank);
 }
 
-// Remove all of the streamgraph
+// Remove streamgraph
 function removeStreamGraph() {
   $('#stream-graph-parent').remove();
 }
 
-// Render a streamgraph
-function renderStreamGraph(preppedData, parent, minTotal) {
-  // Prep data
-  var combinedData = preppedData.us.concat(preppedData.uk);
+//******************************************************************************
+// Stream Graph Helper functions
+//******************************************************************************
 
+// Render a streamgraph
+function renderStreamGraph(preppedData, parent) {
+  // Data
+  var combinedData = preppedData.us.concat(preppedData.uk);
 
   // Stack
   var stack = d3.stack()
@@ -131,22 +169,26 @@ function renderStreamGraph(preppedData, parent, minTotal) {
   // Create layered data from stack
   var layers = stack(combinedData);
 
-  // Scales x & y
-  xScale = d3.scaleTime()
-    .range([0, width])
-    .domain(d3.extent(combinedData, function(d) {
+  // Adjust x/y domains
+  xScale.domain(d3.extent(combinedData, function(d) {
       var dateObj = new Date(d.key);
       dateObj = new Date( dateObj.getTime() + ( dateObj.getTimezoneOffset() * 60000 ) );
       return dateObj;
     }));
 
-  // Update axis
-  d3.select("#x-axis")
-    .call(d3.axisBottom().scale(xScale))
+  var minCount = d3.min(layers, function(layer) {
+    return d3.min(layer, function(d) {
+      return d[1];
+    })
+  });
 
-  yScale = d3.scaleLinear()
-    .range([height, 0])
-    .domain([
+  var maxCount = d3.max(layers, function(layer) {
+    return d3.max(layer, function(d) {
+      return d[1];
+    })
+  });
+
+  yScale.domain([
       d3.min(layers, function(layer) {
         return d3.min(layer, function(d) {
           return d[1];
@@ -158,6 +200,17 @@ function renderStreamGraph(preppedData, parent, minTotal) {
         })
       })
     ]);
+
+  axisYScale.domain([0, (maxCount + (-minCount))]);
+
+  // Update axes
+  d3.select("#x-axis")
+    .call(d3.axisBottom().scale(xScale))
+
+  d3.select("#y-axis-top")
+    .call(d3.axisRight().scale(axisYScale))
+  d3.select("#y-axis-bot")
+    .call(d3.axisRight().scale(axisYScale))
 
   // Area function
   var area = d3.area()
@@ -174,8 +227,8 @@ function renderStreamGraph(preppedData, parent, minTotal) {
     });
 
   // Render layers for us and uk
-  renderLayers(stack(preppedData.us), area, d3.scaleOrdinal(constants.streamColors1), '#stream-graph-stream-us');
-  renderLayers(stack(preppedData.uk), area, d3.scaleOrdinal(constants.streamColors2), '#stream-graph-stream-uk');
+  renderLayers(stack(preppedData.us), area, d3.scaleOrdinal(colors.streamColors1), '#stream-graph-stream-us');
+  renderLayers(stack(preppedData.uk), area, d3.scaleOrdinal(colors.streamColors2), '#stream-graph-stream-uk');
 
   // Add in tooltip interaction
   addToolTip();
@@ -184,6 +237,19 @@ function renderStreamGraph(preppedData, parent, minTotal) {
   d3.selectAll("path")
     .on("click", function(d, i) {
       // Here's where we transition to the bar chart
+
+      // Get slider selection
+      var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
+
+      // Invert slider dates
+      var startDate = controls.reverseScale(sliderSelection[0]),
+          endDate = controls.reverseScale(sliderSelection[1]);
+
+      var dateRange = {
+        "startDate": startDate,
+        "endDate": endDate
+      }
+
       console.log(dateRange);
       console.log(d.key);
     })
@@ -399,11 +465,11 @@ function renderTooltip(d, dateInfo) {
     "us": usValue,
     "uk": ukValue,
     "artist": d.key,
-    "week": monthNames[dateInfo.date.getMonth()] + ", " + dateInfo.date.getFullYear()
+    "week": constants.monthNames[dateInfo.date.getMonth()] + ", " + dateInfo.date.getFullYear()
   }
 
   // Render tooltip
-  tooltip.show(tooltipData, tipCircle.node());
+  tooltip.show(tooltipData, d3.select('#tip-circle').node());
   tooltipLib.addStreamgraphTooltipGraph(tooltipData);
 
   currentTipArtist = d.key;
@@ -485,7 +551,7 @@ function filterAndRerender(filterText) {
     "us": filterData(globalData.us, filteredArtists),
     "uk": filterData(globalData.uk, filteredArtists)
   }
-  renderStreamGraph(filteredData,'body', $('#min-total-value').val());
+  renderStreamGraph(filteredData,'body');
 }
 
 function filterData(data, filteredArtists) {

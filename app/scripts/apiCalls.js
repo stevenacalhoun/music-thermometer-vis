@@ -1,7 +1,12 @@
 var $ = require('jQuery'),
     utilities = require('./utilities.js'),
-    d3 = require('d3'),
-    settings = require('./settings.js');
+    d3 = require('d3');
+
+var serverAddress = "http://localhost:3000/api/",
+    topChartsUrl = 'charts',
+    songInfoUrl = 'song',
+    spotifyUrl = 'song',
+    artistInfoUrl = 'artist';
 
 module.exports = {
   /*
@@ -15,7 +20,7 @@ module.exports = {
   getChartRange: function(dateRange, callBack, minRank=100) {
     var params = dateRange;
     params.minRank = minRank;
-    ajaxGet(settings.topChartsUrl, params, callBack);
+    ajaxGet(topChartsUrl, params, callBack);
   },
 
   /*
@@ -30,7 +35,7 @@ module.exports = {
   getChartRangeCountry: function(country, dateRange, callBack, minRank=100) {
     var params = dateRange;
     params.minRank = minRank;
-    ajaxGet(settings.topChartsUrl + '/' + country, params, callBack);
+    ajaxGet(topChartsUrl + '/' + country, params, callBack);
   },
 
   /*
@@ -58,7 +63,7 @@ module.exports = {
     @minRank: optional minimum rank wanted
   */
   getChartRangeCountryArtist: function(country, artist, dateRange, callBack, minRank=100) {
-    var url = settings.topChartsUrl + "/" + country + "/" + artist;
+    var url = topChartsUrl + "/" + country + "/" + artist;
     var params = dateRange;
     params.minRank = minRank;
     ajaxGet(url, params, callBack);
@@ -80,7 +85,7 @@ module.exports = {
     var params = {
       "song_spotify_id": songIds
     };
-    ajaxGet(settings.spotifyUrl, params, callBack);
+    ajaxGet(spotifyUrl, params, callBack);
   },
 
   /*
@@ -99,7 +104,7 @@ module.exports = {
     var params = {
       "songSpotifyIDs": songIds
     };
-    ajaxGet(settings.songInfoUrl, params, callBack);
+    ajaxGet(songInfoUrl, params, callBack);
   },
 
   /*
@@ -111,7 +116,7 @@ module.exports = {
   */
   getArtistSongs: function(artist, dateRange, callback) {
     var params = dateRange;
-    ajaxGet(settings.artistInfoUrl+'/'+artist, params, function(rawData) {
+    ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
 
       var data = d3.nest()
         .key(function(d) {
@@ -153,7 +158,7 @@ function generateUriParamString(params) {
 function ajaxGet(url, params, callBack) {
   $.ajax({
     type: "GET",
-    url: settings.serverAddress + url + generateUriParamString(params),
+    url: serverAddress + url + generateUriParamString(params),
     dataType: "json",
     success: function(data){ callBack(data) },
   });
