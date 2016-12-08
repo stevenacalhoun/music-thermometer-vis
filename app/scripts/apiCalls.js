@@ -115,32 +115,61 @@ module.exports = {
     - endDate: latest date
   */
   getArtistSongs: function(artist, dateRange, callback) {
+
     var params = dateRange;
     ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
-      var data = d3.nest()
-        .key(function(d) {
-          var dateObj = new Date(d.chart_week);
-          return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
+
+    console.log('api');
+    console.log(rawData);
+
+    var data = d3.nest()
+        .key(function(d){
+          return d.country
         })
-        .rollup(function(leaves){
-          var count = leaves.length;
-          var songs = [];
-          leaves.forEach(function(d){
-            songs.push({
-              "title": d.title,
-              "albumArtLink": d.albumArtLink,
-              "chartWeek": d.chart_week,
-              "rank": d.rank,
-              "spotify_id": d.spotify_id
-            })
-          });
-          return {
-            "count": count,
-            "songs": songs
-          }
+        .key(function(d){
+          return d.title
         })
         .entries(rawData);
+
+    // var data = d3.nest()
+    //     .key(function(d){
+    //       return d.country
+    //     })
+    //     .key(function(d) {
+    //       var dateObj = new Date(d.chart_week);
+    //       return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
+    //     })
+    //     .key(function(d){
+    //       return d.title
+    //     })
+    //     .entries(rawData);
+
+    // var data = d3.nest()
+    //     .key(function(d) {
+    //       var dateObj = new Date(d.chart_week);
+    //       return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
+    //     })
+    //     .rollup(function(leaves){
+    //       var count = leaves.length;
+    //       var songs = [];
+    //       leaves.forEach(function(d){
+    //         songs.push({
+    //           "title": d.title,
+    //           "albumArtLink": d.albumArtLink,
+    //           "chartWeek": d.chart_week,
+    //           "rank": d.rank
+    //         })
+    //       });
+    //       return {
+    //         "count": count,
+    //         "songs": songs
+    //       }
+    //     })
+    //     .entries(rawData);
       callback(data);
+
+
+
     })
   }
 }
