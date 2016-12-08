@@ -28,29 +28,12 @@ var xScale,
 //******************************************************************************
 // Public functions
 //******************************************************************************
-function streamGraphInit(startDate, endDate, minRank, minTotal) {
+function streamGraphInit1(startDate, endDate, minRank, minTotal, halfMode) {
   // Graph container
   var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
 
   // Add controls
   createControls(startDate, endDate, minRank, minTotal);
-
-  var theFuck = 70;
-  // Sizing
-  var margin = {top: 10, right: 20, bottom: 0, left: 150};
-      streamPadding = 30,
-      containerHeight = window.innerHeight - theFuck - $('#controls').outerHeight() - margin.top - margin.bottom,
-      axisHeight = 10,
-      height = (containerHeight/2) - axisHeight - streamPadding,
-      labelOffset = 50,
-      width = document.body.clientWidth - margin.left - margin.right,
-      streamWidth = width - labelOffset;
-
-  // Main container
-  var svg = d3.select("#stream-graph-parent").append("svg")
-      .attr('id', 'stream-graph-svg')
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", containerHeight+margin.top+margin.bottom)
 
   // Hover tooltip
   tooltip = tip()
@@ -60,10 +43,42 @@ function streamGraphInit(startDate, endDate, minRank, minTotal) {
         return tooltipLib.streamGraphTooltip(d.artist, d.count, 1, d.week);
       })
       .offset([-120,0]);
+}
+function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode) {
+  // // Graph container
+  // var graphContainer = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo('body')
+  //
+  // // Add controls
+  // createControls(startDate, endDate, minRank, minTotal);
+
+  var theFuck = 70;
+  // Sizing
+  var margin = {top: 10, right: 20, bottom: 0, left: 150};
+      streamPadding = 30,
+      containerHeight = window.innerHeight - theFuck - $('#controls').outerHeight() - margin.top - margin.bottom,
+      axisHeight = 10,
+      height = (containerHeight/2) - axisHeight - streamPadding,
+      labelOffset = 50,
+      width = document.body.clientWidth - margin.left - margin.right;
+
+  if (halfMode) {
+    width = width/2;
+  }
+
+  var streamWidth = width - labelOffset;
+
+  $("#stream-graph-svg").remove();
+
+  var svg = d3.select("#stream-graph-parent")
+    .append("svg")
+      .attr('id', 'stream-graph-svg')
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", containerHeight+margin.top+margin.bottom)
 
   // Hidden circle for tooltip on mouse
   var tipCircle = svg.append("circle")
-      .attr('id', 'tip-circle');
+    .attr('id', 'tip-circle')
+    .attr('class', 'tip-circle');
 
   // Move circle to mouse
   svg.on('mousemove', function(d,i) {
@@ -273,7 +288,6 @@ function renderStreamGraph(preppedData) {
   d3.selectAll("path")
     .on("click", function(d, i) {
       // Here's where we transition to the bar chart
-
       // Get slider selection
       var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
 
@@ -286,8 +300,7 @@ function renderStreamGraph(preppedData) {
         "endDate": endDate
       }
 
-      console.log(dateRange);
-      console.log(d.key);
+      transitionToSplitView(dateRange, d.key);
     })
 }
 
@@ -611,9 +624,18 @@ function filterData(data, filteredArtists) {
   return filteredData;
 }
 
+function slideStreamgraph(dateRange, artist) {
+  streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), true);
+}
+
+function transitionToSplitView(dateRange, artist) {
+  slideStreamgraph(dateRange, artist);
+}
+
 module.exports = {
   streamGraphInit: streamGraphInit,
   createStreamGraph: createStreamGraph,
   removeStreamGraph: removeStreamGraph,
+  streamGraphInit1: streamGraphInit1,
   initialLoad: initialLoad
 }

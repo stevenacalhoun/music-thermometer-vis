@@ -13,4 +13,5 @@ header.append("<div id='spinner-container' class='spinner-container'></div>");
 header.append("<div id='app-title' class='title'>Music Thermometer</div>");
 
 // Start with stream graph
-streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 50, 1);
+streamGraph.streamGraphInit1(new Date(2009,0,1), new Date(2009,11,31), 50, 1, false);
+streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 50, 1, false);
