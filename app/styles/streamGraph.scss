@@ -1,3 +1,23 @@
-.streamGraph {
-  
+@import './colors.scss';
+
+.stream-chart {
+}
+
+svg {
+  display: block;
+}
+
+.stream-label {
+  font-size:40px;
+  fill: $font-color;
+}
+
+.axis .domain,
+.axis .tick line {
+  stroke: $axis-color;
+}
+
+.tick text {
+  stroke: none;
+  fill: $font-color;
 }

@@ -1,0 +1,104 @@
+@import './colors.scss';
+
+$control-item-background-color: $light-gray;
+$control-item-text-color: $dark-gray;
+
+$control-height: 100px;
+
+$control-piece-height: 40px;
+
+$button-color: $accent-color;
+$button-text-color: $control-item-text-color;
+$button-width: 150px;
+$button-height: $control-piece-height;
+
+$label-color: $light-gray;
+$input-color: $dark-gray;
+
+.controls {
+  padding: 15px 0;
+  max-width: 100%;
+  text-align: center;
+}
+
+.control-piece {
+  padding:0 10px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/** Button Styling **/
+.button-parent {
+  height: 100%;
+  width: auto;
+}
+
+.button {
+  cursor: pointer;
+  height: $button-height;
+  width: $button-width;
+  border-radius: 2px;
+  float: right;
+  background-color: $button-color;
+}
+
+.button-text {
+  text-align: center;
+  vertical-align: middle;
+  line-height: $button-height;
+  font-size:18px;
+}
+
+/** Number input box styling **/
+.number-input-parent {
+  text-align: left;
+}
+
+.number-input-label {
+  font-size: 18px;
+  font-weight: lighter;
+}
+
+.number-input-box {
+  border: none;
+  border-bottom: 1px solid $accent-color;
+  font-size: 18px;
+  &:focus{
+    outline: none;
+  }
+}
+
+/** Search Bar **/
+.search-input-box {
+  width: 50%;
+  height: $control-piece-height;
+  font-size: 35px;
+  border:none;
+  border-bottom: 1px solid $accent-color;
+  text-align: center;
+  &:focus {
+    outline:none;
+  }
+}
+
+/** Date slider **/
+.selection{
+  fill: $accent-color;
+  fill-opacity: 0.8;
+  stroke: none;
+}
+
+.handle {
+  fill: none;
+}
+
+.slider-axis  line {
+  stroke: $stroke-color;
+}
+.slider-axis  path {
+  stroke: $stroke-color;
+}
+.slider-axis text {
+  stroke: none;
+  fill: $font-color;
+}
