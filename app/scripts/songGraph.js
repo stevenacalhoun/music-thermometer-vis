@@ -155,11 +155,6 @@ function songGraph(data, passedDateRange) {
   createBars(usData, usColor, 'us');
   createBars(ukData, ukColor, 'uk');
 
-  // // add Spotify play button
-  // var playerWidth=640,playerHeight=180;
-  //
-  // $('<iframe src="https://embed.spotify.com/?uri=spotify:track:5JunxkcjfCYcY7xJ29tLai" width="'+playerWidth+'" height="'+playerHeight+'" frameborder="0" allowtransparency="true"></iframe>').appendTo('body');
-
   createLegend();
 }
 
@@ -212,8 +207,28 @@ function createBars(data, color, country) {
       .attr("fill", function(d){
         return color(d.rank);
       })
-      .on('mouseover', tooltip.show)
-      .on('mouseout', tooltip.hide)
+      .on('mouseover',  function(d) {
+        // Show tooltip
+        tooltip.show(d);
+
+        if (d.preview_url != null) {
+          // Add track and play
+          $('#audio-box-parent').append($("<audio controls id='audio-control'></audio>"));
+          $("#audio-control").append($("<source id='audio-track' src='"+d.preview_url+"' type='audio/mpeg'>"))
+          $("#audio-control")[$("#audio-control").length-1].play();
+        }
+      })
+      .on('mouseout', function() {
+        // Hide tooltip
+        tooltip.hide();
+
+        // Pause audio
+        $("#audio-control")[0].pause();
+
+        // Clear track
+        $('#audio-control').remove();
+        $('#audio-track').remove();
+      })
       .on('click',function(d){
         if(d.spotify_id){
           console.log(d)

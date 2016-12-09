@@ -118,6 +118,16 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
   // Add search bar
   var searchBar = createSearchBar('stream-search');
   controlsContainerBot.append(searchBar);
+
+  $('body').append(addSpotifyPreview("https://p.scdn.co/mp3-preview/4839b070015ab7d6de9fec1756e1f3096d908fba"));
+}
+
+function addSpotifyPreview(link) {
+  var audioBoxParent = $("<div id='audio-box-parent' class='audio-box-parent'></div>");
+  // var audioBox = $("<audio controls  id='audio-control'></audio>").appendTo(audioBoxParent);
+  // audioBox.append($("<source id='audio-track' src='none' type='audio/mpeg'>"));
+
+  return audioBoxParent;
 }
 
 module.exports = {

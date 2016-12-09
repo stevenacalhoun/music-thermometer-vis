@@ -15,6 +15,18 @@ $button-height: $control-piece-height;
 $label-color: $light-gray;
 $input-color: $dark-gray;
 
+.spotify-player {
+  z-index: -100;
+  float:left;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.audio-box-parent {
+  display: none;
+}
+
 .controls {
   padding: 15px 0;
   max-width: 100%;

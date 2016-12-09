@@ -3,7 +3,6 @@ var $ = require('jQuery'),
 
 require('../styles/tooltip.scss');
 
-
 function songGraphTooltip(d) {
   var container = $("<div class='song-tooltip-container'></div>");
   container.append('<div class="tooltip-rank">'+d.rank+'<div>');
