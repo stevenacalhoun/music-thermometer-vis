@@ -4,6 +4,7 @@ var apiCalls = require('./apiCalls.js'),
     introScreen = require('./introScreen.js');
 
 require('../styles/main.scss');
+require('../styles/genericons/genericons.css');
 
 $.fn.d3Click = function () {
   this.each(function (i, e) {
@@ -12,10 +13,10 @@ $.fn.d3Click = function () {
   });
 };
 
-introScreen.createLandingScreen();
+// introScreen.createLandingScreen();
 
-// introScreen.createVisScreen($("<div></div>"));
-//
-// setTimeout(function() {
-//   $('#Kelly_Clarkson_uk').d3Click()
-// }, 2000)
+introScreen.createVisScreen($("<div></div>"));
+
+setTimeout(function() {
+  // $('#Kelly_Clarkson_uk').d3Click()
+}, 2000)

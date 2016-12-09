@@ -20,6 +20,11 @@ module.exports = {
         loader: "style!css!sass"
       },
       {
+        test: /\.css$/,
+        loader: "style!css",
+        include: path.join(PATHS.styles, "genericons")
+      },
+      {
         test: /\.json$/,
         loader: "json-loader"
       },
@@ -34,6 +39,11 @@ module.exports = {
           'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       },
+      {
+        test: /\.(png|eot|svg|ttf|woff|gif)$/,
+        loader: "url-loader",
+        exclude: "node_modules"
+      }
     ]
   },
   output: {

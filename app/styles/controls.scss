@@ -15,6 +15,55 @@ $button-height: $control-piece-height;
 $label-color: $light-gray;
 $input-color: $dark-gray;
 
+.select-box {
+  display: inline-block;
+}
+
+.select-container {
+  position: relative;
+  background-color: $background-color;
+}
+
+.select-title {
+  display: block;
+  font-size: 25px;
+}
+
+select {
+  -webkit-appearance:none;
+  outline:none;
+  width: $button-width;
+  height: $button-height;
+
+  border-radius: 0;
+
+  padding: 10px;
+  color: $font-color;
+
+  border: none;
+  border-bottom: 1px solid $accent-color;
+  font-size:1.1em;
+  background-color: $background-color;
+
+  &:active, &:focus {
+  }
+  + .genericon {
+    position: absolute;
+    right: 10px;
+    top: 40%;
+    color: $accent-color;
+    pointer-events: none;
+  }
+}
+
+.genericon-downarrow:before {
+  content: '\f431';
+  font: normal 16px/1 'Genericons';
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .spotify-player {
   z-index: -100;
   float:left;
@@ -102,6 +151,7 @@ $input-color: $dark-gray;
 
 .handle {
   fill: none;
+  display: none;
 }
 
 .slider-axis  line {
@@ -113,4 +163,7 @@ $input-color: $dark-gray;
 .slider-axis text {
   stroke: none;
   fill: $font-color;
+}
+g.brush>.resize {
+  display: none;
 }
