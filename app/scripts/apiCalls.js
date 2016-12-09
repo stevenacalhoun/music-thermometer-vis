@@ -128,41 +128,6 @@ module.exports = {
         })
         .entries(rawData);
 
-    // var data = d3.nest()
-    //     .key(function(d){
-    //       return d.country
-    //     })
-    //     .key(function(d) {
-    //       var dateObj = new Date(d.chart_week);
-    //       return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
-    //     })
-    //     .key(function(d){
-    //       return d.title
-    //     })
-    //     .entries(rawData);
-
-    // var data = d3.nest()
-    //     .key(function(d) {
-    //       var dateObj = new Date(d.chart_week);
-    //       return utilities.createDateAggregateKey(dateRange.startDate, dateRange.endDate, dateObj);
-    //     })
-    //     .rollup(function(leaves){
-    //       var count = leaves.length;
-    //       var songs = [];
-    //       leaves.forEach(function(d){
-    //         songs.push({
-    //           "title": d.title,
-    //           "albumArtLink": d.albumArtLink,
-    //           "chartWeek": d.chart_week,
-    //           "rank": d.rank
-    //         })
-    //       });
-    //       return {
-    //         "count": count,
-    //         "songs": songs
-    //       }
-    //     })
-    //     .entries(rawData);
       callback(data);
 
 

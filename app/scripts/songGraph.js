@@ -13,6 +13,8 @@ var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin, dateRange;
 
 var minimumRectHeight = 20;
 
+var currentSong = '';
+
 var boxHeight = 50
     rectHeight = 15;
 
@@ -211,7 +213,8 @@ function createBars(data, color, country) {
         // Show tooltip
         tooltip.show(d);
 
-        if (d.preview_url != null) {
+        if ((d.preview_url != null) && (d.preview_url != currentSong)){
+          currentSong = d.preview_url;
           // Add track and play
           $('#audio-box-parent').append($("<audio controls id='audio-control'></audio>"));
           $("#audio-control").append($("<source id='audio-track' src='"+d.preview_url+"' type='audio/mpeg'>"))
@@ -221,6 +224,8 @@ function createBars(data, color, country) {
       .on('mouseout', function() {
         // Hide tooltip
         tooltip.hide();
+
+        currentSong = '';
 
         // Pause audio
         $("#audio-control")[0].pause();

@@ -1,4 +1,12 @@
-var d3 = require('d3');
+var d3 = require('d3'),
+    $ = require('jQuery');
+
+$.fn.d3Click = function () {
+  this.each(function (i, e) {
+    var evt = new MouseEvent("click");
+    e.dispatchEvent(evt);
+  });
+};
 
 module.exports = {
   translate: function(x,y) {
@@ -18,10 +26,17 @@ module.exports = {
     var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
     var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    if (diffDays>5*365){
-      return new Date(dateObj.getFullYear(),0,1);
+    if (diffDays>5*365) {
+      var returnData = {
+        "mode": "year",
+        "key": new Date(dateObj.getFullYear(),0,1)
+      }
     } else {
-      return new Date(dateObj.getFullYear(), dateObj.getMonth()-1,1);
+      var returnData = {
+        "mode": "month",
+        "key": new Date(dateObj.getFullYear(), dateObj.getMonth()-1,1)
+      }
     }
+    return returnData;
   }
 }

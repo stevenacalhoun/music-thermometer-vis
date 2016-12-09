@@ -6,13 +6,6 @@ var apiCalls = require('./apiCalls.js'),
 require('../styles/main.scss');
 require('../styles/genericons/genericons.css');
 
-$.fn.d3Click = function () {
-  this.each(function (i, e) {
-    var evt = new MouseEvent("click");
-    e.dispatchEvent(evt);
-  });
-};
-
 // introScreen.createLandingScreen();
 
 introScreen.createVisScreen($("<div></div>"));

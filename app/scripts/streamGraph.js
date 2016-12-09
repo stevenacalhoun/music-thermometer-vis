@@ -25,7 +25,8 @@ var xScale,
     currentTipArtist,
     currentTipDate,
     dateRange,
-    globalData;
+    globalData,
+    dateMode;
 
 //******************************************************************************
 // Public functions
@@ -307,6 +308,18 @@ function renderStreamGraph(preppedData) {
 
 // Render layers of streamgraph
 function renderLayers(layersData, area, color, country) {
+  var minCount = d3.min(layersData, function(layer) {
+    return d3.min(layer, function(d) {
+      return d[0];
+    })
+  });
+
+  var maxCount = d3.max(layersData, function(layer) {
+    return d3.max(layer, function(d) {
+      return d[1];
+    })
+  });
+
   // Render layers from layer data with area function
   var layers = d3.select('#stream-graph-stream-'+country)
     .selectAll("path")
@@ -370,18 +383,18 @@ function prepData(data, minTotal) {
   var preDate = new Date(startDate.getTime() - 40*(1000*60*60*24));
   var postDate = new Date(endDate.getTime() + 10*(1000*60*60*24));
 
-  // Create all 0s for each artist
-  var preData = {};
-  artists.forEach(d => {
-    preData[d] = 0;
-  })
-  preData['key'] = preDate;
-
-  var postData = {};
-  artists.forEach(d => {
-    postData[d] = 0;
-  })
-  postData['key'] = postDate;
+  // // Create all 0s for each artist
+  // var preData = {};
+  // artists.forEach(d => {
+  //   preData[d] = 0;
+  // })
+  // preData['key'] = preDate;
+  //
+  // var postData = {};
+  // artists.forEach(d => {
+  //   postData[d] = 0;
+  // })
+  // postData['key'] = postDate;
 
   // Add to our data
   // returnData.us.unshift(preData);
@@ -395,20 +408,14 @@ function prepData(data, minTotal) {
 
 // Create totals
 function createTotals(data, artists, startDate, endDate, minTotal) {
-  var startDate = d3.min(data, function(d) {
-    return new Date(d.chart_week);
-  })
-
-  var endDate = d3.max(data, function(d) {
-    return new Date(d.chart_week);
-  })
-
   var aggregateData = d3.nest()
     .key(function(d) {
       // month/year key
       var dateObj = new Date(d.chart_week);
       dateObj = new Date( dateObj.getTime() + ( dateObj.getTimezoneOffset() * 60000 ) );
-      return utilities.createDateAggregateKey(startDate, endDate, dateObj)
+      var dateInfo = utilities.createDateAggregateKey(startDate, endDate, dateObj);
+      dateMode = dateInfo.mode
+      return dateInfo.key;
     })
     .rollup(function(leaves) {
       // Combine all artist data into one long list
@@ -542,11 +549,18 @@ function getMouseDate(d, e) {
   }
 
   // Get value at date
-  var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
+  if (dateMode == 'month'){
+    var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
+  }
+  else {
+    var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/0");
+  }
   return {"index": mouseDateIndex, "date": mouseDate};
 }
 
 function applyFilters() {
+  $('#exit-song-graph').d3Click();
+
   // Get slider selection
   var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
 
