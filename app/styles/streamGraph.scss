@@ -1,4 +1,5 @@
 @import './colors.scss';
+@import './fonts.scss';
 
 .stream-chart {
   display: inline-block;
@@ -9,7 +10,7 @@ svg {
 }
 
 .stream-label {
-  font-size:40px;
+  font-size: $title-font-size;
   fill: $font-color;
 }
 

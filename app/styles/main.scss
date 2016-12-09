@@ -1,5 +1,7 @@
 @import './colors.scss';
 @import './constants.scss';
+@import './fonts.scss';
+@import './fonts.scss';
 
 html {
   width: 100%;
@@ -9,6 +11,7 @@ html {
   font-family: $font;
   background-color: $background-color;
   color: $font-color;
+  font-size: $base-font-size
 }
 
 input {
@@ -31,7 +34,7 @@ body {
   display: inline-block;
   margin: 0 auto;
   padding: 10px 0;
-  font-size: 40px;
+  font-size: $title-font-size;
   letter-spacing: 4px;
 }
 

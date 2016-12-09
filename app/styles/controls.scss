@@ -1,4 +1,5 @@
 @import './colors.scss';
+@import './fonts.scss';
 
 $control-item-background-color: $light-gray;
 $control-item-text-color: $dark-gray;
@@ -24,11 +25,6 @@ $input-color: $dark-gray;
   background-color: $background-color;
 }
 
-.select-title {
-  display: block;
-  font-size: 25px;
-}
-
 select {
   -webkit-appearance:none;
   outline:none;
@@ -42,7 +38,7 @@ select {
 
   border: none;
   border-bottom: 1px solid $accent-color;
-  font-size:1.1em;
+  font-size: $input-font-size;
   background-color: $background-color;
 
   &:active, &:focus {
@@ -107,7 +103,7 @@ select {
   text-align: center;
   vertical-align: middle;
   line-height: $button-height;
-  font-size:18px;
+  font-size:$input-font-size;
 }
 
 /** Number input box styling **/
@@ -116,14 +112,14 @@ select {
 }
 
 .number-input-label {
-  font-size: 18px;
+  font-size: $input-font-size;
   font-weight: lighter;
 }
 
 .number-input-box {
   border: none;
   border-bottom: 1px solid $accent-color;
-  font-size: 18px;
+  font-size: $input-font-size;
   &:focus{
     outline: none;
   }
@@ -133,7 +129,7 @@ select {
 .search-input-box {
   width: 50%;
   height: $control-piece-height;
-  font-size: 35px;
+  font-size: $search-font-size;
   border:none;
   border-bottom: 1px solid $accent-color;
   text-align: center;

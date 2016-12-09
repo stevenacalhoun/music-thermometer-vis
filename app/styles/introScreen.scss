@@ -1,5 +1,6 @@
 @import './colors.scss';
 @import './constants.scss';
+@import './fonts.scss';
 
 .background {
   width: 100%;
@@ -37,20 +38,20 @@
 
 .splash-title {
   font-family: $title-font;
-  font-size: 90px;
+  font-size: $splash-title-font-size;
   color: $bright-white;
 }
 
 .splash-subtitle {
   color: $offwhite;
-  font-size: 20px;
+  font-size: $splash-subtitle-font-size;
   padding-top: 10px;
 }
 
 .splash-subtitle-bold {
   padding-top: 10px;
   color: $offwhite;
-  font-size: 35px;
+  font-size: $splash-subtitle-bold-font-size;
   font-weight: 900;
 }
 
@@ -60,7 +61,7 @@
   padding: 8px 8px;
   color: $offwhite;
   font-weight: 100;
-  font-size: 25px;
+  font-size: $splash-subtitle-font-size;
   cursor: pointer;
   width: 40%;
   margin: 0 auto;
@@ -69,7 +70,7 @@
 
 .splash-text {
   padding-bottom: 30px;
-  font-size: 25px;
+  font-size: $splash-subtitle-font-size;
   color: $offwhite;
   text-align: left;
   line-height: 40px;

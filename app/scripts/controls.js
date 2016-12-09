@@ -18,7 +18,7 @@ function createButton(text, id) {
 }
 
 function createSelectOption(options, id, title) {
-  var boundingBox = $('<div class="select-box"></div>');
+  var boundingBox = $('<div class="control-piece select-box"></div>');
 
   var selectContainer = $('<span class="select-container">');
   boundingBox.append(selectContainer);

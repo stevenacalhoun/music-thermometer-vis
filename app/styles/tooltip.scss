@@ -1,4 +1,5 @@
 @import './colors.scss';
+@import './fonts.scss';
 
 $tooltip-background-color: $offwhite;
 $tooltip-font-color: $dark-gray;
@@ -7,7 +8,7 @@ $tooltip-min-width: 200px;
 
 /** Stream graph tooltip **/
 .tooltip-artist {
-  font-size: 25px;
+  font-size: $tooltip-top-font-size;
   font-weight: lighter;
 }
 
@@ -20,11 +21,11 @@ $tooltip-min-width: 200px;
 .tooltip-song-name{
   font-style: italic;
   text-align: center;
-  font-size: 20px;
+  font-size: $tooltip-sub-font-size;
 }
 
 .tooltip-by-artist {
-  font-size: 15px;
+  font-size: $tooltip-sub-font-size;
   font-weight: lighter;
 }
 
@@ -34,7 +35,7 @@ $tooltip-min-width: 200px;
 }
 
 .tooltip-rank {
-  font-size: 40px;
+  font-size: $tooltip-super-font-size;
   text-align: center;
   padding-bottom: 15px;
 }
@@ -71,7 +72,7 @@ $tooltip-min-width: 200px;
 }
 
 .bar-text-label {
-  font-size: 14px;
+  font-size: $tooltip-sub-font-size;
   fill: $tooltip-font-color;
 }
 

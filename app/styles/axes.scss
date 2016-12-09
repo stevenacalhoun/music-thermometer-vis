@@ -1,4 +1,5 @@
 @import './colors.scss';
+@import './fonts.scss';
 
 $axis-color: $font-color;
 
@@ -21,6 +22,7 @@ $axis-color: $font-color;
 .tick text {
   stroke: none;
   fill: $font-color;
+  font-size: $axes-font-size;
 }
 
 
@@ -28,7 +30,7 @@ $axis-color: $font-color;
 .x-axis-tip-bar{
   .tick {
     text {
-      font-size: 12px;
+      font-size: $axes-font-size;
       font-weight: bold;
       stroke: none;
       fill: $dark-gray;
