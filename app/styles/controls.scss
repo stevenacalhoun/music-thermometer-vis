@@ -33,7 +33,7 @@ select {
 
   border-radius: 0;
 
-  padding: 10px;
+  // padding: 10px;
   color: $font-color;
 
   border: none;
@@ -112,6 +112,7 @@ select {
 }
 
 .number-input-label {
+  text-align: left;
   font-size: $input-font-size;
   font-weight: lighter;
 }

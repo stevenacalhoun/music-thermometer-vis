@@ -20,6 +20,8 @@ function createButton(text, id) {
 function createSelectOption(options, id, title) {
   var boundingBox = $('<div class="control-piece select-box"></div>');
 
+  boundingBox.append($("<div class='number-input-label'>Date Range</div>"))
+
   var selectContainer = $('<span class="select-container">');
   boundingBox.append(selectContainer);
 
