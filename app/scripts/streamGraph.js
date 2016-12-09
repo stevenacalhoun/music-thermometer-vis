@@ -173,7 +173,9 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
 
   // Add spinner
   var spinner = new spin(spinnerOptions).spin();
-  $('#spinner-container').append(spinner.el);
+  if (dataLoaded != true) {
+    $('#spinner-container').append(spinner.el);
+  }
 
   if (dataLoaded) {
     // Render graph
@@ -618,7 +620,7 @@ function createSongGraphExitButton(){
     .attr('transform', utilities.translate((document.body.clientWidth/2)-buttonSize*2,0))
     .on('click', function(){
       // Get rid of song info
-      $('#song-graph-parent').remove();
+      $('#song-graph-parent-container').remove();
 
       // Clear out artist name
       $('#stream-search').val('');

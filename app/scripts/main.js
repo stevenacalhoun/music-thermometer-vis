@@ -12,10 +12,10 @@ $.fn.d3Click = function () {
   });
 };
 
-// introScreen.createLandingScreen();
+introScreen.createLandingScreen();
 
-introScreen.createVisScreen($("<div></div>"));
-
-setTimeout(function() {
-  // $('#Drake_uk').d3Click()
-}, 2000)
+// introScreen.createVisScreen($("<div></div>"));
+//
+// setTimeout(function() {
+//   $('#Kelly_Clarkson_uk').d3Click()
+// }, 2000)
