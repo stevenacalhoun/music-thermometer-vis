@@ -329,7 +329,7 @@ function renderLayers(layersData, area, color, country) {
   layers.enter()
     .append("path")
     .merge(layers)
-      .attr("id", d => {
+      .attr("id", function(d) {
         var id = d.key.replace(/ /g, "_") + "_" + country;
         return id;
       })
