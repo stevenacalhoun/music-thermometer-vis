@@ -33,22 +33,5 @@ module.exports = {
     else {
       return "month";
     }
-  },
-  createDateAggregateKey: function(startDate, endDate, dateObj) {
-    var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-    var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    if (diffDays>5*365) {
-      var returnData = {
-        "mode": "year",
-        "key": new Date(dateObj.getFullYear(),0,1)
-      }
-    } else {
-      var returnData = {
-        "mode": "month",
-        "key": new Date(dateObj.getFullYear(), dateObj.getMonth()-1,1)
-      }
-    }
-    return returnData;
   }
 }
