@@ -26,7 +26,7 @@ var xScale,
     currentTipDate,
     dateRange,
     globalData,
-    dateMode;
+    aggregateSetting;
 
 var currentlyUpdating = false;
 
@@ -191,10 +191,10 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
     renderStreamGraph(globalData);
   }
   else {
-    var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+    aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
     apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
-      globalData = addMissingArtistEntries(data);
       // Render graph
+      globalData = addMissingArtistEntries(data);
       renderStreamGraph(globalData);
 
       // Remove spinner
@@ -218,7 +218,7 @@ function initialLoad(start, end, rank, minTotal) {
     "startDate": start,
     "endDate": end
   }
-  var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+  aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
   apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
     globalData = addMissingArtistEntries(data);
   }, rank);
@@ -420,11 +420,12 @@ function getMouseDate(d, e) {
   var datearray = [];
   for (var k = 0; k < d.length; k++) {
     date = new Date(d[k].data.key);
+    date = new Date( date.getTime() + ( date.getTimezoneOffset() * 60000 ) );
     datearray[k] = date.getFullYear() + "/" + date.getMonth();
   }
 
   // Get value at date
-  if (dateMode == 'month'){
+  if (aggregateSetting == 'month'){
     var mouseDateIndex = datearray.indexOf(mouseDate.getFullYear() + "/" + mouseDate.getMonth());
   }
   else {
