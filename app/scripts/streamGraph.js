@@ -183,9 +183,9 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
     renderStreamGraph(globalData);
   }
   else {
-    apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-      // Prepdata
-      globalData = prepData(data, minTotal)
+    var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+    apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
+      globalData = data;
 
       // Render graph
       renderStreamGraph(globalData);
@@ -207,9 +207,9 @@ function initialLoad(start, end, rank, minTotal) {
     "startDate": start,
     "endDate": end
   }
-  apiCalls.getChartRangeCountry('both', dateRange, function(data) {
-    var preppedData = prepData(data, minTotal)
-    globalData = preppedData;
+  var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+  apiCalls.getChartRangeCountry(dateRange, aggregateSetting, function(data) {
+    globalData = data;
   }, rank);
 }
 
@@ -342,68 +342,6 @@ function renderLayers(layersData, area, color, country) {
 
   // Remove old layers
   layers.exit().remove();
-}
-
-// Prep data for stream graph
-function prepData(data, minTotal) {
-  // Aggregate weeks into months
-  var artists = [];
-  var i = 0;
-
-  // Keep up with all artists
-  data.forEach(function(d){
-    if ($.inArray(d.artist, artists) == -1) {
-      artists.push(d.artist);
-    }
-  })
-
-  // Split up data
-  var countrySplit = {
-    "us": data.filter(function(d) {if (d.country == 'us') return d;}),
-    "uk": data.filter(function(d) {if (d.country == 'uk') return d;})
-  }
-
-  // Actual earliest and latest date
-  var startDate = d3.min(data, function(d) {
-    return new Date(d.chart_week);
-  })
-  var endDate = d3.max(data, function(d) {
-    return new Date(d.chart_week);
-  })
-
-  // Create totals
-  var returnData = {
-    "us": createTotals(countrySplit.us, artists, startDate, endDate, minTotal),
-    "uk": createTotals(countrySplit.uk, artists, startDate, endDate, minTotal),
-    "artists": artists
-  }
-
-  // Taper off streams
-  // Create a date a bit after the first/last date
-  var preDate = new Date(startDate.getTime() - 40*(1000*60*60*24));
-  var postDate = new Date(endDate.getTime() + 10*(1000*60*60*24));
-
-  // // Create all 0s for each artist
-  // var preData = {};
-  // artists.forEach(d => {
-  //   preData[d] = 0;
-  // })
-  // preData['key'] = preDate;
-  //
-  // var postData = {};
-  // artists.forEach(d => {
-  //   postData[d] = 0;
-  // })
-  // postData['key'] = postDate;
-
-  // Add to our data
-  // returnData.us.unshift(preData);
-  // returnData.uk.unshift(preData);
-  //
-  // returnData.us.push(postData);
-  // returnData.uk.push(postData);
-
-  return returnData;
 }
 
 // Create totals

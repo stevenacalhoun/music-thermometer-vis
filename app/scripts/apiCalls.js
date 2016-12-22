@@ -32,10 +32,11 @@ module.exports = {
     @callback
     @minRank: optional minimum rank wanted
   */
-  getChartRangeCountry: function(country, dateRange, callBack, minRank=100) {
+  getChartRange: function(dateRange, aggregateSetting, callBack, minRank=100) {
     var params = dateRange;
     params.minRank = minRank;
-    ajaxGet(topChartsUrl + '/' + country, params, callBack);
+    params.aggregateSetting = aggregateSetting;
+    ajaxGet(topChartsUrl + '/both', params, callBack);
   },
 
   /*
