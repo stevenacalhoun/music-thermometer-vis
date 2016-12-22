@@ -173,7 +173,7 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
 
   // Add filter for min total
   var totalInput = createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
-  controlsContainerTop.append(totalInput);
+  // controlsContainerTop.append(totalInput);
 
   // Add button
   var button = createButton("Update", 'apply-filters-button');
