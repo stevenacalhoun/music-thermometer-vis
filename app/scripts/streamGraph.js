@@ -185,7 +185,7 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
   else {
     var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
     apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
-      globalData = data;
+      globalData = addMissingArtistEntries(data);
 
       // Render graph
       renderStreamGraph(globalData);
@@ -209,7 +209,7 @@ function initialLoad(start, end, rank, minTotal) {
   }
   var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
   apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
-    globalData = data;
+    globalData = addMissingArtistEntries(data);
   }, rank);
 }
 
@@ -601,6 +601,25 @@ function createSongGraphExitButton(){
     .attr("y2", buttonSize)
     .attr("stroke-width", buttonStrokeWidth)
     .attr("stroke", colors.accentColor);
+}
+
+function addMissingArtistEntries(data) {
+  data.us.forEach(function(entry) {
+    data.artists.forEach(function(artist) {
+      if (artist in entry == false) {
+        entry[artist] = 0;
+      }
+    })
+  })
+
+  data.uk.forEach(function(entry) {
+    data.artists.forEach(function(artist) {
+      if (artist in entry == false) {
+        entry[artist] = 0;
+      }
+    })
+  })
+  return data;
 }
 
 module.exports = {

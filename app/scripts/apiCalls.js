@@ -5,8 +5,8 @@ var $ = require('jQuery'),
 var topChartsUrl = 'charts',
     artistInfoUrl = 'artist';
 
-var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
-// var serverAddress = "http://localhost:3000/api/";
+// var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
+var serverAddress = "http://localhost:3000/api/";
 
 /*
   @returns all entries in hot 100 database fitting parameters in 'data'
@@ -59,7 +59,6 @@ function generateUriParamString(params) {
 
 // Helper to run ajax get with params and callback
 function ajaxGet(url, params, callBack) {
-  console.log(serverAddress+url+generateUriParamString(params))
   $.ajax({
     type: "GET",
     url: serverAddress + url + generateUriParamString(params),
