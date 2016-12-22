@@ -236,7 +236,6 @@ function createBars(data, color, country) {
       })
       .on('click',function(d){
         if(d.spotify_id){
-          console.log(d)
           var src = 'https://embed.spotify.com/?uri='+d.spotify_id;
           $('iframe').attr('src',src);
         }
