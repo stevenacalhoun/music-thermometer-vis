@@ -17,7 +17,7 @@ var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
   @callback
   @minRank: optional minimum rank wanted
 */
-function getChartRange(dateRange, aggregateSetting, callBack, minRank=100) {
+function getChartRange(dateRange, aggregateSetting, callBack, minRank) {
   var params = dateRange;
   params.minRank = minRank;
   params.aggregateSetting = aggregateSetting;
@@ -32,7 +32,6 @@ function getChartRange(dateRange, aggregateSetting, callBack, minRank=100) {
   - endDate: latest date
 */
 function getArtistSongs(artist, dateRange, callback) {
-
   var params = dateRange;
   ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
 

@@ -22,7 +22,7 @@ module.exports = {
     }
     return a;
   },
-  getAggregateSetting(startDate, endDate) {
+  getAggregateSetting: function(startDate, endDate) {
 
     var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
     var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -34,7 +34,7 @@ module.exports = {
       return "month";
     }
   },
-  createDateAggregateKey(startDate, endDate, dateObj) {
+  createDateAggregateKey: function(startDate, endDate, dateObj) {
     var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
     var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 

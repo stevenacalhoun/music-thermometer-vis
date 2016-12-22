@@ -45,7 +45,7 @@ function smallBarChart(tooltipData) {
     .tickSize(0);
 
   var y = d3.scaleLinear()
-    .domain([0, d3.max([data[0].count, data[1].count], d => {return d*1.1;})])
+    .domain([0, d3.max([data[0].count, data[1].count], function(d) {return d*1.1;})])
     .range([height,0]);
 
   var yAxis = d3.axisLeft()
@@ -74,7 +74,7 @@ function smallBarChart(tooltipData) {
     .merge(bars)
       .attr("width", x.bandwidth())
       .attr("height", function(d) { return height - y(d.count); })
-      .attr("fill", d => {return d.country == "US" ? "#023858" : "#b30000"})
+      .attr("fill", function(d){return d.country == "US" ? "#023858" : "#b30000"})
 
   // Bar lable
   g.selectAll("text.bar")
@@ -83,7 +83,7 @@ function smallBarChart(tooltipData) {
       .attr("class", "bar-text-label")
       .attr("x", function(d) { return x(d.country) + x.bandwidth()/2 - 6; })
       .attr("y", function(d) { return y(d.count) - 5; })
-      .text(d => {return d.count})
+      .text(function(d){return d.count})
 
   // Bar axis
   svg.append("g")
