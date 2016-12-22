@@ -58,7 +58,8 @@ function initVis() {
       .attr('class', 'd3-tip')
       .attr('id', 'stream-tip')
       .html(function(d) {
-        return tooltipLib.streamGraphTooltip(d.artist, d.count, 1, d.week);
+        var dateStr = aggregateSetting == "year" ? d.date.getFullYear() : constants.monthNames[d.date.getMonth()] + ", " + d.date.getFullYear()
+        return tooltipLib.streamGraphTooltip(d.artist, d.count, 1, dateStr);
       })
       .offset([-120,0]);
 }
@@ -401,7 +402,7 @@ function renderTooltip(d, dateInfo) {
     "us": usValue,
     "uk": ukValue,
     "artist": d.key,
-    "week": constants.monthNames[dateInfo.date.getMonth()] + ", " + dateInfo.date.getFullYear()
+    "date": dateInfo.date
   }
 
   // Render tooltip
