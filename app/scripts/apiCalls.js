@@ -2,9 +2,6 @@ var $ = require('jQuery'),
     utilities = require('./utilities.js'),
     d3 = require('d3');
 
-var topChartsUrl = 'charts',
-    artistInfoUrl = 'artist';
-
 // var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
 var serverAddress = "http://localhost:3000/api/";
 
@@ -21,7 +18,7 @@ function getChartRange(dateRange, aggregateSetting, callBack, minRank) {
   var params = dateRange;
   params.minRank = minRank;
   params.aggregateSetting = aggregateSetting;
-  ajaxGet(topChartsUrl + '/both', params, callBack);
+  ajaxGet('charts/both', params, callBack);
 }
 
 /*
@@ -33,7 +30,7 @@ function getChartRange(dateRange, aggregateSetting, callBack, minRank) {
 */
 function getArtistSongs(artist, dateRange, callback) {
   var params = dateRange;
-  ajaxGet(artistInfoUrl+'/'+artist, params, function(rawData) {
+  ajaxGet('artist/'+artist, params, function(rawData) {
 
   var data = d3.nest()
       .key(function(d){

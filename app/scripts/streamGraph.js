@@ -28,6 +28,8 @@ var xScale,
     globalData,
     dateMode;
 
+var currentlyUpdating = false;
+
 //******************************************************************************
 // Public functions
 //******************************************************************************
@@ -36,8 +38,15 @@ function initVis() {
     filterAndRerender($('#stream-search').val());
   })
   $('#apply-filters-button').on("click", function(){
-    $('#stream-search').val("");
-    applyFilters();
+    if (currentlyUpdating == false) {
+      currentlyUpdating = true;
+      $('#apply-filters-button').css('cursor', 'default');
+
+      // Clear song graph and apply filters
+      $('#stream-search').val("");
+      $('#exit-song-graph').d3Click();
+      applyFilters();
+    }
   })
 
   // Graph container
@@ -149,7 +158,6 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
     .range([height, 0])
 
   // Pull data and create stream
-  // renderStreamGraph(globalData);
   createStreamGraph(startDate, endDate, minRank, minTotal, dataLoaded)
 }
 
@@ -186,12 +194,15 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
     var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
     apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
       globalData = addMissingArtistEntries(data);
-
       // Render graph
       renderStreamGraph(globalData);
 
       // Remove spinner
       $('#spinner-container').html('');
+
+      // Renable controls
+      $('#apply-filters-button').css('cursor', 'pointer');
+      currentlyUpdating = false;
     }, rank);
   }
 }
@@ -497,8 +508,6 @@ function getMouseDate(d, e) {
 }
 
 function applyFilters() {
-  $('#exit-song-graph').d3Click();
-
   // Get slider selection
   var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
 
@@ -507,7 +516,7 @@ function applyFilters() {
   var endDate = controls.reverseScale(sliderSelection[1]);
 
   // Create a new graph
-  createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val());
+  createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false);
 }
 
 function filterAndRerender(filterText) {

@@ -29,7 +29,7 @@ function createLandingScreen() {
   splashContainer.fadeIn(500);
 
   // Load some data from server
-  streamGraph.initialLoad(new Date(2009,0,1), new Date(2009,11,31), 50, 1)
+  streamGraph.initialLoad(new Date(2009,0,1), new Date(2009,11,31), 100, 1)
 }
 
 function createDescriptionScreen(splashContainer) {
@@ -66,7 +66,7 @@ function createVisScreen(splashContainer) {
 
     // Start with stream graph
     streamGraph.initVis();
-    streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 50, 1, false, false);
+    streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 100, 1, false, false);
   });
 }
 
