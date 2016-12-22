@@ -208,7 +208,7 @@ function initialLoad(start, end, rank, minTotal) {
     "endDate": end
   }
   var aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
-  apiCalls.getChartRangeCountry(dateRange, aggregateSetting, function(data) {
+  apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
     globalData = data;
   }, rank);
 }
