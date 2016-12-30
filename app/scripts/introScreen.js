@@ -17,6 +17,7 @@ function createLandingScreen() {
   container.append("<div class='splash-title'>Music Thermometer</div>");
   container.append("<div class='splash-subtitle'>artists' popularity over time</div>");
   container.append("<div class='splash-subtitle-bold'>US vs. UK</div>");
+  container.append("<div class='created-by'>Created by Steven Calhoun, Qin Li, Jing Liu, and Sotaro Sugimoto</div>");
 
   // Button to transition
   var nextButton = $("<div class='splash-button'>Find Out More</div>").appendTo(container);
