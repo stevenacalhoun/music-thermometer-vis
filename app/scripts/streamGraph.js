@@ -90,6 +90,7 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
   // Hidden circle for tooltip on mouse
   var tipCircle = svg.append("circle")
     .attr('id', 'tip-circle')
+    .attr('r', 0.1)
     .attr('class', 'tip-circle');
 
   // Move circle to mouse
