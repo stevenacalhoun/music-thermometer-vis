@@ -26,7 +26,8 @@ var xScale,
     currentTipDate,
     dateRange,
     globalData,
-    aggregateSetting;
+    aggregateSetting,
+    lastKeyPushTime;
 
 var currentlyUpdating = false;
 
@@ -35,7 +36,13 @@ var currentlyUpdating = false;
 //******************************************************************************
 function initVis() {
   $('#stream-search').on('input', function(d) {
-    filterAndRerender($('#stream-search').val());
+    lastKeyPushTime = new Date().getTime();
+    setTimeout(function(){
+      var currentTime = new Date().getTime();
+      if (currentTime - lastKeyPushTime > 250) {
+        filterAndRerender($('#stream-search').val());
+      }
+    }, 250);
   })
   $('#apply-filters-button').on("click", function(){
     if (currentlyUpdating == false) {
