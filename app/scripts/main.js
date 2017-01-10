@@ -8,3 +8,8 @@ require('../styles/genericons/genericons.css');
 
 // introScreen.createLandingScreen();
 introScreen.createVisScreen($("<div></div>"));
+
+
+setTimeout(function() {
+  $('#Lady_Gaga_uk').d3Click()
+}, 2000)

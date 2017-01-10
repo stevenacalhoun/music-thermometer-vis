@@ -6,8 +6,8 @@ require('../styles/tooltip.scss');
 function songGraphTooltip(d) {
   var container = $("<div class='song-tooltip-container'></div>");
   container.append('<div class="tooltip-rank">'+d.rank+'<div>');
-  if (d.albumArtLink != null) {
-    container.append("<div class='tooltip-album-art'><img src='"+d.albumArtLink+"' /></div>");
+  if (d.album_art_link != null) {
+    container.append("<div class='tooltip-album-art'><img src='"+d.album_art_link+"' /></div>");
   }
   container.append("<span class='tooltip-song-name tooltip-piece'>"+d.title+"</span>");
   container.append("<div class='tooltip-by-artist tooltip-piece'>by "+d.artist+"</div>");

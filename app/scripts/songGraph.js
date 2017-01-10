@@ -11,35 +11,17 @@ require('../styles/axes.scss');
 
 var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin, dateRange;
 
-var minimumRectHeight = 20;
+var minimumRectHeight = 20,
+    maximumRectHeight = 50;
 
 var currentSong = '';
 
-var boxHeight = 50
-    rectHeight = 15;
-
 function songGraph(data, passedDateRange) {
   dateRange = passedDateRange;
-  // process data
-  var ukData = [],
-      usData = [];
-
-  for(var i=0;i<data.length;i++){
-    if(data[i].key === 'us')
-      usData = data[i].values;
-    else if(data[i].key === 'uk')
-      ukData = data[i].values;
-  }
-
-  // Split data up
-  var usSongs = usData.map(function(d){ return d.key; }),
-      ukSongs = ukData.map(function(d){ return d.key; }),
-      allSongs = usSongs.concat(ukSongs.filter(function(item){ return usSongs.indexOf(item)<0; }));
 
   // Sizing
   var cWidth = document.body.clientWidth;
-  // margin =  { top: cWidth*0.05, right: cWidth*0.05, bottom: cWidth*0.1, left: cWidth*0.1 };
-  margin =  { top: 50, right: 50, bottom: 50, left: 50 };
+  margin =  { top: 50, right: 10, bottom: 50, left: 10 };
 
   var width = document.body.clientWidth*0.5 - margin.left - margin.right,
       height = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom;
@@ -54,10 +36,15 @@ function songGraph(data, passedDateRange) {
 
   var xAxisShift = contentHeight;
 
-  rectHeight = contentHeight/allSongs.length/3;
+  rectHeight = contentHeight/data.length;
+  var separatorHeight = 2;
 
+  // Rect height bounds
   if (rectHeight<minimumRectHeight) {
-    // rectHeight = minimumRectHeight;
+    rectHeight = minimumRectHeight;
+  }
+  else if (rectHeight>maximumRectHeight) {
+    rectHeight = maximumRectHeight;
   }
 
   // Scales
@@ -65,14 +52,13 @@ function songGraph(data, passedDateRange) {
     .range([0,contentWidth])
     .domain([dateRange.startDate,dateRange.endDate])
 
-  y = d3.scaleBand()
-    .rangeRound([0,contentHeight])
-    .domain(allSongs)
-
   // Container
   $("<div id='song-graph-parent-container' class='song-graph'></div>").appendTo("#vis-parent");
 
-  // Song grpah svg
+  // var zoom = d3.zoom()
+  //     .on("zoom", zoomed);
+
+  // Song graph svg
   var svg = d3.select("#song-graph-parent-container").append("svg")
       .attr("id", "song-graph-svg")
       .attr("width", width + margin.left + margin.right)
@@ -81,32 +67,21 @@ function songGraph(data, passedDateRange) {
   // Graph contents
   var parent = svg.append("g")
     .attr('id', 'song-graph-parent')
-    .attr("transform", utilities.translate(margin.left, totalLegendHeight));
+    .attr("transform", utilities.translate(margin.left, totalLegendHeight))
+    .on('scroll', function() {
+      console.log("heyo")
+    })
 
   var content = parent.append("g")
     .attr('id', 'song-graph-content')
     .attr('class','content')
-    .attr('width', contentWidth)
-    .attr('height', contentHeight)
     .attr("transform", utilities.translate(margin.left,0))
-    .attr('clip-path', 'url(#plotAreaClip)')
-
-  content.append('clipPath')
-    .attr('id', 'plotAreaClip')
-    .append('rect')
-    .attr('width', width)
-    .attr('height', height);
 
   // Axes
   var xAxis = parent.append("g")
     .attr("id", "song-graph-x-axis")
     .attr("class", "x axis")
     .attr("transform", utilities.translate(margin.left,contentHeight))
-
-  var yAxis = parent.append("g")
-    .attr("id", "song-graph-y-axis")
-    .attr("class", "transparent y axis")
-    .attr("transform", utilities.translate(margin.left,-rectHeight/4))
 
   // Tooltip
   tooltip = tip()
@@ -117,8 +92,6 @@ function songGraph(data, passedDateRange) {
 
   // Add tooltip
   svg.call(tooltip);
-
-  // Set x/y domain
 
   // Color scales
   var ukColor = d3.scaleLinear()
@@ -132,69 +105,34 @@ function songGraph(data, passedDateRange) {
     .range([d3.color(colors.usGradientPair[0]), d3.color(colors.usGradientPair[1])])
 
   // Add axes
-  var xAxis = d3.axisBottom(x),
-      yAxis = d3.axisLeft(y).tickSize(0);
-
+  var xAxis = d3.axisBottom(x);
   d3.select('#song-graph-x-axis').call(xAxis);
-  d3.select('#song-graph-y-axis').call(yAxis);
 
-  var bases = content.selectAll(".base")
-    .data(allSongs);
+  // Song sections
+  var songs = d3.select('#song-graph-content')
+      .selectAll("g")
+    .data(data).enter()
+      .append("g")
+        .attr("class", "song-section")
+        .attr("transform", function(d,i) {
+          return utilities.translate(0,i*rectHeight*3);
+        })
 
-  // Add base between us/uk
-  bases.exit().remove();
-  bases.enter().append("rect")
+  // Add separator
+  songs.append("rect")
     .attr("class", "base")
-    .merge(bases)
-      .attr("transform", function(d,i){
-        return utilities.translate(0,(y(d)+rectHeight));
-      })
-      .attr("height", rectHeight/2)
-      .attr("width", contentWidth)
-      .attr("fill", "rgba(200,200,200,.2)");
+    .attr("height", separatorHeight)
+    .attr("width", contentWidth)
+    .attr("fill", colors.accentColor)
+    .attr("transform", utilities.translate(0,rectHeight))
 
-  // Add bars
-  createBars(usData, usColor, 'us');
-  createBars(ukData, ukColor, 'uk');
-
-  createLegend();
-}
-
-function createBars(data, color, country) {
-  if (country == 'uk') {
-    var factor = 0.5;
-  }
-  else {
-    var factor = -1.0
-  }
-
-  var groupsClass = country+'Groups',
-      groupClass = country+'Group',
-      barClass = country+'Bar';
-
-  // Groups
-  var groups = d3.select('#song-graph-content')
-    .selectAll('.'+groupClass)
-    .data(data);
-
-  groups.enter().append("g")
-    .attr("class", groupsClass)
-    .merge(groups)
-      .attr("transform", function(d,i){
-        return utilities.translate(0,(y(d.key)+(rectHeight)+(rectHeight*factor)));
-      })
-  groups.exit().remove();
-
-  // Bars
-  var bars = d3.select('#song-graph-svg')
-    .selectAll('.'+groupsClass)
-    .selectAll('.'+barClass)
-      .data(function(d){return d.values; });
-
-  bars.enter().append("rect")
-    .merge(bars)
-      .attr('class',barClass)
+  // Add entries
+  songs.selectAll(".bar")
+    .data(function(d) { return d.dates }).enter()
+    .append("rect")
+      .attr("class", "bar")
       .attr("height", rectHeight)
+      .attr("width", rectHeight)
       .attr("width", function(d){
         var thisWeek = new Date(d.chart_week),
             nextWeek = new Date(d.chart_week);
@@ -206,44 +144,25 @@ function createBars(data, color, country) {
       .attr("x", function(d){
         return x(new Date(d.chart_week));
       })
+      .attr("y", function(d){
+        if (d.country == "uk") {
+          return rectHeight+separatorHeight;
+        }
+      })
       .attr("fill", function(d){
-        return color(d.rank);
-      })
-      .on('mouseover',  function(d) {
-        // Show tooltip
-        tooltip.show(d);
-
-        if ((d.preview_url != null) && (d.preview_url != currentSong)){
-          currentSong = d.preview_url;
-          // Add track and play
-          $('#audio-box-parent').append($("<audio controls id='audio-control'></audio>"));
-          $("#audio-control").append($("<source id='audio-track' src='"+d.preview_url+"' type='audio/mpeg'>"))
-          $("#audio-control")[$("#audio-control").length-1].play();
+        if (d.country == "uk") {
+          return ukColor(d.rank);
+        }
+        else {
+          return usColor(d.rank);
         }
       })
-      .on('mouseout', function() {
-        // Hide tooltip
-        tooltip.hide();
 
-        currentSong = '';
+  createLegend();
+}
 
-        // Pause audio
-        $("#audio-control")[0].pause();
-
-        // Clear track
-        $('#audio-control').remove();
-        $('#audio-track').remove();
-      })
-      .on('click',function(d){
-        if(d.spotify_id){
-          var src = 'https://embed.spotify.com/?uri='+d.spotify_id;
-          $('iframe').attr('src',src);
-        }
-        else{
-          alert('This song does not have a Spotify link');
-        }
-      });
-  bars.exit().remove()
+function scroll() {
+  console.log('heyo')
 }
 
 function createLegend() {

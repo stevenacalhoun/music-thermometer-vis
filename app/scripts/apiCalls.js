@@ -31,17 +31,7 @@ function getChartRange(dateRange, aggregateSetting, callBack, minRank) {
 function getArtistSongs(artist, dateRange, callback) {
   var params = dateRange;
   ajaxGet('artist/'+artist, params, function(rawData) {
-
-  var data = d3.nest()
-      .key(function(d){
-        return d.country
-      })
-      .key(function(d){
-        return d.title
-      })
-      .entries(rawData);
-
-    callback(data);
+    callback(rawData);
   })
 }
 

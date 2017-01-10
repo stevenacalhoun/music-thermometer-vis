@@ -110,32 +110,32 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
   d3.select("#stream-graph-svg")
     .append("g")
       .attr("id", "stream-graph-us")
-      .attr("transform", "translate(0,"+margin.top+")")
+      .attr("transform", utilities.translate(0,margin.top))
       .append("g")
         .attr("id", "stream-graph-stream-us")
-        .attr("transform", "translate("+margin.left+",0)")
+        .attr("transform", utilities.translate(margin.left,0))
         .call(tooltip)
 
   d3.select("#stream-graph-svg")
     .append("g")
       .attr("id", "stream-graph-uk")
-      .attr("transform", "translate(0,"+(margin.top+height+(streamPadding*2))+")")
+      .attr("transform", utilities.translate(0,(margin.top+height+(streamPadding*2))))
     .append("g")
       .attr("id", "stream-graph-stream-uk")
-      .attr("transform", "translate("+margin.left+",0)")
+      .attr("transform", utilities.translate(margin.left,0))
       .call(tooltip)
 
   // Stream labels
   d3.select("#stream-graph-us")
     .append("g")
-      .attr("transform", "translate("+(labelOffset)+","+(8+height/2)+")")
+      .attr("transform",utilities.translate(labelOffset,(8+height/2)))
       .append("text")
         .text("US")
         .attr("class", "stream-label")
 
   d3.select("#stream-graph-uk")
     .append("g")
-      .attr("transform", "translate("+(labelOffset)+","+(8+height/2)+")")
+      .attr("transform", utilities.translate(labelOffset,(8+height/2)))
       .append("text")
         .text("UK")
         .attr("class", "stream-label")
@@ -144,17 +144,17 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
   svg.append("g")
       .attr("id", "x-axis")
       .attr("class", "x axis")
-      .attr("transform", "translate("+margin.left+"," + (height+streamPadding) + ")")
+      .attr("transform", utilities.translate(margin.left,(height+streamPadding)))
 
   svg.append("g")
       .attr("id", "y-axis-top")
       .attr("class", "y axis")
-      .attr("transform", "translate("+(width+margin.left-labelOffset)+"," + (margin.top) + ")")
+      .attr("transform", utilities.translate((width+margin.left-labelOffset),margin.top))
 
   svg.append("g")
       .attr("id", "y-axis-bot")
       .attr("class", "y axis")
-      .attr("transform", "translate("+(width+margin.left-labelOffset)+"," + (margin.top+height+(streamPadding*2)) + ")")
+      .attr("transform", utilities.translate((width+margin.left-labelOffset),(margin.top+height+(streamPadding*2))))
 
   // x/y Scales
   xScale = d3.scaleTime()
@@ -373,9 +373,6 @@ function addToolTip() {
       d3.selectAll(".layer").transition()
         .duration(250)
         .attr("opacity", function(e, j) {
-          if (e == d) {
-            return 1;
-          }
           return e.key != d.key ? 0.2 : 1;
       });
 
