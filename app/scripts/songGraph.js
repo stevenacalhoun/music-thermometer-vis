@@ -13,12 +13,12 @@ var currentSong = '';
 
 function songGraph(data, dateRange) {
   // Song graph size
-  var margin =  { top: 0, right: 0, bottom: 0, left: 20 },
-      width = document.body.clientWidth*0.5 - margin.left,
+  var margin =  { top: 0, right: 20, bottom: 0, left: 0 },
+      width = document.body.clientWidth*0.5 - margin.right,
       height = window.innerHeight - $('#app-header').outerHeight();
 
   // Legend size
-  var legendHeight = 50;
+  var legendHeight = 60;
 
   // Axis size
   var axisHeight = 30;
@@ -41,9 +41,6 @@ function songGraph(data, dateRange) {
 }
 
 function addLegend(height, width) {
-  var gradientBarWidth = width/2,
-      gradientBarHeight = height*0.25;
-
   // Container
   var container = $("<div />").appendTo("#song-graph-container");
   container.css("height", height);
@@ -54,23 +51,25 @@ function addLegend(height, width) {
     .attr("width", width)
     .attr("height", height)
 
-  var gradientY = d3.scaleLinear()
-    .range([gradientBarWidth, 0])
-    .domain([100, 1]);
-
-  addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
-  addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
+  addGradientLegend('US', colors.usGradientPair, width);
+  addGradientLegend('UK', colors.ukGradientPair, width);
 }
 
-function addGradientLegend(country, barWidth, barHeight, gradientY, color){
-  if (country == 'UK') {
-    var xShift = barWidth*1.1;
-  }
-  else {
-    var xShift = 0;
-  }
+function addGradientLegend(country, color, width){
+  var textOffset = 2,
+      padding = 50,
+      barHeight = 15,
+      barWidth = (width-(2*padding))/2,
+      textPadding = 5;
 
-  // Add gradient
+  var gradientScale = d3.scaleLinear()
+    .range([barWidth, 0])
+    .domain([100, 1]);
+
+  // Shift UK legends
+  var xShift = country == 'UK' ? barWidth + padding + 3 : 3;
+
+  // Add gradient defs
   var gradient = d3.select('#song-graph-legend-svg').append("defs")
     .append("linearGradient")
       .attr("id", country+"-gradient")
@@ -90,26 +89,28 @@ function addGradientLegend(country, barWidth, barHeight, gradientY, color){
     .attr("stop-color", color[1])
     .attr("stop-opacity", 1);
 
-  var legendBar = d3.select('#song-graph-legend-svg')
+  // SVG Container
+  var svg = d3.select('#song-graph-legend-svg')
     .append("g")
     .attr("transform", utilities.translate(xShift,12.5))
 
-  legendBar.append("text")
-    .attr("y", 12.5)
-    .attr("x", 55)
+  // Label
+  svg.append("text")
+    .attr("y", textOffset)
     .text(country+" Ranking")
 
   // Gradient
-  legendBar.append("rect")
+  svg.append("rect")
     .attr("width", barWidth)
     .attr("height", barHeight)
     .style("fill", "url(#"+country+"-gradient)")
+    .attr("transform", utilities.translate(0, textOffset+textPadding))
 
   // Axis
-  legendBar.append("g")
+  svg.append("g")
     .attr("class", "x axis")
-    .attr("transform", utilities.translate(0, barHeight))
-    .call(d3.axisBottom(gradientY).tickSize(0))
+    .attr("transform", utilities.translate(0, (barHeight+textOffset+textPadding)))
+    .call(d3.axisBottom(gradientScale).tickSize(0).tickValues([1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]))
 }
 
 function addContent(height, width, data, x) {
@@ -120,15 +121,14 @@ function addContent(height, width, data, x) {
       textHeight = 21.5,
       separatorHeight = 2;
 
+  // Calculate rect width
   var thisWeek = new Date(data[0].dates[0].chart_week),
       nextWeek = new Date(data[0].dates[0].chart_week);
   nextWeek.setDate(nextWeek.getDate()+7);
   var rectWidth = x(nextWeek)-x(thisWeek);
 
   // Height of svg
-  var height = (data.length-1)*((3*rectHeight)+textHeight+separatorHeight+labelPadding) - rectHeight
-
-  console.log(rectWidth);
+  var contentHeight = (data.length-1)*((3*rectHeight)+textHeight+separatorHeight+labelPadding) - rectHeight
 
   // Container
   var container = $("<div class='song-graph-content' />").appendTo("#song-graph-container");
@@ -137,7 +137,7 @@ function addContent(height, width, data, x) {
   // SVG element
   var svg = d3.select(container.get(0))
     .append("svg")
-      .attr("height", height)
+      .attr("height", contentHeight)
       .attr("width", width);
 
   var content = svg.append("g")
