@@ -9,82 +9,142 @@ var d3 = require('d3'),
 require('../styles/songGraph.scss');
 require('../styles/axes.scss');
 
-var x, y, tooltip, margin, legendWidth, legendHeight, legendMargin, dateRange;
-
-var minimumRectHeight = 20,
-    maximumRectHeight = 50;
-
 var currentSong = '';
 
-function songGraph(data, passedDateRange) {
-  dateRange = passedDateRange;
+function songGraph(data, dateRange) {
+  // Song graph size
+  var margin =  { top: 0, right: 0, bottom: 0, left: 20 },
+      width = document.body.clientWidth*0.5 - margin.left,
+      height = window.innerHeight - $('#app-header').outerHeight();
 
-  // Sizing
-  var cWidth = document.body.clientWidth;
-  margin =  { top: 50, right: 10, bottom: 50, left: 10 };
+  // Legend size
+  var legendHeight = 50;
 
-  var width = document.body.clientWidth*0.5 - margin.left - margin.right,
-      height = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom;
+  // Axis size
+  var axisHeight = 30;
 
-  legendWidth = width-margin.right;
-  legendHeight = 50;
-  legendMargin = {top: 20, left:20, bottom: 20, right:20 };
-  totalLegendHeight =  legendHeight + legendMargin.top + legendMargin.bottom;
-
-  var contentHeight = height - legendHeight;
-  var contentWidth = width - margin.right;
-
-  var xAxisShift = contentHeight;
-
-  rectHeight = contentHeight/data.length;
-  var separatorHeight = 2;
-
-  // Rect height bounds
-  if (rectHeight<minimumRectHeight) {
-    rectHeight = minimumRectHeight;
-  }
-  else if (rectHeight>maximumRectHeight) {
-    rectHeight = maximumRectHeight;
-  }
+  // Content size
+  var contentHeight = height - legendHeight - axisHeight;
 
   // Scales
-  x = d3.scaleTime()
-    .range([0,contentWidth])
+  var x = d3.scaleTime()
+    .range([0,width-margin.right-margin.left])
     .domain([dateRange.startDate,dateRange.endDate])
 
   // Container
-  $("<div id='song-graph-parent-container' class='song-graph'></div>").appendTo("#vis-parent");
+  var parent = $("<div id='song-graph-container' class='container' />").appendTo("#vis-parent");
 
-  // var zoom = d3.zoom()
-  //     .on("zoom", zoomed);
+  // Add each component
+  addLegend(legendHeight, width);
+  addContent(contentHeight, width, data, x);
+  addAxis(axisHeight, width, x);
+}
+
+function addLegend(height, width) {
+  var gradientBarWidth = width/2,
+      gradientBarHeight = height*0.25;
+
+  // Container
+  var container = $("<div />").appendTo("#song-graph-container");
+  container.css("height", height);
 
   // Song graph svg
-  var svg = d3.select("#song-graph-parent-container").append("svg")
-      .attr("id", "song-graph-svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+  var svg = d3.select(container.get(0)).append("svg")
+    .attr("id", "song-graph-legend-svg")
+    .attr("width", width)
+    .attr("height", height)
 
-  // Graph contents
-  var parent = svg.append("g")
-    .attr('id', 'song-graph-parent')
-    .attr("transform", utilities.translate(margin.left, totalLegendHeight))
-    .on('scroll', function() {
-      console.log("heyo")
-    })
+  var gradientY = d3.scaleLinear()
+    .range([gradientBarWidth, 0])
+    .domain([100, 1]);
 
-  var content = parent.append("g")
-    .attr('id', 'song-graph-content')
-    .attr('class','content')
-    .attr("transform", utilities.translate(margin.left,0))
+  addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
+  addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
+}
 
-  // Axes
-  var xAxis = parent.append("g")
-    .attr("id", "song-graph-x-axis")
+function addGradientLegend(country, barWidth, barHeight, gradientY, color){
+  if (country == 'UK') {
+    var xShift = barWidth*1.1;
+  }
+  else {
+    var xShift = 0;
+  }
+
+  // Add gradient
+  var gradient = d3.select('#song-graph-legend-svg').append("defs")
+    .append("linearGradient")
+      .attr("id", country+"-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+  gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", color[0])
+    .attr("stop-opacity", 1);
+
+  gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", color[1])
+    .attr("stop-opacity", 1);
+
+  var legendBar = d3.select('#song-graph-legend-svg')
+    .append("g")
+    .attr("transform", utilities.translate(xShift,12.5))
+
+  legendBar.append("text")
+    .attr("y", 12.5)
+    .attr("x", 55)
+    .text(country+" Ranking")
+
+  // Gradient
+  legendBar.append("rect")
+    .attr("width", barWidth)
+    .attr("height", barHeight)
+    .style("fill", "url(#"+country+"-gradient)")
+
+  // Axis
+  legendBar.append("g")
     .attr("class", "x axis")
-    .attr("transform", utilities.translate(margin.left,contentHeight))
+    .attr("transform", utilities.translate(0, barHeight))
+    .call(d3.axisBottom(gradientY).tickSize(0))
+}
+
+function addContent(height, width, data, x) {
+  // Constants for each song section
+  var rectHeight = 20,
+      sectionPaddingTop = 15,
+      labelPadding = 5,
+      textHeight = 21.5,
+      separatorHeight = 2;
+
+  var thisWeek = new Date(data[0].dates[0].chart_week),
+      nextWeek = new Date(data[0].dates[0].chart_week);
+  nextWeek.setDate(nextWeek.getDate()+7);
+  var rectWidth = x(nextWeek)-x(thisWeek);
+
+  // Height of svg
+  var height = (data.length-1)*((3*rectHeight)+textHeight+separatorHeight+labelPadding) - rectHeight
+
+  console.log(rectWidth);
+
+  // Container
+  var container = $("<div class='song-graph-content' />").appendTo("#song-graph-container");
+  container.css("height", height);
+
+  // SVG element
+  var svg = d3.select(container.get(0))
+    .append("svg")
+      .attr("height", height)
+      .attr("width", width);
+
+  var content = svg.append("g")
+    .attr('class','content');
 
   // Tooltip
-  tooltip = tip()
+  var tooltip = tip()
     .direction('e')
     .attr('class', 'd3-tip')
     .offset([-100,-325])
@@ -104,49 +164,55 @@ function songGraph(data, passedDateRange) {
     .interpolate(d3.interpolateRgb)
     .range([d3.color(colors.usGradientPair[0]), d3.color(colors.usGradientPair[1])])
 
-  // Add axes
-  var xAxis = d3.axisBottom(x);
-  d3.select('#song-graph-x-axis').call(xAxis);
-
   // Song sections
-  var songs = d3.select('#song-graph-content')
-      .selectAll("g")
+  var songs = content.selectAll("g")
     .data(data).enter()
       .append("g")
         .attr("class", "song-section")
         .attr("transform", function(d,i) {
-          return utilities.translate(0,i*rectHeight*3);
+          return utilities.translate(0,(i*(rectHeight)*4));
         })
 
   // Add separator
   songs.append("rect")
     .attr("class", "base")
     .attr("height", separatorHeight)
-    .attr("width", contentWidth)
+    .attr("width", width)
     .attr("fill", colors.accentColor)
-    .attr("transform", utilities.translate(0,rectHeight))
+    .attr("transform", utilities.translate(0,sectionPaddingTop+rectHeight+labelPadding))
+
+  // Song label
+  songs.append("text")
+    .text(function(d) { return d.title; })
+    .attr("transform", utilities.translate(0, sectionPaddingTop))
+    .attr('class', 'song-text');
 
   // Add entries
   songs.selectAll(".bar")
-    .data(function(d) { return d.dates }).enter()
+    .data(function(d) {
+      var data = d.dates;
+      data.forEach(function(e) {
+        e.album_art_link = d.album_art_link;
+        e.title = d.title;
+        e.artist = d.artist;
+        e.preview_url = d.preview_url;
+      })
+      return data;
+    }).enter()
     .append("rect")
       .attr("class", "bar")
       .attr("height", rectHeight)
-      .attr("width", rectHeight)
-      .attr("width", function(d){
-        var thisWeek = new Date(d.chart_week),
-            nextWeek = new Date(d.chart_week);
-        nextWeek.setDate(nextWeek.getDate()+7);
-
-        return x(nextWeek)-x(thisWeek);
-
-      })
+      .attr("transform", utilities.translate(0,sectionPaddingTop))
+      .attr("width", rectWidth)
       .attr("x", function(d){
         return x(new Date(d.chart_week));
       })
       .attr("y", function(d){
         if (d.country == "uk") {
-          return rectHeight+separatorHeight;
+          return rectHeight+separatorHeight+labelPadding;
+        }
+        else {
+          return labelPadding;
         }
       })
       .attr("fill", function(d){
@@ -157,80 +223,47 @@ function songGraph(data, passedDateRange) {
           return usColor(d.rank);
         }
       })
+      .on('mouseover',  function(d) {
+        // Show tooltip
+        tooltip.show(d);
 
-  createLegend();
+        if ((d.preview_url != null) && (d.preview_url != currentSong)){
+          currentSong = d.preview_url;
+          // Add track and play
+          $('#audio-box-parent').append($("<audio controls id='audio-control'></audio>"));
+          $("#audio-control").append($("<source id='audio-track' src='"+d.preview_url+"' type='audio/mpeg'>"))
+          $("#audio-control")[$("#audio-control").length-1].play();
+        }
+      })
+      .on('mouseout', function() {
+        // Hide tooltip
+        tooltip.hide();
+
+        currentSong = '';
+
+        // Pause audio
+        $("#audio-control")[0].pause();
+
+        // Clear track
+        $('#audio-control').remove();
+        $('#audio-track').remove();
+      })
+
 }
 
-function scroll() {
-  console.log('heyo')
-}
+function addAxis(height, width, x) {
+  // Container
+  var container = $("<div />").appendTo("#song-graph-container");
 
-function createLegend() {
-  // add us legend
-  var gradientBarWidth = legendWidth/2,
-      gradientBarHeight = legendHeight - legendMargin.top-legendMargin.bottom;
+  // SVG element
+  var svg = d3.select(container.get(0)).append("svg")
+    .attr("width", width)
+    .attr("height", height)
 
-  // Add legend
-  var legend = d3.select('#song-graph-svg')
-    .append('g')
-      .attr('id', 'song-graph-legend')
-      .attr("transform", utilities.translate(margin.left,margin.top));
-
-  var gradientY = d3.scaleLinear()
-    .range([gradientBarWidth, 0])
-    .domain([100, 1]);
-
-  addGradientLegend('US', gradientBarWidth, gradientBarHeight, gradientY, colors.usGradientPair);
-  addGradientLegend('UK', gradientBarWidth, gradientBarHeight, gradientY, colors.ukGradientPair);
-}
-
-function addGradientLegend(country, barWidth, barHeight, gradientY, color){
-  if (country == 'UK') {
-    var xShift = barWidth*1.1;
-  }
-  else {
-    var xShift =0;
-  }
-
-  // Add gradient
-  var gradient = d3.select('#song-graph-svg').append("defs")
-    .append("linearGradient")
-      .attr("id", country+"-gradient")
-      .attr("x1", "0%")
-      .attr("y1", "100%")
-      .attr("x2", "100%")
-      .attr("y2", "100%")
-      .attr("spreadMethod", "pad");
-
-  gradient.append("stop")
-    .attr("offset", "0%")
-    .attr("stop-color", color[0])
-    .attr("stop-opacity", 1);
-
-  gradient.append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", color[1])
-    .attr("stop-opacity", 1);
-
-
-  var legendBar = d3.select('#song-graph-legend')
-    .append("g")
-    .attr("transform", utilities.translate(xShift,0))
-
-  legendBar.append("rect")
-    .attr("width", barWidth)
-    .attr("height", barHeight)
-    .style("fill", "url(#"+country+"-gradient)")
-
-  legendBar.append("g")
+  // Axes
+  var xAxis = svg.append("g")
     .attr("class", "x axis")
-    .attr("transform", utilities.translate(0, barHeight))
-    .call(d3.axisBottom(gradientY).tickSize(0))
-    .append("text")
-      .attr("y", -18)
-      .attr("x", 55)
-      .style("text-anchor", "end")
-      .text(country+" Ranking")
+    .call(d3.axisBottom(x))
 }
 
 module.exports = {

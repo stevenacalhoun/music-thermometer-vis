@@ -58,7 +58,7 @@ function initVis() {
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
-  var streamParent = $("<div id='stream-graph-parent' class='stream-chart'></div>").appendTo(visContainer);
+  var streamParent = $("<div id='stream-graph-parent' class='container'></div>").appendTo(visContainer);
 
   // Hover tooltip
   tooltip = tip()
@@ -498,7 +498,7 @@ function transitionToSplitView(dateRange, artist) {
   apiCalls.getArtistSongs(artist, dateRange, function(data) {
     songGraph.songGraph(data,dateRange);
 
-    createSongGraphExitButton()
+    // createSongGraphExitButton()
   })
 }
 

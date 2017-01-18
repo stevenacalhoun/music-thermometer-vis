@@ -1,13 +1,17 @@
-@import '../styles/colors.scss';
+@import './colors';
+@import './main.scss';
 
-.song-graph {
-  display: inline-block;
-}
-
-svg {
-  display: block;
+.song-graph-content {
+  overflow: scroll;
 }
 
 .song-graph-exit {
   cursor: pointer;
+}
+
+text {
+  stroke: none;
+  fill: $font-color;
+  font-size: $base-font-size;
+  font-style: italic;
 }

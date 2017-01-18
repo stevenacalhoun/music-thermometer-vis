@@ -8,14 +8,14 @@ $font: 'Roboto';
 $base-font-size: 18px;
 
 $input-font-size: $base-font-size;
-$title-font-size: 2.0em;
-$axes-font-size: 1.2em;
-$search-font-size: 1.8em;
+$title-font-size: 2.0*$base-font-size;
+$axes-font-size: 0.6*$base-font-size;
+$search-font-size: 1.8*$base-font-size;
 
-$splash-title-font-size: 3.5em;
-$splash-subtitle-font-size: 1.4em;
-$splash-subtitle-bold-font-size: 1.5em;
+$splash-title-font-size: 3.5*$base-font-size;
+$splash-subtitle-font-size: 1.4*$base-font-size;
+$splash-subtitle-bold-font-size: 1.5*$base-font-size;
 
-$tooltip-top-font-size: 1.8em;
-$tooltip-sub-font-size: 1.0em;
-$tooltip-super-font-size: 2.2em;
+$tooltip-top-font-size: 1.8*$base-font-size;
+$tooltip-sub-font-size: 1.0*$base-font-size;
+$tooltip-super-font-size: 2.2*$base-font-size;
