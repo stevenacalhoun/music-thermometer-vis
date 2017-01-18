@@ -33,5 +33,27 @@ module.exports = {
     else {
       return "month";
     }
+  },
+  setUrl: function(startDate, endDate, dateRange, minRank, search, songGraph) {
+    var stateStr = "/?";
+    stateStr += "dateRange=" + dateRange + '&';
+    stateStr += "minRank=" + minRank + '&';
+    stateStr += "search=" + search + '&';
+    stateStr += "songGraph=" + songGraph + '&';
+    stateStr += "startDate=" + startDate + '&';
+    stateStr += "endDate=" + endDate;
+
+    window.history.pushState("app_state", "AppState", stateStr)
+  },
+  getParameterByName: function(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 }

@@ -51,8 +51,9 @@ function initVis() {
 
       // Clear song graph and apply filters
       $('#stream-search').val("");
-      $('#exit-song-graph').d3Click();
+      $('#search-clear-button').d3Click();
       applyFilters();
+      utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
     }
   })
   $('#search-clear-button').on("click", function() {
@@ -63,7 +64,10 @@ function initVis() {
     $('#stream-search').val('');
 
     // Go back to full screen stream
-    streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false, true);
+    streamGraphInit(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(),
+
+    $('#min-total-value').val(), false, true);
+    utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
   })
 
   // Graph container
@@ -186,6 +190,13 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
     "startDate": startDate,
     "endDate": endDate
   }
+  utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
+  // console.log("startDate: "+utilities.getParameterByName('startDate'));
+  // console.log("endDate: "+utilities.getParameterByName('endDate'));
+  // console.log("dateRange: "+utilities.getParameterByName('dateRange'));
+  // console.log("minRank: "+utilities.getParameterByName('minRank'));
+  // console.log("search: "+utilities.getParameterByName('search'));
+  // console.log("songGraph: "+utilities.getParameterByName('songGraph'));
 
   var spinnerOptions = {
     className: 'spinner',
@@ -457,6 +468,10 @@ function applyFilters() {
   // Invert slider dates
   var startDate = controls.reverseScale(sliderSelection[0]);
   var endDate = controls.reverseScale(sliderSelection[1]);
+  dateRange = {
+    'startDate': startDate,
+    'endDate': endDate
+  }
 
   // Create a new graph
   createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false);
@@ -507,6 +522,7 @@ function transitionToSplitView(dateRange, artist) {
   // Create song graph
   apiCalls.getArtistSongs(artist, dateRange, function(data) {
     songGraph.songGraph(data,dateRange);
+    utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), true);
   })
 }
 
