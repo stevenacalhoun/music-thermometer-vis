@@ -49,17 +49,8 @@ select {
     position: absolute;
     right: 10px;
     top: 40%;
-    color: $accent-color;
     pointer-events: none;
   }
-}
-
-.genericon-downarrow:before {
-  content: '\f431';
-  font: normal 16px/1 'Genericons';
-  display: inline-block;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 .spotify-player {
@@ -129,12 +120,43 @@ select {
 }
 
 /** Search Bar **/
-.search-input-box {
+.search-parent {
+  margin: 0 auto;
   width: 50%;
   height: $control-piece-height;
-  font-size: $search-font-size;
-  border:none;
   border-bottom: 1px solid $accent-color;
+  text-align: center;
+}
+
+.search-icon {
+  float: left;
+  width: 10%;
+  height: $control-piece-height;
+  padding-top: 10px;
+
+  .genericon {
+    float: left;
+  }
+}
+
+.search-clear {
+  float: left;
+  width: 10%;
+  height: $control-piece-height;
+  padding-top: 10px;
+
+  .genericon {
+    float: right;
+  }
+}
+
+.search-input-box {
+  float: left;
+  width: 80%;
+  height: $control-piece-height;
+  font-size: $search-font-size;
+  padding: 0;
+  border:none;
   text-align: center;
   &:focus {
     outline:none;

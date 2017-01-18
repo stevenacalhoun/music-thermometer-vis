@@ -76,9 +76,18 @@ function createNumberInput(labelText, min, max, startValue, id) {
 }
 
 function createSearchBar(id) {
-  var searchBar = $("<input placeholder='Type in artist' onfocus=\"this.placeholder = ''\" onfocusout=\"this.placeholder = 'Type in artist'\" class='control-piece search-input-box' id='"+id+"' />");
-  return searchBar;
+  var searchParent = $("<div class='search-parent'></div>");
+  var searchIconContainer = $("<div class='search-icon'></div>").appendTo(searchParent);
+  $("<span class='genericon genericon-search'></span>").appendTo(searchIconContainer);
+
+  var searchBar = $("<input placeholder='Type in artist' onfocus=\"this.placeholder = ''\" onfocusout=\"this.placeholder = 'Type in artist'\" class='control-piece search-input-box' id='"+id+"' />").appendTo(searchParent);
+
+  var searchClearContainer = $("<div class='search-clear'></div>").appendTo(searchParent);
+  $("<span id='search-clear-button' class='genericon genericon-close-alt'></span>").appendTo(searchClearContainer);
+  return searchParent;
 }
+
+// <svg class="genericons-neue genericons-neue-close-alt" width="16px" height="16px"></use></svg>
 
 function createSlider(parent, earlyStartingDate, lateStartingDate) {
   var sliderContainer = $("<div id='slider-parent' class='control-piece slider'></div>").appendTo(parent)

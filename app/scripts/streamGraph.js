@@ -55,6 +55,16 @@ function initVis() {
       applyFilters();
     }
   })
+  $('#search-clear-button').on("click", function() {
+    // Get rid of song info
+    $('#song-graph-container').remove();
+
+    // Clear out artist name
+    $('#stream-search').val('');
+
+    // Go back to full screen stream
+    streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false, true);
+  })
 
   // Graph container
   var visContainer = $("<div id='vis-parent' class='vis-parent'></div>").appendTo('body');
@@ -497,52 +507,7 @@ function transitionToSplitView(dateRange, artist) {
   // Create song graph
   apiCalls.getArtistSongs(artist, dateRange, function(data) {
     songGraph.songGraph(data,dateRange);
-
-    // createSongGraphExitButton()
   })
-}
-
-function createSongGraphExitButton(){
-  var buttonSize = 30,
-      buttonStrokeWidth = 2;
-
-  // Add X button
-  var exitButton = d3.select('#song-graph-svg').append("g")
-    .attr('id', 'exit-song-graph')
-    .attr('class', 'exit-song-graph')
-    .attr('cursor', 'pointer')
-    .attr('transform', utilities.translate((document.body.clientWidth/2)-buttonSize*2,0))
-    .on('click', function(){
-      // Get rid of song info
-      $('#song-graph-parent-container').remove();
-
-      // Clear out artist name
-      $('#stream-search').val('');
-
-      // Go back to full screen stream
-      streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false, true);
-    });
-
-  exitButton.append("rect")
-    .attr("width",buttonSize)
-    .attr("height", buttonSize)
-    .attr("fill", colors.backgroundColor)
-
-  exitButton.append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", buttonSize)
-    .attr("y2", buttonSize)
-    .attr("stroke-width", buttonStrokeWidth)
-    .attr("stroke", colors.accentColor);
-
-  exitButton.append("line")
-    .attr("x1", buttonSize)
-    .attr("y1", 0)
-    .attr("x2", 0)
-    .attr("y2", buttonSize)
-    .attr("stroke-width", buttonStrokeWidth)
-    .attr("stroke", colors.accentColor);
 }
 
 function addMissingArtistEntries(data) {

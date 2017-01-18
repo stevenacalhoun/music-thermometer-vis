@@ -19,3 +19,30 @@ $splash-subtitle-bold-font-size: 1.5*$base-font-size;
 $tooltip-top-font-size: 1.8*$base-font-size;
 $tooltip-sub-font-size: 1.0*$base-font-size;
 $tooltip-super-font-size: 2.2*$base-font-size;
+
+// Genericons
+.genericon {
+  color: $accent-color;
+}
+
+.genericon-downarrow:before {
+  font: normal 16px/1 'Genericons';
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.genericon-search:before {
+  font: bold 25px/1 'Genericons';
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.genericon-close-alt:before {
+  font: normal 25px/1 'Genericons';
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+}
