@@ -148,7 +148,7 @@ function addContent(height, width, data, x) {
   var tooltip = tip()
     .direction('e')
     .attr('class', 'd3-tip')
-    .offset([-100,-325])
+    .offset([0,-240])
     .html(function(d){return tooltipLib.songGraphTooltip(d)});
 
   // Add tooltip

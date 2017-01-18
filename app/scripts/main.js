@@ -11,5 +11,5 @@ introScreen.createVisScreen($("<div></div>"));
 
 
 setTimeout(function() {
-  $('#Michael_Jackson_uk').d3Click()
+  $('#Drake_uk').d3Click()
 }, 2000)
