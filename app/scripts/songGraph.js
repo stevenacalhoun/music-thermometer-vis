@@ -28,7 +28,7 @@ function songGraph(data, dateRange) {
 
   // Scales
   var x = d3.scaleTime()
-    .range([0,width-margin.right-margin.left])
+    .range([0,width-margin.right-margin.left-15])
     .domain([dateRange.startDate,dateRange.endDate])
 
   // Container
@@ -138,7 +138,7 @@ function addContent(height, width, data, x) {
   var svg = d3.select(container.get(0))
     .append("svg")
       .attr("height", contentHeight)
-      .attr("width", width);
+      .attr("width", width-15);
 
   var content = svg.append("g")
     .attr('class','content');
