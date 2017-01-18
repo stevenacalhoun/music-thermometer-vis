@@ -119,7 +119,8 @@ function addContent(height, width, data, x) {
       sectionPaddingTop = 15,
       labelPadding = 5,
       textHeight = 21.5,
-      separatorHeight = 2;
+      separatorHeight = 2,
+      sectionSize = 80;
 
   // Calculate rect width
   var thisWeek = new Date(data[0].dates[0].chart_week),
@@ -128,7 +129,7 @@ function addContent(height, width, data, x) {
   var rectWidth = x(nextWeek)-x(thisWeek);
 
   // Height of svg
-  var contentHeight = (data.length-1)*((3*rectHeight)+textHeight+separatorHeight+labelPadding) - rectHeight
+  var contentHeight = (data.length)*sectionSize
 
   // Container
   var container = $("<div class='song-graph-content' />").appendTo("#song-graph-container");
