@@ -26709,7 +26709,7 @@
 	    }
 	  },
 	  setUrl: function(visParams) {
-	    var stateStr = "/?";
+	    var stateStr = "/music-thermometer-vis/?";
 	    stateStr += "dateRange=" + visParams.dateRange + '&';
 	    stateStr += "minRank=" + visParams.minRank + '&';
 	    stateStr += "search=" + visParams.search + '&';
