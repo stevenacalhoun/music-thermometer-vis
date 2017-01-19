@@ -32,7 +32,3 @@ else if (utilities.getParameterByName("skip") != null) {
 else {
   introScreen.createLandingScreen();
 }
-
-setTimeout(function() {
-  $('#Drake_uk').d3Click()
-}, 2000)
