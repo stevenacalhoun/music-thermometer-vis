@@ -189,3 +189,7 @@ select {
 g.brush>.resize {
   display: none;
 }
+
+.date-label {
+  font-size: $axes-font-size;
+}

@@ -47,21 +47,22 @@ function createSelectOption(options, id, title, startingVal) {
 function updateSliderWidth(years) {
   var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
 
-  earlySliderDate = reverseScale(sliderSelection[0]),
-  lateSliderDate = reverseScale(sliderSelection[0]);
+  startDate = reverseScale(sliderSelection[0]),
+  endDate = reverseScale(sliderSelection[0]);
 
   // Get end date
-  lateSliderDate.setDate(lateSliderDate.getDate()+(years*365));
+  endDate.setDate(endDate.getDate()+(years*365));
 
   // If the late date is past the max date
-  if (lateSliderDate > new Date(2015,12,31)) {
-    var difference = lateSliderDate - new Date(2015,12,31);
-    lateSliderDate = new Date(2015,12,31);
-    earlySliderDate = new Date(earlySliderDate - difference);
+  if (endDate > new Date(2015,12,31)) {
+    var difference = endDate - new Date(2015,12,31);
+    endDate = new Date(2015,12,31);
+    startDate = new Date(startDate - difference);
   }
 
   // Change slider
-  d3.select('#stream-graph-brush').call(brush.move, [sliderScale(earlySliderDate), sliderScale(lateSliderDate)])
+  d3.select('#stream-graph-brush').call(brush.move, [sliderScale(startDate), sliderScale(endDate)])
+  updateDateLabels();
 }
 
 function createDropdown(list, id) {
@@ -92,13 +93,13 @@ function createSearchBar(id, starting) {
   return searchParent;
 }
 
-// <svg class="genericons-neue genericons-neue-close-alt" width="16px" height="16px"></use></svg>
-
 function createSlider(parent, earlyStartingDate, lateStartingDate) {
   var sliderContainer = $("<div id='slider-parent' class='control-piece slider'></div>").appendTo(parent)
 
-  earlySliderDate = earlyStartingDate,
-  lateSliderDate= lateStartingDate;
+  startDate = earlyStartingDate,
+  endDate= lateStartingDate;
+
+  var labelWidth = 120;
 
   // Sizes
   var margin = {top: 0, right: 20, bottom: 20, left: 0},
@@ -108,7 +109,7 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
   // Scale
   sliderScale = d3.scaleTime()
     .domain([new Date(1960,0,1), new Date(2015,12,31)])
-    .rangeRound([0, width]);
+    .rangeRound([0, width-labelWidth]);
 
   // Axis object
   var xAxis = d3.axisBottom(sliderScale)
@@ -117,7 +118,7 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
 
   // Brush object
   brush = d3.brushX()
-    .extent([[0,0], [width,height]])
+    .extent([[0,0], [width-labelWidth,height]])
     .on("brush", function() {
       brushed(sliderScale)
     })
@@ -127,18 +128,33 @@ function createSlider(parent, earlyStartingDate, lateStartingDate) {
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
-      .attr("transform", "translate("+margin.left+","+margin.top+")");
+      .attr("transform", utilities.translate(margin.left, margin.top))
+
+  var textGroup = svg.append("g")
+    .attr("transform", utilities.translate(width-labelWidth, 0))
+
+  textGroup.append("text")
+    .attr("id", "slider-start-label")
+    .attr("class", "date-label")
+    .attr("transform", utilities.translate(30, 10))
+
+  textGroup.append("text")
+  .attr("id", "slider-end-label")
+    .attr("class", "date-label")
+    .attr("transform", utilities.translate(30, 35))
+
+  updateDateLabels();
 
   // Axis at bottom
   svg.append("g")
       .attr("class", "axis slider-axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", utilities.translate(0, height))
       .call(xAxis)
 
   // Visual bar
   svg.append("g")
       .attr("class", "slider-axis")
-      .attr("transform", "translate(0," + (height) + ")")
+      .attr("transform", utilities.translate(0,height))
       .call(d3.axisBottom(sliderScale)
         .tickPadding(0))
       .attr("text-anchor", null)
@@ -160,6 +176,7 @@ function brushed(xScale) {
   var s = d3.event.selection;
   startDate = xScale.invert(s[0]);
   endDate = xScale.invert(s[1]);
+  updateDateLabels();
 };
 
 // Controls
@@ -204,6 +221,14 @@ function addSpotifyPreview(link) {
   return audioBoxParent;
 }
 
+function updateDateLabels() {
+  d3.select('#slider-start-label').text("Start Date " + convertDate(startDate))
+  d3.select('#slider-end-label').text("End Date " + convertDate(endDate))
+}
+
+function convertDate(date) {
+  return (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear();
+}
 module.exports = {
   createButton: createButton,
   createNumberInput: createNumberInput,
