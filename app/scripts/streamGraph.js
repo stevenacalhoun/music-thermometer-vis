@@ -341,20 +341,22 @@ function renderStreamGraph(preppedData) {
   // Click to transition to other view
   d3.selectAll("path")
     .on("click", function(d, i) {
-      // Here's where we transition to the bar chart
-      // Get slider selection
-      var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
+      if (visParams.songGraph == false) {
+        // Here's where we transition to the bar chart
+        // Get slider selection
+        var sliderSelection = d3.brushSelection(d3.select('#stream-graph-brush').node());
 
-      // Invert slider dates
-      var startDate = controls.reverseScale(sliderSelection[0]),
-          endDate = controls.reverseScale(sliderSelection[1]);
+        // Invert slider dates
+        var startDate = controls.reverseScale(sliderSelection[0]),
+            endDate = controls.reverseScale(sliderSelection[1]);
 
-      $('#stream-search').val(d.key);
-      visParams.search = d.key;
+        $('#stream-search').val(d.key);
+        visParams.search = d.key;
 
-      transitionToSplitView(d.key);
-      filterAndRerender($('#stream-search').val());
-      tooltip.hide();
+        transitionToSplitView(d.key);
+        filterAndRerender($('#stream-search').val());
+        tooltip.hide();
+      }
     })
 }
 
@@ -490,6 +492,7 @@ function applyFilters() {
   visParams.minRank = $('#min-rank-value').val();
   visParams.songGraph = false;
   visParams.dataLoaded = false;
+  visParams.search = "";
   createStreamGraph();
 }
 
