@@ -29,6 +29,8 @@ var xScale,
     aggregateSetting,
     lastKeyPushTime;
 
+var visParams = {};
+
 var currentlyUpdating = false;
 
 //******************************************************************************
@@ -41,6 +43,7 @@ function initVis() {
       var currentTime = new Date().getTime();
       if (currentTime - lastKeyPushTime > 250) {
         filterAndRerender($('#stream-search').val());
+        visParams.search = $('#stream-search').val();
       }
     }, 250);
   })
@@ -53,7 +56,14 @@ function initVis() {
       $('#stream-search').val("");
       $('#search-clear-button').d3Click();
       applyFilters();
-      utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
+
+      // Set URL
+      visParams.startDate = dateRange.startDate;
+      visParams.endDate = dateRange.endDate;
+      visParams.dateRange = $('#slider-dropdown').val();
+      visParams.minRank = $('#min-rank-value').val();
+      visParams.songGraph = false;
+      utilities.setUrl(visParams);
     }
   })
   $('#search-clear-button').on("click", function() {
@@ -64,10 +74,12 @@ function initVis() {
     $('#stream-search').val('');
 
     // Go back to full screen stream
-    streamGraphInit(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(),
+    visParams.dataLoaded = true;
+    visParams.songGraph = false;
+    streamGraphInit();
 
-    $('#min-total-value').val(), false, true);
-    utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
+    // Set url
+    utilities.setUrl(visParams);
   })
 
   // Graph container
@@ -84,7 +96,8 @@ function initVis() {
       })
       .offset([-120,0]);
 }
-function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLoaded) {
+
+function streamGraphInit() {
   // Sizing
   var margin = {top: 10, right: 20, bottom: 0, left: 150};
       streamPadding = 30,
@@ -94,7 +107,7 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
       labelOffset = 50,
       width = document.body.clientWidth - margin.left - margin.right;
 
-  if (halfMode) {
+  if (visParams.songGraph) {
     width = (document.body.clientWidth/2) - margin.left - margin.right;
   }
 
@@ -181,16 +194,16 @@ function streamGraphInit(startDate, endDate, minRank, minTotal, halfMode, dataLo
     .range([height, 0])
 
   // Pull data and create stream
-  createStreamGraph(startDate, endDate, minRank, minTotal, dataLoaded)
+  createStreamGraph()
 }
 
 // Create streamgraph
-function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
+function createStreamGraph() {
   dateRange = {
-    "startDate": startDate,
-    "endDate": endDate
+    "startDate": visParams.startDate,
+    "endDate": visParams.endDate
   }
-  utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), false);
+  utilities.setUrl(visParams);
   // console.log("startDate: "+utilities.getParameterByName('startDate'));
   // console.log("endDate: "+utilities.getParameterByName('endDate'));
   // console.log("dateRange: "+utilities.getParameterByName('dateRange'));
@@ -212,11 +225,11 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
 
   // Add spinner
   var spinner = new spin(spinnerOptions).spin();
-  if (dataLoaded != true) {
+  if (visParams.dataLoaded != true) {
     $('#spinner-container').append(spinner.el);
   }
 
-  if (dataLoaded) {
+  if (visParams.dataLoaded) {
     // Render graph
     renderStreamGraph(globalData);
   }
@@ -233,7 +246,9 @@ function createStreamGraph(startDate, endDate, rank, minTotal, dataLoaded) {
       // Renable controls
       $('#apply-filters-button').css('cursor', 'pointer');
       currentlyUpdating = false;
-    }, rank);
+
+      if (visParams.search != "") { filterAndRerender(visParams.search) };
+    }, visParams.minRank);
   }
 }
 
@@ -243,7 +258,7 @@ function removeStreamGraph() {
 }
 
 // Load some data at the beginning
-function initialLoad(start, end, rank, minTotal) {
+function initialLoad(start, end, rank) {
   var dateRange = {
     "startDate": start,
     "endDate": end
@@ -334,14 +349,10 @@ function renderStreamGraph(preppedData) {
       var startDate = controls.reverseScale(sliderSelection[0]),
           endDate = controls.reverseScale(sliderSelection[1]);
 
-      var dateRange = {
-        "startDate": startDate,
-        "endDate": endDate
-      }
+      $('#stream-search').val(d.key);
+      visParams.search = d.key;
 
-      $('#stream-search').val(d.key)
-
-      transitionToSplitView(dateRange, d.key);
+      transitionToSplitView(d.key);
       filterAndRerender($('#stream-search').val());
       tooltip.hide();
     })
@@ -474,7 +485,12 @@ function applyFilters() {
   }
 
   // Create a new graph
-  createStreamGraph(startDate, endDate, $('#min-rank-value').val(), $('#min-total-value').val(), false);
+  visParams.startDate = startDate;
+  visParams.endDate = endDate;
+  visParams.minRank = $('#min-rank-value').val();
+  visParams.songGraph = false;
+  visParams.dataLoaded = false;
+  createStreamGraph();
 }
 
 function filterAndRerender(filterText) {
@@ -515,14 +531,24 @@ function filterData(data, filteredArtists) {
   return filteredData;
 }
 
-function transitionToSplitView(dateRange, artist) {
+function transitionToSplitView(artist) {
   // Make streamgraph half width
-  streamGraphInit(dateRange.startDate, dateRange.endDate, $('#min-rank-value').val(), $('#min-total-value').val(), true, true);
+  visParams.songGraph = true;
+  visParams.dataLoaded = true;
+  streamGraphInit();
 
+  createSongGraph(artist, visParams.startDate, visParams.endDate);
+}
+
+function createSongGraph(artist, startDate, endDate) {
   // Create song graph
-  apiCalls.getArtistSongs(artist, dateRange, function(data) {
-    songGraph.songGraph(data,dateRange);
-    utilities.setUrl(dateRange.startDate, dateRange.endDate, $('#slider-dropdown').val(), $('#min-rank-value').val(), $('#stream-search').val(), true);
+  apiCalls.getArtistSongs(artist, startDate, endDate, function(data) {
+    console.log(data);
+    songGraph.songGraph(data, startDate, endDate);
+
+    // Set url
+    visParams.songGraph = true;
+    utilities.setUrl(visParams);
   })
 }
 
@@ -545,10 +571,16 @@ function addMissingArtistEntries(data) {
   return data;
 }
 
+function setVisParams(passedParams) {
+  visParams = passedParams;
+}
+
 module.exports = {
   streamGraphInit: streamGraphInit,
   createStreamGraph: createStreamGraph,
   removeStreamGraph: removeStreamGraph,
   initVis: initVis,
-  initialLoad: initialLoad
+  setVisParams: setVisParams,
+  initialLoad: initialLoad,
+  createSongGraph
 }

@@ -17,7 +17,7 @@ function createButton(text, id) {
   return buttonParent;
 }
 
-function createSelectOption(options, id, title) {
+function createSelectOption(options, id, title, startingVal) {
   var boundingBox = $('<div class="control-piece select-box"></div>');
 
   boundingBox.append($("<div class='number-input-label'>Date Range</div>"))
@@ -29,7 +29,12 @@ function createSelectOption(options, id, title) {
   selectContainer.html(select);
 
   for(var i=0;i<options.length;i++) {
-    select.append($('<option value="' + options[i].value + '"/>').html(options[i].name));
+    if (options[i].value == startingVal) {
+      select.append($('<option selected="selected" value="' + options[i].value + '"/>').html(options[i].name));
+    }
+    else {
+      select.append($('<option value="' + options[i].value + '"/>').html(options[i].name));
+    }
   }
   $("<span class='genericon genericon-downarrow'></span>").appendTo(selectContainer);
 
@@ -75,12 +80,12 @@ function createNumberInput(labelText, min, max, startValue, id) {
   return inputParent;
 }
 
-function createSearchBar(id) {
+function createSearchBar(id, starting) {
   var searchParent = $("<div class='search-parent'></div>");
   var searchIconContainer = $("<div class='search-icon'></div>").appendTo(searchParent);
   $("<span class='genericon genericon-search'></span>").appendTo(searchIconContainer);
 
-  var searchBar = $("<input placeholder='Type in artist' onfocus=\"this.placeholder = ''\" onfocusout=\"this.placeholder = 'Type in artist'\" class='control-piece search-input-box' id='"+id+"' />").appendTo(searchParent);
+  var searchBar = $("<input placeholder='Type in artist' onfocus=\"this.placeholder = ''\" onfocusout=\"this.placeholder = 'Type in artist'\" class='control-piece search-input-box' id='"+id+"' value='"+starting+"' />").appendTo(searchParent);
 
   var searchClearContainer = $("<div class='search-clear'></div>").appendTo(searchParent);
   $("<span id='search-clear-button' class='genericon genericon-close-alt'></span>").appendTo(searchClearContainer);
@@ -158,7 +163,7 @@ function brushed(xScale) {
 };
 
 // Controls
-function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingTotal) {
+function createControls(parent, earlyStartingDate, lateStartingDate, startingRank, startingRange, startingSearch) {
   var controlsContainer = $("<div id='controls'></div>").appendTo(parent),
       controlsContainerTop = $("<div id='controls-top' class='controls'></div>").appendTo(controlsContainer),
       controlsContainerBot = $("<div id='controls-bot' class='controls'></div>").appendTo(controlsContainer);
@@ -173,23 +178,19 @@ function createControls(parent, earlyStartingDate, lateStartingDate, startingRan
     {"name": "5 Years", "value": 5},
     {"name": "10 Years", "value": 10}
   ]
-  var sliderDropdown = createSelectOption(yearOptions, "slider-dropdown", "Time Range");
+  var sliderDropdown = createSelectOption(yearOptions, "slider-dropdown", "Time Range", startingRange);
   controlsContainerTop.append(sliderDropdown);
 
   // Add filter for min rank
   var rankInput = createNumberInput("Min. Song Rank", 1, 100, startingRank, "min-rank-value");
   controlsContainerTop.append(rankInput);
 
-  // Add filter for min total
-  var totalInput = createNumberInput("Min. Total Count", 1, 100, startingTotal, "min-total-value");
-  // controlsContainerTop.append(totalInput);
-
   // Add button
   var button = createButton("Update", 'apply-filters-button');
   controlsContainerTop.append(button);
 
   // Add search bar
-  var searchBar = createSearchBar('stream-search');
+  var searchBar = createSearchBar('stream-search', startingSearch);
   controlsContainerBot.append(searchBar);
 
   $('body').append(addSpotifyPreview("https://p.scdn.co/mp3-preview/4839b070015ab7d6de9fec1756e1f3096d908fba"));

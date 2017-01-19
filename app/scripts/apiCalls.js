@@ -28,8 +28,11 @@ function getChartRange(dateRange, aggregateSetting, callBack, minRank) {
   - startDate: earliest date
   - endDate: latest date
 */
-function getArtistSongs(artist, dateRange, callback) {
-  var params = dateRange;
+function getArtistSongs(artist, startDate, endDate, callback) {
+  var params = {
+    'startDate': startDate,
+    'endDate': endDate
+  };
   ajaxGet('artist/'+artist, params, function(rawData) {
     callback(rawData);
   })

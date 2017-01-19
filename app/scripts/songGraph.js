@@ -9,9 +9,10 @@ var d3 = require('d3'),
 require('../styles/songGraph.scss');
 require('../styles/axes.scss');
 
+var currentVisParams;
 var currentSong = '';
 
-function songGraph(data, dateRange) {
+function songGraph(data, startDate, endDate) {
   // Song graph size
   var margin =  { top: 0, right: 20, bottom: 0, left: 0 },
       width = document.body.clientWidth*0.5 - margin.right,
@@ -29,9 +30,10 @@ function songGraph(data, dateRange) {
   // Scales
   var x = d3.scaleTime()
     .range([0,width-margin.right-margin.left-15])
-    .domain([dateRange.startDate,dateRange.endDate])
+    .domain([startDate, endDate])
 
   // Container
+  console.log($('#vis-parent'))
   var parent = $("<div id='song-graph-container' class='container' />").appendTo("#vis-parent");
 
   // Add each component

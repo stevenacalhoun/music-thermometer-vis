@@ -34,14 +34,14 @@ module.exports = {
       return "month";
     }
   },
-  setUrl: function(startDate, endDate, dateRange, minRank, search, songGraph) {
+  setUrl: function(visParams) {
     var stateStr = "/?";
-    stateStr += "dateRange=" + dateRange + '&';
-    stateStr += "minRank=" + minRank + '&';
-    stateStr += "search=" + search + '&';
-    stateStr += "songGraph=" + songGraph + '&';
-    stateStr += "startDate=" + startDate + '&';
-    stateStr += "endDate=" + endDate;
+    stateStr += "dateRange=" + visParams.dateRange + '&';
+    stateStr += "minRank=" + visParams.minRank + '&';
+    stateStr += "search=" + visParams.search + '&';
+    stateStr += "songGraph=" + visParams.songGraph + '&';
+    stateStr += "startDate=" + visParams.startDate + '&';
+    stateStr += "endDate=" + visParams.endDate;
 
     window.history.pushState("app_state", "AppState", stateStr)
   },

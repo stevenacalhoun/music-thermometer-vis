@@ -50,24 +50,38 @@ function createDescriptionScreen(splashContainer) {
   enterButton.on("click", function() {
     $('#description-screen').fadeOut(500, function() {
       // Create vis
-      createVisScreen(splashContainer);
+      var visParams = {
+        "startDate": new Date(2009,0,1),
+        "endDate": new Date(2009,11,31),
+        "dateRange": "1",
+        "minRank": 100,
+        "search": "",
+        "songGraph": false,
+      }
+      createVisScreen(splashContainer, visParams);
     })
   })
   totalContainer.fadeIn(500);
 }
 
-function createVisScreen(splashContainer) {
+function createVisScreen(splashContainer, visParams) {
   splashContainer.fadeOut(500, function(){
     // Add title
     var header = $("<div id='app-header' class='app-header'></div>").appendTo('body');
     $(header).append("<div id='spinner-container' class='spinner-container'></div>");
     $(header).append("<div id='app-title' class='title'>Music Thermometer</div>");
 
-    controls.createControls(header, new Date(2009,0,1), new Date(2009,11,31), 100, 1);
+    controls.createControls(header, visParams.startDate, visParams.endDate, visParams.minRank, visParams.dateRange, visParams.search);
+    streamGraph.initVis();
 
     // Start with stream graph
-    streamGraph.initVis();
-    streamGraph.streamGraphInit(new Date(2009,0,1), new Date(2009,11,31), 100, 1, false, false);
+    streamGraph.setVisParams(visParams);
+    streamGraph.streamGraphInit();
+
+    if (visParams.songGraph) {
+      $('#stream-search').val(visParams.search);
+      streamGraph.createSongGraph(visParams.search, visParams.startDate, visParams.endDate);
+    }
   });
 }
 
