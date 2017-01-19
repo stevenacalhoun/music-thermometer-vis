@@ -240,16 +240,20 @@ function addContent(height, width, data, x) {
       })
       .on('mouseout', function() {
         // Hide tooltip
-        tooltip.hide();
-
         currentSong = '';
 
-        // Pause audio
-        $("#audio-control")[0].pause();
+        setTimeout(function(){
+          if (currentSong == '') {
+            tooltip.hide();
 
-        // Clear track
-        $('#audio-control').remove();
-        $('#audio-track').remove();
+            // Pause audio
+            $("#audio-control")[0].pause();
+
+            // Clear track
+            $('#audio-control').remove();
+            $('#audio-track').remove();
+          }
+        }, 100)
       })
 
 }
