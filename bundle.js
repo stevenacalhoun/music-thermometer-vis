@@ -27344,8 +27344,8 @@
 	    utilities = __webpack_require__(5),
 	    d3 = __webpack_require__(4);
 	
-	// var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
-	var serverAddress = "http://localhost:3000/api/";
+	var serverAddress = "https://immense-badlands-95769.herokuapp.com/api/";
+	// var serverAddress = "http://localhost:3000/api/";
 	
 	/*
 	  @returns all entries in hot 100 database fitting parameters in 'data'
