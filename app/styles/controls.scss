@@ -6,7 +6,8 @@ $control-item-text-color: $dark-gray;
 
 $control-height: 100px;
 
-$control-piece-height: 40px;
+$control-piece-height: 50px;
+$select-height: 24px;
 
 $button-color: $accent-color;
 $button-text-color: $control-item-text-color;
@@ -31,7 +32,7 @@ select {
 
   outline:none;
   width: $button-width;
-  height: $button-height;
+  height: $select-height;
 
   border-radius: 0;
 
