@@ -28267,10 +28267,6 @@
 	else {
 	  introScreen.createLandingScreen();
 	}
-	
-	setTimeout(function() {
-	  $('#Drake_uk').d3Click()
-	}, 2000)
 
 
 /***/ },
