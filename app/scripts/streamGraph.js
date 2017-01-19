@@ -543,7 +543,6 @@ function transitionToSplitView(artist) {
 function createSongGraph(artist, startDate, endDate) {
   // Create song graph
   apiCalls.getArtistSongs(artist, startDate, endDate, function(data) {
-    console.log(data);
     songGraph.songGraph(data, startDate, endDate);
 
     // Set url

@@ -33,7 +33,6 @@ function songGraph(data, startDate, endDate) {
     .domain([startDate, endDate])
 
   // Container
-  console.log($('#vis-parent'))
   var parent = $("<div id='song-graph-container' class='container' />").appendTo("#vis-parent");
 
   // Add each component
@@ -150,7 +149,7 @@ function addContent(height, width, data, x) {
   var tooltip = tip()
     .direction('e')
     .attr('class', 'd3-tip')
-    .offset([0,-240])
+    .offset([0,-240-(rectWidth)])
     .html(function(d){return tooltipLib.songGraphTooltip(d)});
 
   // Add tooltip
@@ -230,12 +229,16 @@ function addContent(height, width, data, x) {
         // Show tooltip
         tooltip.show(d);
 
-        if ((d.preview_url != null) && (d.preview_url != currentSong)){
-          currentSong = d.preview_url;
+        currentSong = d.title;
+        if ((d.preview_url != null)){
           // Add track and play
           $('#audio-box-parent').append($("<audio controls id='audio-control'></audio>"));
           $("#audio-control").append($("<source id='audio-track' src='"+d.preview_url+"' type='audio/mpeg'>"))
           $("#audio-control")[$("#audio-control").length-1].play();
+          audioPresent = true;
+        }
+        else {
+          audioPresent = false;
         }
       })
       .on('mouseout', function() {
@@ -246,14 +249,16 @@ function addContent(height, width, data, x) {
           if (currentSong == '') {
             tooltip.hide();
 
-            // Pause audio
-            $("#audio-control")[0].pause();
+            if (audioPresent){
+              // Pause audio
+              $("#audio-control")[0].pause();
 
-            // Clear track
-            $('#audio-control').remove();
-            $('#audio-track').remove();
+              // Clear track
+              $('#audio-control').remove();
+              $('#audio-track').remove();
+            }
           }
-        }, 100)
+        }, 10)
       })
 
 }
