@@ -41,7 +41,7 @@ function getArtistSongs(artist, startDate, endDate, callback) {
 // Helper to generate list of url params
 function generateUriParamString(params) {
   var paramString = "?"
-  for (param in params) {
+  for (var param in params) {
     paramString += param + "=" + params[param] + "&";
   }
   return paramString.substring(0, paramString.length - 1);

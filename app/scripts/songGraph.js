@@ -9,8 +9,9 @@ var d3 = require('d3'),
 require('../styles/songGraph.scss');
 require('../styles/axes.scss');
 
-var currentVisParams;
-var currentSong = '';
+var currentVisParams,
+    currentSong = '',
+    audioPresent;
 
 function songGraph(data, startDate, endDate) {
   // Song graph size

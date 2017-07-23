@@ -36,6 +36,7 @@ module.exports = {
   },
   setUrl: function(visParams) {
     var stateStr = "/music-thermometer-vis/?";
+    var stateStr = "/?"
     stateStr += "dateRange=" + visParams.dateRange + '&';
     stateStr += "minRank=" + visParams.minRank + '&';
     stateStr += "search=" + visParams.search + '&';

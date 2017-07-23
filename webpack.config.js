@@ -1,17 +1,17 @@
 var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRootPlugin = require('html-webpack-react-root-plugin');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
   build: path.join(__dirname, 'build'),
   styles: path.join(__dirname, 'app/styles'),
   scripts: path.join(__dirname, 'app/scripts'),
-  json: path.join(__dirname, 'app/json'),
 }
 
 module.exports = {
   entry: [
-    path.resolve(PATHS.scripts, 'main.js'),
+    path.resolve(PATHS.scripts, 'index.js'),
   ],
   module: {
     loaders: [
@@ -21,16 +21,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
+        loader: "style!css"
+      },
+      {
+        test: /\.css$/,
         loader: "style!css",
         include: path.join(PATHS.styles, "genericons")
       },
       {
-        test: /\.json$/,
-        loader: "json-loader"
-      },
-      {
-        test: /\.csv$/,
-        loader: 'dsv-loader'
+        test: /\.js?/,
+        loader: "babel",
+        include: PATHS.scripts,
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -47,12 +48,13 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: PATHS.build,
     filename: 'bundle.js',
   },
   plugins: [
     new HtmlWebpackPlugin({
       title: "Music Thermometer"
-    })
+    }),
+   new ReactRootPlugin()
   ]
 };

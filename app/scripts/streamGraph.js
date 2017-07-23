@@ -99,7 +99,7 @@ function initVis() {
 
 function streamGraphInit() {
   // Sizing
-  var margin = {top: 10, right: 20, bottom: 0, left: 150};
+  var margin = {top: 10, right: 20, bottom: 0, left: 150},
       streamPadding = 30,
       containerHeight = window.innerHeight - $('#app-header').outerHeight() - margin.top - margin.bottom,
       axisHeight = 10,
@@ -234,7 +234,7 @@ function createStreamGraph() {
     renderStreamGraph(globalData);
   }
   else {
-    aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+    aggregateSetting = utilities.getAggregateSetting(dateRange.startDate, dateRange.endDate);
     apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
       // Render graph
       globalData = addMissingArtistEntries(data);
@@ -263,7 +263,7 @@ function initialLoad(start, end, rank) {
     "startDate": start,
     "endDate": end
   }
-  aggregateSetting = utilities.getAggregateSetting(startDate, endDate);
+  aggregateSetting = utilities.getAggregateSetting(dateRange.startDate, dateRange.endDate);
   apiCalls.getChartRange(dateRange, aggregateSetting, function(data) {
     globalData = addMissingArtistEntries(data);
   }, rank);
@@ -321,7 +321,7 @@ function renderStreamGraph(preppedData) {
   var area = d3.area()
     .curve(d3.curveBasis)
     .x(function(d) {
-      dateObj = new Date(d.data.key);
+      var dateObj = new Date(d.data.key);
       return xScale(dateObj);
     })
     .y0(function(d) {
@@ -433,11 +433,11 @@ function addToolTip() {
 }
 
 function renderTooltip(d, dateInfo) {
-  var usValue = globalData.us[dateInfo.index][d.key];
+  var usValue = globalData.us[dateInfo.index][d.key],
       ukValue = globalData.uk[dateInfo.index][d.key];
 
   // Set up tool tip data
-  tooltipData = {
+  var tooltipData = {
     "us": usValue,
     "uk": ukValue,
     "artist": d.key,
@@ -459,7 +459,7 @@ function getMouseDate(d, e) {
   // Create date array (should be a better way)
   var datearray = [];
   for (var k = 0; k < d.length; k++) {
-    date = new Date(d[k].data.key);
+    var date = new Date(d[k].data.key);
     date = new Date( date.getTime() + ( date.getTimezoneOffset() * 60000 ) );
     datearray[k] = date.getFullYear() + "/" + date.getMonth();
   }
@@ -524,7 +524,7 @@ function filterData(data, filteredArtists) {
     filteredDate["key"] = data[i].key;
 
     // Copy in each artist that is in the list
-    for (artist in data[i]) {
+    for (var artist in data[i]) {
       if (filteredArtists.includes(artist)){
         filteredDate[artist] = data[i][artist];
       }

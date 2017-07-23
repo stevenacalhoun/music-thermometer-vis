@@ -1,5 +1,5 @@
-var $ = require('jQuery')
-    streamGraph = require('./streamGraph.js')
+var $ = require('jQuery'),
+    streamGraph = require('./streamGraph.js'),
     constants = require('./constants.js'),
     controls = require('./controls.js');
 
